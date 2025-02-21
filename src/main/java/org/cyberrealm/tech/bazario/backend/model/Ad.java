@@ -1,5 +1,6 @@
 package org.cyberrealm.tech.bazario.backend.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -40,4 +41,8 @@ public class Ad {
     private LocalDate publicationDate;
     @ManyToMany
     private Set<Category> categories = new HashSet<>();
+    @Column(nullable = false)
+    private boolean isActive = false;
+    @Column(nullable = false)
+    private boolean isDeleted = false;
 }
