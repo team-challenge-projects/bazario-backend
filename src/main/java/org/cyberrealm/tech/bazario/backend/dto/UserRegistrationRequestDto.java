@@ -1,9 +1,9 @@
 package org.cyberrealm.tech.bazario.backend.dto;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.cyberrealm.tech.bazario.backend.validation.FieldMatch;
+import org.cyberrealm.tech.bazario.backend.validation.ValidEmail;
 
 @FieldMatch.List({
         @FieldMatch(
@@ -14,7 +14,7 @@ import org.cyberrealm.tech.bazario.backend.validation.FieldMatch;
 })
 public record UserRegistrationRequestDto(
         @NotBlank
-        @Email
+        @ValidEmail
         String email,
         @NotBlank
         @Size(min = 8, max = 20)
