@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -40,9 +41,17 @@ public class Ad {
     private String city;
     private LocalDate publicationDate;
     @ManyToMany
+    @JoinTable(
+            name = "ads_categories",
+            joinColumns = @JoinColumn(name = "ad_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
     private Set<Category> categories = new HashSet<>();
+    private int viewCount;
+    private int favoritesCount;
+    private int reviewCount;
     @Column(nullable = false)
-    private boolean isActive = false;
+    private boolean isActive = true;
     @Column(nullable = false)
     private boolean isDeleted = false;
 }
