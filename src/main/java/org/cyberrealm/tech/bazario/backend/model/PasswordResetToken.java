@@ -1,5 +1,6 @@
 package org.cyberrealm.tech.bazario.backend.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -20,8 +21,12 @@ public class PasswordResetToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
     private String token;
-    private LocalDateTime expiryDate;
+    @Column(nullable = false)
+    private LocalDateTime createsAt;
+    @Column(nullable = false)
+    private LocalDateTime expiresAt;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
