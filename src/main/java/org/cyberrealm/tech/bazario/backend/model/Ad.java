@@ -30,15 +30,21 @@ public class Ad {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
     private String title;
     private String description;
+    @Column(nullable = false)
     private String imageUrl;
+    @Column(nullable = false)
     private BigDecimal price;
+    @Column(nullable = false)
     private Integer rating;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+    @Column(nullable = false)
     private String city;
+    @Column(nullable = false)
     private LocalDate publicationDate;
     @ManyToMany
     @JoinTable(
@@ -47,9 +53,13 @@ public class Ad {
             inverseJoinColumns = @JoinColumn(name = "category_id")
     )
     private Set<Category> categories = new HashSet<>();
-    private int viewCount;
-    private int favoritesCount;
-    private int reviewCount;
+    @ManyToMany
+    @JoinTable(
+            name = "ads_deliveries",
+            joinColumns = @JoinColumn(name = "ad_id"),
+            inverseJoinColumns = @JoinColumn(name = "delivery_id")
+    )
+    private Set<Delivery> deliveries = new HashSet<>();
     @Column(nullable = false)
     private boolean isActive = true;
     @Column(nullable = false)
