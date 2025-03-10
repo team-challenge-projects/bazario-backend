@@ -24,10 +24,7 @@ public class AdServiceImpl implements AdService {
     public List<AdDto> findPopular(Pageable pageable) {
         Page<Ad> adsPage = adRepository.findAll(pageable);
         return adsPage.stream()
-                .sorted(Comparator.comparingInt((Ad ad) -> ad.getRating()
-                                + ad.getViewCount()
-                                + ad.getFavoritesCount()
-                                + ad.getReviewCount())
+                .sorted(Comparator.comparingInt(Ad::getRating)
                         .reversed())
                 .map(adMapper::toDto)
                 .collect(Collectors.toList());
