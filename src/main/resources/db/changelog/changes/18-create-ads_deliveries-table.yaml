@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-ads_deliveries-table
+      author: Vitalii Pavlyk
+      changes:
+        - createTable:
+            tableName: ads_deliveries
+            columns:
+              - column:
+                  name: ad_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: delivery_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: ads_deliveries
+            columnNames: ad_id, delivery_id
+        - addForeignKeyConstraint:
+            baseTableName: ads_deliveries
+            baseColumnNames: ad_id
+            constraintName: fk_ads_deliveries_ad
+            referencedTableName: ads
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: ads_deliveries
+            baseColumnNames: delivery_id
+            constraintName: fk_ads_deliveries_delivery
+            referencedTableName: deliveries
+            referencedColumnNames: id
+            onDelete: CASCADE

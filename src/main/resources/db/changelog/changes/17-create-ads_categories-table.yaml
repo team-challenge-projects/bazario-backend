@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-ads_categories-table
+      author: Vitalii Pavlyk
+      changes:
+        - createTable:
+            tableName: ads_categories
+            columns:
+              - column:
+                  name: ad_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: ads_categories
+            columnNames: ad_id, category_id
+        - addForeignKeyConstraint:
+            baseTableName: ads_categories
+            baseColumnNames: ad_id
+            constraintName: fk_ads_categories_ad
+            referencedTableName: ads
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: ads_categories
+            baseColumnNames: category_id
+            constraintName: fk_ads_categories_category
+            referencedTableName: categories
+            referencedColumnNames: id
+            onDelete: CASCADE
