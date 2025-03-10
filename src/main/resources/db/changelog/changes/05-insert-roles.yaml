@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-roles
+      author: Vitalii Pavlyk
+      changes:
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: role
+                  valueComputed: "'ROLE_ADMIN'"
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: role
+                  valueComputed: "'ROLE_USER'"
