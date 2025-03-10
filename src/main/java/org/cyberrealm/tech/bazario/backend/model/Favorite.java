@@ -28,8 +28,8 @@ public class Favorite {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "item_id", nullable = false)
-    private Ad item;
+    @JoinColumn(name = "ad_id", nullable = false)
+    private Ad ad;
     @Column(nullable = false)
     private boolean isDeleted = false;
 }
