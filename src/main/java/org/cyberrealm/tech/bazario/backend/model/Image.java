@@ -21,6 +21,6 @@ public class Image {
     private Long id;
     private String imageUrl;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "item_id", nullable = false)
-    private Ad item;
+    @JoinColumn(name = "ad_id", nullable = false)
+    private Ad ad;
 }
