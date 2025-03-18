@@ -10,7 +10,7 @@ databaseChangeLog:
               - column: { name: last_name, value: "Stepanuk" }
               - column: { name: email, value: "vitalii@ukr.net" }
               - column: { name: phone_number, value: "+380982687965" }
-              - column: { name: password, value: "$2a$10$dcjJkFV1m02n8VlWdH6Yw.5t6D6oNcGcTIpbsfKq2FvKSq4J5G33i" } #1234
+              - column: { name: password, value: "$2a$10$z/tSu0Ewi62/1t1za7OZCexHSIVFQw1LwX/mEObPS1LHVA9RCQW86" } #12345678
               - column: { name: created_at, value: "2025-03-10T10:23:00" }
               - column: { name: city, value: "Lviv" }
         - insert:
@@ -20,6 +20,6 @@ databaseChangeLog:
               - column: { name: last_name, value: "Shved" }
               - column: { name: email, value: "viktor@gmail.com" }
               - column: { name: phone_number, value: "+380682737966" }
-              - column: { name: password, value: "$2a$10$0ruMefA7LbVPHISvQ8bUwOnotzljSwSjnY...wi9PgXXHbWbMyXKK" } #securePassword123
+              - column: { name: password, value: "$2a$10$boSW707nFX4jGPIzDWkawuCR7.ynUhsMaw1A27rAP4w0s.RQe8ti." } #securePassword123
               - column: { name: created_at, value: "2025-01-12T18:26:00" }
               - column: { name: city, value: "Kyiv" }
