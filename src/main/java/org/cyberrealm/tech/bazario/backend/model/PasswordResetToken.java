@@ -24,7 +24,7 @@ public class PasswordResetToken {
     @Column(nullable = false)
     private String token;
     @Column(nullable = false)
-    private LocalDateTime createsAt;
+    private LocalDateTime createdAt;
     @Column(nullable = false)
     private LocalDateTime expiresAt;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
