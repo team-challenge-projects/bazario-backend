@@ -6,19 +6,23 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.dto.AccessTokenResponseDto;
+import org.cyberrealm.tech.bazario.backend.dto.UserForgotPasswordRequestDto;
 import org.cyberrealm.tech.bazario.backend.dto.UserLoginRequestDto;
 import org.cyberrealm.tech.bazario.backend.dto.UserLoginResponseDto;
 import org.cyberrealm.tech.bazario.backend.dto.UserRegistrationRequestDto;
 import org.cyberrealm.tech.bazario.backend.dto.UserResponseDto;
+import org.cyberrealm.tech.bazario.backend.dto.UserVerifyCodeRequestDto;
 import org.cyberrealm.tech.bazario.backend.exception.RegistrationException;
 import org.cyberrealm.tech.bazario.backend.security.AuthenticationService;
 import org.cyberrealm.tech.bazario.backend.security.CookieService;
 import org.cyberrealm.tech.bazario.backend.service.UserService;
+import org.cyberrealm.tech.bazario.backend.service.impl.PasswordResetService;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Authentication management", description =
@@ -30,6 +34,7 @@ public class AuthenticationController {
     private final UserService userService;
     private final AuthenticationService authenticationService;
     private final CookieService cookieService;
+    private final PasswordResetService passwordResetService;
 
     @PostMapping("/registration")
     @Operation(summary = "Register a new user",
@@ -62,5 +67,15 @@ public class AuthenticationController {
             description = "Clear refresh token cookies")
     public void logout(HttpServletResponse response) {
         cookieService.clearRefreshTokenCookie(response);
+    }
+
+    @PostMapping("/forgot-password")
+    public void forgotPassword(@RequestBody UserForgotPasswordRequestDto requestDto) {
+        passwordResetService.generatePasswordResetCode(requestDto.email());
+    }
+
+    @PostMapping("/verify-reset-code")
+    public boolean verifyResetCode(@RequestParam UserVerifyCodeRequestDto requestDto) {
+        return passwordResetService.verifyPasswordResetCode(requestDto.email(), requestDto.code());
     }
 }
