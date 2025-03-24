@@ -15,7 +15,6 @@ import org.cyberrealm.tech.bazario.backend.validation.ValidEmail;
 public record UserRegistrationRequestDto(
         @NotBlank
         String firstName,
-        @NotBlank
         String lastName,
         @NotBlank
         @ValidEmail
