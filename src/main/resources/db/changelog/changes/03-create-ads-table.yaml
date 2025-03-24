@@ -45,14 +45,17 @@ databaseChangeLog:
                   name: city
                   type: varchar(255)
               - column:
+                  name: publication_date
+                  type: DATE
+              - column:
                   name: is_active
-                  type: bit
+                  type: boolean
                   defaultValueBoolean: true
                   constraints:
                     nullable: false
               - column:
                   name: is_deleted
-                  type: bit
+                  type: boolean
                   defaultValueBoolean: false
                   constraints:
                     nullable: false

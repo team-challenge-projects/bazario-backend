@@ -14,19 +14,18 @@ import org.cyberrealm.tech.bazario.backend.validation.ValidEmail;
 })
 public record UserRegistrationRequestDto(
         @NotBlank
+        String firstName,
+        @NotBlank
+        String lastName,
+        @NotBlank
         @ValidEmail
         String email,
+        String phoneNumber,
         @NotBlank
         @Size(min = 8, max = 20)
         String password,
         @NotBlank
         @Size(min = 8, max = 20)
-        String repeatPassword,
-        @NotBlank
-        String firstName,
-        @NotBlank
-        String lastName,
-        String phoneNumber,
-        String city
+        String repeatPassword
 ) {
 }

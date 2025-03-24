@@ -1,5 +1,6 @@
 package org.cyberrealm.tech.bazario.backend.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.dto.UserRegistrationRequestDto;
@@ -38,6 +39,7 @@ public class UserServiceImpl implements UserService {
         );
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoles(Set.of(role));
+        user.setCreatedAt(LocalDateTime.now());
         userRepository.save(user);
         return userMapper.toUserResponse(user);
     }

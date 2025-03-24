@@ -16,17 +16,28 @@ import org.springframework.stereotype.Component;
 public class JwtUtil {
     private final SecretKey secret;
     @Value("${jwt.expiration}")
-    private long expiration;
+    private long accessTokenExpiration;
+    @Value("${jwt.refresh.expiration}")
+    private long refreshTokenExpiration;
 
     public JwtUtil(@Value("${jwt.secret}") String secretString) {
         secret = Keys.hmacShaKeyFor(secretString.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(String username) {
+    public String generateAccessToken(String username) {
         return Jwts.builder()
                 .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + expiration))
+                .expiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
+                .signWith(secret)
+                .compact();
+    }
+
+    public String generateRefreshToken(String username) {
+        return Jwts.builder()
+                .subject(username)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
                 .signWith(secret)
                 .compact();
     }
