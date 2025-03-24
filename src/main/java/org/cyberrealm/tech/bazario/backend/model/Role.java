@@ -35,7 +35,12 @@ public class Role implements GrantedAuthority {
         return role.name();
     }
 
-    public enum RoleName {
-        ROLE_ADMIN, ROLE_USER
+    public enum RoleName implements GrantedAuthority{
+        ROLE_ADMIN, ROLE_USER;
+
+        @Override
+        public String getAuthority() {
+            return name();
+        }
     }
 }
