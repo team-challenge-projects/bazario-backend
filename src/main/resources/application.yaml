@@ -1,0 +1,79 @@
+server:
+  servlet:
+    context-path: /api
+
+spring:
+  config:
+    import: optional:file:.env[.properties]
+
+  application:
+    name: bazario-backend
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+      show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    #Cloud database
+    url: ${POSTGRES_DB_URL}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_ROOT_PASSWORD}
+
+    ##local
+    #spring.datasource.url=jdbc:postgresql://localhost:5432/bazario?serverTimezone=UTC
+    #spring.datasource.username=${POSTGRES_LOCAL_USER}
+    #spring.datasource.password=${POSTGRES_LOCAL_ROOT_PASSWORD}
+
+  cache:
+    type: redis
+
+  redis:
+    host: ${REDIS_HOST}
+    port: ${REDIS_PORT}
+    username: ${REDIS_USERNAME}
+    password: ${REDIS_PASSWORD}
+    ssl: true
+
+  mail:
+    host: ${MAILTRAP_HOST}
+    port: ${MAILTRAP_PORT}
+    username: ${MAILTRAP_USERNAME}
+    password: ${MAILTRAP_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+        starttls:
+          enable: true
+jwt:
+  expiration: ${JWT_EXPIRATION}
+  secret: ${JWT_SECRET}
+  refresh:
+    expiration: ${JWT_REFRESH_EXPIRATION}
+
+password:
+  reset:
+    code:
+      length: 6
+      expiration:
+        minutes: 3
+user:
+  root:
+    credentials:
+      firstName: 'Vitalii'
+      lastName: 'Stepanuk'
+      avatar: 'https://happy-tails-mantine.vercel.app/_next/image?url=https%3A%2F%2Fimgur.com%2FtH5pXEV.png&w=1920&q=75'
+      email: 'vitalii@ukr.net'
+      phoneNumber: '+380982687965'
+      password: 'rooT1#root'
+      cityName: 'Lviv'
+      cityCoordinate: '49,5017|24,0123'
+
+frontend:
+  reset:
+    password:
+      url: https://frontend.yourapp.com/reset-password

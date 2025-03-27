@@ -1,6 +1,14 @@
 package org.cyberrealm.tech.bazario.backend.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -8,6 +16,7 @@ import java.util.Collections;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
+import org.cyberrealm.tech.bazario.backend.model.enums.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -30,11 +39,11 @@ public class User implements UserDetails {
     private String phoneNumber;
     @Column(nullable = false)
     private String password;
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
     private String cityName;
-    private Double cityCoordinate;
+    private String cityCoordinate;
     @Enumerated(EnumType.STRING)
-    private Role.RoleName role;
+    private Role role;
     @Column(nullable = false)
     private boolean isLocked = false;
 

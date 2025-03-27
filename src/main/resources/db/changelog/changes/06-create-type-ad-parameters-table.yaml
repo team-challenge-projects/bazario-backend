@@ -1,0 +1,33 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-type-ad-parameters-table
+      author: Andrey Sitarskiy
+      changes:
+        - createTable:
+            tableName: type_ad_parameters
+            ifNotExists: true
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: restriction_pattern
+                  type: varchar(50)
+              - column:
+                  name: description_pattern
+                  type: varchar(50)
+              - column:
+                  name: parent_id
+                  type: bigint
+                  constraints:
+                    foreignKeyName: fk_type_ad_param_type_ad_param
+                    references: type_ad_parameters(id)

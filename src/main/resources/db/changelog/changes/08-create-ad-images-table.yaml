@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-ad-images-table
+      author: Andrey Sitarskiy
+      changes:
+        - createTable:
+            tableName: ad_images
+            ifNotExists: true
+            columns:
+              - column:
+                  name: ad_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_ad_images_ads
+                    references: ads(id)
+              - column:
+                  name: url
+                  type: varchar(150)
