@@ -50,16 +50,14 @@ public class AuthenticationController {
             description = "Login an existing user by validating their username and password. ")
     public UserLoginResponseDto login(@RequestBody @Valid UserLoginRequestDto request,
                                       HttpServletResponse response) {
-        UserLoginResponseDto loginResponse = authenticationService.authenticate(request);
-        cookieService.addRefreshTokenCookie(loginResponse.refreshToken(), response);
-        return loginResponse;
+        return null;
     }
 
     @PostMapping("/refresh")
     @Operation(summary = "Refresh access token",
             description = "Create new access token by refresh token")
     public AccessTokenResponseDto refresh(@CookieValue("refreshToken") String refreshToken) {
-        return authenticationService.refreshAccessToken(refreshToken);
+        return null;
     }
 
     @GetMapping("/logout")
