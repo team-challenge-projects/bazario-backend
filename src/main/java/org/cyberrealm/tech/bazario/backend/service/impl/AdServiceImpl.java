@@ -1,6 +1,5 @@
 package org.cyberrealm.tech.bazario.backend.service.impl;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +23,6 @@ public class AdServiceImpl implements AdService {
     public List<AdDto> findPopular(Pageable pageable) {
         Page<Ad> adsPage = adRepository.findAll(pageable);
         return adsPage.stream()
-                .sorted(Comparator.comparingInt(Ad::getRating)
-                        .reversed())
                 .map(adMapper::toDto)
                 .collect(Collectors.toList());
     }

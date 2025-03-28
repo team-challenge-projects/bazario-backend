@@ -1,10 +1,10 @@
 databaseChangeLog:
   - changeSet:
-      id: create-favorites-table
-      author: Vitalii Pavlyk
+      id: create-ad-parameters-table
+      author: Andrey Sitarskiy
       changes:
         - createTable:
-            tableName: favorites
+            tableName: ad_parameters
             ifNotExists: true
             columns:
               - column:
@@ -15,16 +15,21 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: user_id
+                  name: value
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: parameter_id
                   type: bigint
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_favorite_user
-                    references: users(id)
+                    foreignKeyName: fk_ad_param_type_ad_param
+                    references: type_ad_parameters(id)
               - column:
                   name: ad_id
                   type: bigint
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_favorite_ad
+                    foreignKeyName: fk_ad_param_ad
                     references: ads(id)

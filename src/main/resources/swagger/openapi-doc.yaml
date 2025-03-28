@@ -1,0 +1,2178 @@
+openapi: 3.0.1
+
+info:
+  title: Bazario marketplace Panel API
+  description: |
+    The Bazario marketplace Panel API is a comprehensive RESTful API
+    that serves as the backbone of the marketplace`s digital platform.
+    It provides a wide range of endpoints for managing crud-operation of ad, users
+    and admins.
+
+  version: v0.0.1
+
+servers:
+  - url: https://bazario-mkur.onrender.com/api
+    description: Remote service for managing platform of the Bazario marketplace
+  - url: http://127.0.0.1:8080/api
+    description: Local service for managing platform of the Bazario marketplace
+
+tags:
+  - name: Authentication
+    description: |
+      Endpoints for user authentication.
+  - name: User
+    description: |
+      Endpoints for users to manage yourself.
+      Includes registration, updating, deleting user`s account.
+  - name: User parameter
+    description: |
+      Endpoints for users manage user parameter.
+  - name: Reset Password
+    description: |
+      Endpoints for users reset password.
+  - name: Favorite
+    description: |
+      Endpoints for users to manage favotite ad on the website.
+  - name: Comment
+    description: |
+      Endpoints for managing museum data in the admin API.
+      This API handles operations such as adding and updating museum data.
+  - name: Category
+    description: |
+      Endpoint for admin and user to manage category.
+  - name: Ad
+    description: |
+      Endpoints for users to manage ad on the website.
+  - name: AdParameter
+    description: |
+      Endpoints for admin to manage ad parameters on the website.
+  - name: Image
+    description: |
+      Endpoints for users to manage image on the website.
+
+paths:
+  /public/login:
+    post:
+      tags:
+        - Authentication
+      description: User login endpoint
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthenticationRequst'
+        required: true
+      responses:
+        200:
+          description: Authenticated successfully. Get token.
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: JWT_REFRESH_TOKEN=abcs123
+          content:
+            text/plain:
+              schema:
+                type: string
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /public/refreshToken:
+    post:
+      tags:
+        - Authentication
+      description: User login endpoint
+      operationId: refreshToken
+      parameters:
+        - in: cookie
+          name: refreshToken
+          schema:
+            type: string
+      responses:
+        200:
+          description: Authenticated successfully. Get token.
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: JWT_REFRESH_TOKEN=abcs123
+          content:
+            text/plain:
+              schema:
+                type: string
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /public/registration:
+    post:
+      tags:
+        - User
+      summary: Create user
+      description: Creates user with the provided information.
+      operationId: createUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrationRequst'
+        required: true
+      responses:
+        204:
+          description: Registration data load successfully.
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /public/send/{type}:
+    post:
+      tags:
+        - User
+      summary: Send message to email of user
+      description: Send verification code or reset link to email of user
+      operationId: sendMessage
+      parameters:
+        - $ref: '#/components/parameters/typeEmailMessage'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+              format: email
+      responses:
+        204:
+          description: Send verification code to email
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /public/email/verify:
+    post:
+      tags:
+        - User
+      summary: Verify Email
+      description: Verify Email after registration user
+      operationId: verifyEmail
+      parameters:
+        - $ref: '#/components/parameters/typeEmailMessage'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerificationEmail'
+      responses:
+        200:
+          description: Registration successfully. Get token.
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: JWT_REFRESH_TOKEN=abcs123
+          content:
+            text/plain:
+              schema:
+                type: string
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /private/user:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - User
+      summary: Get user information
+      description: Get user information
+      operationId: getUserInformation
+      responses:
+        200:
+          description: Registration successfully. Get token.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivateUserInformation'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    patch:
+      security:
+        - bearerAuth: []
+      tags:
+        - User
+      summary: Update user
+      description: Update user`s field. If update email you will also need verify it. Role and isLocked fields change only admin.
+      operationId: updateUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchUser'
+      responses:
+        200:
+          description: Registration successfully. Get token.
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/UserInformation'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - User
+      summary: Delete an existing User
+      description: Deletes an existing User by its unique identifier.
+      operationId: deleteUser
+
+      responses:
+        204:
+          description: User deleted successfully
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /private/user/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - User
+      summary: Get other user information
+      description: Get other user information
+      operationId: getOtherUserInformation
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        200:
+          description: Registration successfully. Get token.
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/UserInformation'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /admin/user/{id}:
+    patch:
+      security:
+        - bearerAuth: []
+      tags:
+        - User
+      summary: Update user by admin
+      description: Update user`s field by admin. Role and isLocked fields change only admin.
+      operationId: updateUserByAdmin
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchUser'
+      responses:
+        200:
+          description: Registration successfully. Get token.
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/UserInformation'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /admin/user/parameter:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - User parameter
+      summary: Create user parameter by user
+      description: Create user parameter by user
+      operationId: createUserParameter
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BasisAdminParameter'
+      responses:
+        204:
+          description: Send verification code to email
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /admin/user/parameter/{id}:
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - User parameter
+      summary: Put user parameter by admin
+      description: Put user parameter by admin
+      operationId: putUserParameter
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BasisAdminParameter'
+      responses:
+        204:
+          description: Send verification code to email
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - User parameter
+      security:
+        - bearerAuth: []
+      summary: Delete user parameter by user
+      description: Delete user parameter by user
+      operationId: deleteUserParameter
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        204:
+          description: Send verification code to email
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /public/resetPassword:
+    post:
+      tags:
+        - Reset Password
+      summary: Reset password of user
+      description: Reset password of user by hex.
+      operationId: resetPassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPassword'
+      responses:
+        204:
+          description: Send verification code to email
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /private/favorite:
+    get:
+      security:
+        -  bearerAuth: []
+      tags:
+        - Favorite
+      summary: Get favorite ad
+      description: Get favorite ad
+      operationId: getFavorite
+      responses:
+        200:
+          description: Add ad successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AdDto'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /private/favorite/{id}:
+    post:
+      security:
+        -  bearerAuth: []
+      tags:
+        - Favorite
+      summary: Add favorite add
+      description: Add favorite add
+      operationId: addFavorite
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        204:
+          description: Add ad successfully
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      security:
+        -  bearerAuth: []
+      tags:
+        - Favorite
+      summary: Delete favorite ad
+      description: Delete ad from the favorite list
+      operationId: deleteFavorite
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        204:
+          description: Delete ad successfully
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /public/comment/{id}/totalRating:
+    get:
+      tags:
+        - Comment
+      summary: Get total rating of user by user`s id
+      description: Get total rating of user by user`s id from coment list of user
+      operationId: getTotalRating
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        200:
+          description: Get coment successfully
+          content:
+            text/plain:
+              schema:
+                type: integer
+                format: int32
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /public/comment/{id}:
+    get:
+      tags:
+        - Comment
+      summary: Get coments for user by user`s id
+      description: Get coments for user by user`s id from coment list of user
+      operationId: getComents
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/sizeParam'
+        - $ref: '#/components/parameters/sortParam'
+      responses:
+        200:
+          description: Get coment successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PageComment'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /private/comment/{id}:
+    post:
+      security:
+        -  bearerAuth: []
+      tags:
+        - Comment
+      summary: Add coment for user by user`s id
+      description: Add coment for user by user`s id to coment list of user
+      operationId: addComent
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentDto'
+      responses:
+        204:
+          description: Add coment successfully
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      security:
+        -  bearerAuth: []
+      tags:
+        - Comment
+      summary: Put coment for user by user`s id
+      description: Put coment for user by user`s id to coment list of user
+      operationId: putComent
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentDto'
+      responses:
+        204:
+          description: Add coment successfully
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      security:
+        -  bearerAuth: []
+      tags:
+        - Comment
+      summary: Delete coment by id
+      description: Delete coment by id from coment list of user
+      operationId: deleteComent
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        204:
+          description: Delete coment successfully
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /admin/comment/{idEvaluator}/{idEvaluated}:
+    put:
+      security:
+        -  bearerAuth: []
+      tags:
+        - Comment
+      summary: Put coment for user by user`s id
+      description: Put coment for user by user`s id to coment list of user
+      operationId: putComentByAdmin
+      parameters:
+        - in: path
+          required: true
+          description: Unique identifier of entity
+          schema:
+            type: integer
+            format: int64
+          name: idEvaluator
+        - in: path
+          required: true
+          description: Unique identifier of entity
+          schema:
+            type: integer
+            format: int64
+          name: idEvaluated
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentDto'
+      responses:
+        204:
+          description: Add coment successfully
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /public/categories:
+    get:
+      tags:
+        - Category
+      summary: Get categories
+      description: Get categories
+      operationId: getCategories
+      responses:
+        200:
+          description: Get categories successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /public/category/{id}:
+    get:
+      tags:
+        - Category
+      summary: Get category
+      description: Get category. Use filter.
+      operationId: getCategory
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        200:
+          description: Get categories successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryResponseDto'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /public/category/{id}/ad/parameters:
+    get:
+      tags:
+        - Category
+      summary: Get ad parameters by category id
+      description: Get ad parameters by category id. Use create ad.
+      operationId: getCategoryAdParameter
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        200:
+          description: Get categories successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AdParameterDto'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /admin/category:
+    post:
+      security:
+        -  bearerAuth: []
+      tags:
+        - Category
+      summary: Add category by admin
+      description: Add category by admin
+      operationId: addCategory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryRequestDto'
+      responses:
+        204:
+          description: Add category successfully
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /admin/category/{id}:
+    put:
+      security:
+        -  bearerAuth: []
+      tags:
+        - Category
+      summary: Put category by admin
+      description: Put category by admin
+      operationId: putCategory
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryRequestDto'
+      responses:
+        204:
+          description: Add category successfully
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      security:
+        -  bearerAuth: []
+      tags:
+        - Category
+      summary: Delete category by admin by categories id
+      description: Delete category by admin
+      operationId: deleteCategory
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        204:
+          description: Add category successfully
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /admin/ad/parameter:
+    post:
+      tags:
+        - AdParameter
+      security:
+        -  bearerAuth: []
+      summary: Create ad parameter by admin
+      description: Create ad parameter by admin
+      operationId: createAdParameter
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BasisAdminParameter'
+      responses:
+        204:
+          description: Send verification code to email
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /admin/ad/parameter/{id}:
+    put:
+      tags:
+        - AdParameter
+      security:
+        -  bearerAuth: []
+      summary: Put ad parameter by admin
+      description: Put ad parameter by admin
+      operationId: PutAdParameter
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BasisAdminParameter'
+      responses:
+        204:
+          description: Send verification code to email
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - AdParameter
+      security:
+        -  bearerAuth: []
+      summary: Delete ad parameter by user
+      description: Delete ad parameter by user
+      operationId: deleteAdParameter
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        204:
+          description: Send verification code to email
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /public/ads:
+    get:
+      tags:
+        - Ad
+      summary: Get ads
+      description: Create ad parameter by user
+      operationId: getAds
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/sizeParam'
+        - $ref: '#/components/parameters/sortParam'
+        - in: query
+          name: titel
+          description: Scherch by word
+          schema:
+            type: string
+          required: false
+        - $ref: '#/components/parameters/basisParameter'
+        - in: query
+          name: userParams
+          required: false
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      format: int64
+                    value:
+                      type: string
+      responses:
+        200:
+          description: Create ad successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageAd'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /public/ad/{id}:
+    get:
+      tags:
+        - Ad
+      summary: Get ad
+      description: Get ad parameter by user
+      operationId: getAd
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        200:
+          description: Create ad successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdDto'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not found ad
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /public/ad/{ids}:
+    get:
+      tags:
+        - Ad
+      summary: Copmpares ad
+      description: Compares ad parameter by ads
+      operationId: comparesAd
+      parameters:
+        - in: path
+          required: true
+          name: ids
+          schema:
+            type: array
+            items:
+              type: integer
+              format: int64
+      responses:
+        200:
+          description: Compare ads successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AdDto'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not found ad
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /private/ad:
+    post:
+      tags:
+        - Ad
+      security:
+        -  bearerAuth: []
+      summary: Create ad by user
+      description: Create ad parameter by user
+      operationId: createAd
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdDto'
+      responses:
+        204:
+          description: Create ad successfully
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /private/ad/{id}:
+    patch:
+      tags:
+        - Ad
+      security:
+        -  bearerAuth: []
+      summary: Put ad by user
+      description: Put ad parameter by user by ad`s id
+      operationId: putAd
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchAd'
+      responses:
+        204:
+          description: Create ad successfully
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not found ad
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - Ad
+      security:
+        -  bearerAuth: []
+      summary: Delete ad by user
+      description: Delete ad parameter by user by ad`s id
+      operationId: deleteAd
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        204:
+          description: Create ad successfully
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not found ad
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /image/{type}/{id}:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - Image
+      description: Load and save image. If typy is ad than parameter id is ad`s id. If type is avatar parameter id ignore.
+      operationId: saveImage
+      parameters:
+        - $ref: '#/components/parameters/typeImage'
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaveImageResponse'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - Image
+      description: Load and change image. Parameter id is image`s id
+      operationId: changeImage
+      parameters:
+        - $ref: '#/components/parameters/typeImage'
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        200:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SaveImageResponse'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - Image
+      description: Delete image. Parameter id is image`s id
+      operationId: deleteImage
+      parameters:
+        - $ref: '#/components/parameters/typeImage'
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        204:
+          description: Delete successful
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    AuthenticationRequst:
+      description:  Authentication form
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          nullable: true
+        password:
+          type: string
+          format: password
+          pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#@&])[\w#@&]{8,}$'
+          nullable: true
+    ErrorResponse:
+      description: Error message with timestamp
+      type: object
+      properties:
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+    VerificationEmail:
+      description: Verify email
+      properties:
+        email:
+          type: string
+          format: email
+        code:
+          type: string
+          pattern: '^\w{6}$'
+    ResetPassword:
+      description: Reset password
+      allOf:
+        - $ref: '#/components/schemas/AuthenticationRequst'
+      properties:
+        hex:
+          type: string
+    RegistrationRequst:
+      description: Registration user
+      allOf:
+        - $ref: '#/components/schemas/UserInformation'
+        - $ref: '#/components/schemas/AuthenticationRequst'
+    UserInformation:
+      description: Registration user
+      type: object
+      properties:
+        firstName:
+          type: string
+          pattern: '^[A-ZА-ЯІЇЄ][a-zа-яіїє]{1,20}$'
+          nullable: true
+        lastName:
+          type: string
+          pattern: '^[A-ZА-ЯІЇЄ][a-zа-яіїє]{1,20}$'
+          nullable: true
+        email:
+          type: string
+          format: email
+          nullable: true
+        phoneNumber:
+          type: string
+          pattern: '^(\+38|38|8)?0\d{9}$'
+          nullable: true
+        cityName:
+          type: string
+          minLength: 3
+          maxLength: 100
+          nullable: true
+    PrivateUserInformation:
+      description: Registration user
+      allOf:
+        - $ref: '#/components/schemas/UserInformation'
+      type: object
+      properties:
+        pararmeters:
+          type: array
+          items:
+            $ref: '#/components/schemas/BasisUserParameter'
+    PatchUser:
+      description: Patch user field
+      allOf:
+        - $ref: '#/components/schemas/RegistrationRequst'
+      type: object
+      properties:
+        cityCoordinate:
+          type: string
+          pattern: '^\d+,?\d*\|\d,?\d*$'
+          nullable: true
+        verificationCode:
+          type: string
+          pattern: '^\w{6}$'
+          description: Verification code from email of user
+          nullable: true
+        userParameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/BasisUserParameter'
+          nullable: true
+        role:
+          type: string
+        isLocked:
+          type: boolean
+          default: false
+    BasisUserParameter:
+      description: Basis user parameter for user or ad
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        value:
+          type: string
+    BasisAdminParameter:
+      description: Basis admin parameter for user or ad
+      type: object
+      properties:
+        name:
+          type: string
+        restrictionPattern:
+          type: string
+        descriptionPattern:
+          type: string
+    AdParameterDto:
+      allOf:
+        - $ref: '#/components/schemas/BasisAdminParameter'
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+    CategoryRequestDto:
+      type: object
+      properties:
+        name:
+          type: string
+        adPrameterIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+    CategoryResponseDto:
+      type: object
+      properties:
+        name:
+          type: string
+        adParameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/BasisUserParameter'
+        userPrameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/BasisUserParameter'
+    CommentDto:
+      description: A user's comment about another user who added an ad
+      type: object
+      properties:
+        raiting:
+          type: integer
+          format: int32
+          minimum: 0
+          maximum: 9
+        description:
+          type: string
+          pattern: '^(?!.*\d{9,})[\w\s]{3,200}$'
+    AdDto:
+      description: Ad information
+      type: object
+      properties:
+        titel:
+          type: string
+          pattern: '^(?!.*\d{9,})[\w\s]{3,20}$'
+          nullable: true
+        description:
+          type: string
+          pattern: '^(?!.*\d{9,})[\w\s]{3,200}$'
+          nullable: true
+        imagesUrl:
+          type: array
+          items:
+            type: string
+            format: uri
+          nullable: true
+        price:
+          type: number
+          nullable: true
+        adParameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/BasisUserParameter'
+          nullable: true
+    PatchAd:
+      description: Patch ad
+      allOf:
+        - $ref: '#/components/schemas/AdDto'
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - NEW
+            - ACTIVE
+            - DISABLE
+            - DELETE
+    AdResponseDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        titel:
+          type: string
+        description:
+          type: string
+        imageUrl:
+          type: string
+          format: uri
+        price:
+          type: number
+    PageAd:
+      type: object
+      description: return Page<AdResponseDto>
+      x-extends: BasisPage
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdResponseDto'
+    PageComment:
+      type: object
+      description: return Page<CommentDto>
+      x-extends: BasisPage
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/CommentDto'
+    SaveImageResponse:
+      description: Id of saved image
+      type: object
+      properties:
+        imageId:
+          type: string
+        originalUrl:
+          type: string
+  parameters:
+    idParam:
+      name: id
+      in: path
+      required: true
+      description: Unique identifier of entity
+      schema:
+        type: integer
+        format: int64
+    typeImage:
+      name: type
+      in: path
+      required: true
+      schema:
+        type: string
+        enum:
+          - ad
+          - avatar
+    typeEmailMessage:
+      name: type
+      in: path
+      required: true
+      schema:
+        type: string
+        enum:
+          - verify
+          - reset
+    basisParameter:
+      name: params
+      in: query
+      required: false
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  format: int64
+                value:
+                  type: string
+    pageParam:
+      name: page
+      in: query
+      required: false
+      description: Number of page
+      schema:
+        type: integer
+        format: int32
+        default: 0
+    sizeParam:
+      name: size
+      in: query
+      required: false
+      description: The number of elements on the page
+      schema:
+        type: integer
+        format: int32
+        default: 16
+    sortParam:
+      name: sort
+      in: query
+      required: false
+      description: The order of sorting elements by their fields
+      schema:
+        type: string
+        pattern: '^[A-Za-z]+,(asc|desc)$'
+        default: id,asc
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

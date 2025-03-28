@@ -1,10 +1,10 @@
 databaseChangeLog:
   - changeSet:
-      id: create-favorites-table
-      author: Vitalii Pavlyk
+      id: create-category-type-ad-parameters-table
+      author: Andrey Sitarskiy
       changes:
         - createTable:
-            tableName: favorites
+            tableName: category_type_ad_parameters
             ifNotExists: true
             columns:
               - column:
@@ -15,16 +15,16 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: user_id
+                  name: category_id
                   type: bigint
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_favorite_user
-                    references: users(id)
+                    foreignKeyName: fk_category_type_ad_param_category
+                    references: categories(id)
               - column:
-                  name: ad_id
+                  name: type_ad_parameter_id
                   type: bigint
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_favorite_ad
-                    references: ads(id)
+                    foreignKeyName: fk_category_type_ad_param_type_ad_param
+                    references: type_ad_parameters(id)

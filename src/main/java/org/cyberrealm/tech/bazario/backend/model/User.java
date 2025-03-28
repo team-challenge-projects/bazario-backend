@@ -2,30 +2,27 @@ package org.cyberrealm.tech.bazario.backend.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
+import org.cyberrealm.tech.bazario.backend.model.enums.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Getter
 @Setter
-@SQLDelete(sql = "UPDATE users SET is_deleted = true WHERE id=?")
-@SQLRestriction("is_deleted=false")
 @Table(name = "users")
 public class User implements UserDetails {
     @Id
@@ -33,8 +30,8 @@ public class User implements UserDetails {
     private Long id;
     @Column(nullable = false)
     private String firstName;
-    @Column(nullable = false)
     private String lastName;
+    private String avatar;
     @Column(nullable = false, unique = true)
     @Email
     private String email;
@@ -42,21 +39,20 @@ public class User implements UserDetails {
     private String phoneNumber;
     @Column(nullable = false)
     private String password;
-    private LocalDateTime createdAt;
-    private String city;
-    @ManyToMany
-    @JoinTable(
-            name = "users_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<Role> roles = new HashSet<>();
+    private LocalDateTime createdAt = LocalDateTime.now();
+    private String cityName;
+    private String cityCoordinate;
+    @Enumerated(EnumType.STRING)
+    private Role role;
     @Column(nullable = false)
-    private boolean isDeleted = false;
+    private boolean isLocked = false;
+
+    @OneToMany(mappedBy = "user")
+    private Set<UserParameter> parameters;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles;
+        return Collections.singleton(role);
     }
 
     @Override
@@ -86,6 +82,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return !isDeleted;
+        return !isLocked;
     }
 }

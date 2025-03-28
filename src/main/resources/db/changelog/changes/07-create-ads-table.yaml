@@ -1,10 +1,11 @@
 databaseChangeLog:
   - changeSet:
-      id: create-books-table
+      id: create-ads-table
       author: Vitalii Pavlyk
       changes:
         - createTable:
             tableName: ads
+            ifNotExists: true
             columns:
               - column:
                   name: id
@@ -15,53 +16,48 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: title
-                  type: varchar(255)
+                  type: varchar(60)
                   constraints:
                     nullable: false
               - column:
                   name: description
-                  type: varchar(255)
+                  type: varchar(200)
                   constraints:
                     nullable: true
-              - column:
-                  name: image_url
-                  type: varchar(255)
-                  constraints:
-                    nullable: false
               - column:
                   name: price
                   type: decimal(19, 2)
                   constraints:
                     nullable: false
               - column:
-                  name: rating
-                  type: integer
+                  name: publication_date
+                  type: DATE
+              - column:
+                  name: status
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
               - column:
                   name: user_id
                   type: bigint
                   constraints:
                     nullable: false
+                    foreignKeyName: fk_ads_user
+                    references: users(id)
               - column:
-                  name: city
-                  type: varchar(255)
-              - column:
-                  name: publication_date
-                  type: DATE
-              - column:
-                  name: is_active
-                  type: boolean
-                  defaultValueBoolean: true
+                  name: category_id
+                  type: bigint
                   constraints:
                     nullable: false
+                    foreignKeyName: fk_ads_categories
+                    references: categories(id)
+        - createIndex:
+            clustered: true
+            columns:
               - column:
-                  name: is_deleted
-                  type: boolean
-                  defaultValueBoolean: false
-                  constraints:
-                    nullable: false
-        - addForeignKeyConstraint:
-            baseTableName: ads
-            baseColumnNames: user_id
-            referencedTableName: users
-            referencedColumnNames: id
-            constraintName: fk_ad_user
+                  descending: true
+                  name: title
+            indexName: idx_title
+            schemaName: public
+            tableName: ads
+            tablespace: A String

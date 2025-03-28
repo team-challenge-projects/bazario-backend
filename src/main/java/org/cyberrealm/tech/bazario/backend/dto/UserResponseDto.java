@@ -6,6 +6,6 @@ public record UserResponseDto(
         String firstName,
         String lastName,
         String phoneNumber,
-        String city
+        String cityName
 ) {
 }

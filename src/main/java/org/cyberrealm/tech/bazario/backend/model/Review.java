@@ -22,10 +22,13 @@ public class Review {
     private Long id;
     private String reviewText;
     private LocalDateTime createdAt;
+    private Integer rating;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "evaluator_id", nullable = false)
+    private User evaluator;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "ad_id", nullable = false)
-    private Ad ad;
+    @JoinColumn(name = "evaluated_id", nullable = false)
+    private User evaluated;
 }

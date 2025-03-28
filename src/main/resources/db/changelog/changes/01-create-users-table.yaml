@@ -5,6 +5,7 @@ databaseChangeLog:
       changes:
         - createTable:
             tableName: users
+            ifNotExists: true
             columns:
               - column:
                   name: id
@@ -15,29 +16,32 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: first_name
-                  type: varchar(255)
+                  type: varchar(50)
                   constraints:
                     nullable: false
               - column:
                   name: last_name
-                  type: varchar(255)
-                  constraints:
-                    nullable: false
+                  type: varchar(50)
               - column:
                   name: email
-                  type: varchar(255)
+                  type: varchar(70)
                   constraints:
                     nullable: false
                     unique: true
               - column:
+                  name: avatar
+                  type: varchar(150)
+                  constraints:
+                    nullable: false
+              - column:
                   name: phone_number
-                  type: varchar(255)
+                  type: varchar(30)
                   constraints:
                     nullable: false
                     unique: true
               - column:
                   name: password
-                  type: varchar(255)
+                  type: varchar(150)
                   constraints:
                     nullable: false
               - column:
@@ -45,11 +49,20 @@ databaseChangeLog:
                   type: TIMESTAMP
                   constraints:
                     nullable: false
+                  defaultValueComputed: CURRENT_TIMESTAMP
               - column:
-                  name: city
-                  type: varchar(255)
+                  name: city_name
+                  type: varchar(150)
               - column:
-                  name: is_deleted
+                  name: city_coordinate
+                  type: varchar(150)
+              - column:
+                  name: role
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_locked
                   type: boolean
                   defaultValueBoolean: false
                   constraints:
