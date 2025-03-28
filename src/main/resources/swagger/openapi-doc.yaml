@@ -500,7 +500,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateUserParameter'
+              $ref: '#/components/schemas/BasisAdminParameter'
       responses:
         204:
           description: Send verification code to email
@@ -549,7 +549,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateUserParameter'
+              $ref: '#/components/schemas/BasisAdminParameter'
       responses:
         204:
           description: Send verification code to email
@@ -676,7 +676,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Ad'
+                  $ref: '#/components/schemas/AdDto'
         400:
           description: Invalid input
           content:
@@ -901,7 +901,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Comment'
+              $ref: '#/components/schemas/CommentDto'
       responses:
         204:
           description: Add coment successfully
@@ -949,7 +949,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Comment'
+              $ref: '#/components/schemas/CommentDto'
       responses:
         204:
           description: Add coment successfully
@@ -1054,7 +1054,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Comment'
+              $ref: '#/components/schemas/CommentDto'
       responses:
         204:
           description: Add coment successfully
@@ -1116,6 +1116,64 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /public/category/{id}:
+    get:
+      tags:
+        - Category
+      summary: Get category
+      description: Get category. Use filter.
+      operationId: getCategory
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        200:
+          description: Get categories successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryResponseDto'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /public/category/{id}/ad/parameters:
+    get:
+      tags:
+        - Category
+      summary: Get ad parameters by category id
+      description: Get ad parameters by category id. Use create ad.
+      operationId: getCategoryAdParameter
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        200:
+          description: Get categories successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AdParameterDto'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /admin/category:
     post:
       security:
@@ -1129,7 +1187,7 @@ paths:
         content:
           application/json:
             schema:
-              type: string
+              $ref: '#/components/schemas/CategoryRequestDto'
       responses:
         204:
           description: Add category successfully
@@ -1178,7 +1236,7 @@ paths:
         content:
           application/json:
             schema:
-              type: string
+              $ref: '#/components/schemas/CategoryRequestDto'
       responses:
         204:
           description: Add category successfully
@@ -1268,7 +1326,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateAdParameter'
+              $ref: '#/components/schemas/BasisAdminParameter'
       responses:
         204:
           description: Send verification code to email
@@ -1317,7 +1375,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateAdParameter'
+              $ref: '#/components/schemas/BasisAdminParameter'
       responses:
         204:
           description: Send verification code to email
@@ -1467,7 +1525,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Ad'
+                $ref: '#/components/schemas/AdDto'
         400:
           description: Invalid input
           content:
@@ -1516,7 +1574,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Ad'
+                  $ref: '#/components/schemas/AdDto'
         400:
           description: Invalid input
           content:
@@ -1554,7 +1612,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Ad'
+              $ref: '#/components/schemas/AdDto'
       responses:
         204:
           description: Create ad successfully
@@ -1839,12 +1897,6 @@ components:
       allOf:
         - $ref: '#/components/schemas/UserInformation'
         - $ref: '#/components/schemas/AuthenticationRequst'
-      type: object
-      properties:
-        cityCoordinate:
-          type: number
-          format: double
-          nullable: true
     UserInformation:
       description: Registration user
       type: object
@@ -1886,6 +1938,10 @@ components:
         - $ref: '#/components/schemas/RegistrationRequst'
       type: object
       properties:
+        cityCoordinate:
+          type: string
+          pattern: '^\d+,?\d*\|\d,?\d*$'
+          nullable: true
         verificationCode:
           type: string
           pattern: '^\w{6}$'
@@ -1922,24 +1978,38 @@ components:
           type: string
         descriptionPattern:
           type: string
-    CreateUserParameter:
-      description: Create user  parameter
+    AdParameterDto:
       allOf:
         - $ref: '#/components/schemas/BasisAdminParameter'
       type: object
       properties:
-        parentId:
+        id:
           type: integer
           format: int64
-    CreateAdParameter:
-      allOf:
-        - $ref: '#/components/schemas/CreateUserParameter'
+    CategoryRequestDto:
       type: object
       properties:
-        catalogId:
-          type: integer
-          format: int64
-    Comment:
+        name:
+          type: string
+        adPrameterIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+    CategoryResponseDto:
+      type: object
+      properties:
+        name:
+          type: string
+        adParameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/BasisUserParameter'
+        userPrameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/BasisUserParameter'
+    CommentDto:
       description: A user's comment about another user who added an ad
       type: object
       properties:
@@ -1951,7 +2021,7 @@ components:
         description:
           type: string
           pattern: '^(?!.*\d{9,})[\w\s]{3,200}$'
-    Ad:
+    AdDto:
       description: Ad information
       type: object
       properties:
@@ -1980,7 +2050,7 @@ components:
     PatchAd:
       description: Patch ad
       allOf:
-        - $ref: '#/components/schemas/Ad'
+        - $ref: '#/components/schemas/AdDto'
       type: object
       properties:
         status:
@@ -1990,7 +2060,7 @@ components:
             - ACTIVE
             - DISABLE
             - DELETE
-    AdForPage:
+    AdResponseDto:
       type: object
       properties:
         id:
@@ -2006,53 +2076,23 @@ components:
         price:
           type: number
     PageAd:
-      allOf:
-        - $ref: '#/components/schemas/Page'
       type: object
+      description: return Page<AdResponseDto>
+      x-extends: BasisPage
       properties:
         content:
           type: array
           items:
-            $ref: '#/components/schemas/AdForPage'
+            $ref: '#/components/schemas/AdResponseDto'
     PageComment:
-      allOf:
-        - $ref: '#/components/schemas/Page'
       type: object
+      description: return Page<CommentDto>
+      x-extends: BasisPage
       properties:
         content:
           type: array
           items:
-            $ref: '#/components/schemas/Comment'
-    Page:
-      type: object
-      properties:
-        pageable:
-          $ref: '#/components/schemas/Pageable'
-        totalPages:
-          type: integer
-          description: Общее количество страниц
-        totalElements:
-          type: integer
-          description: Общее количество элементов
-        size:
-          type: integer
-          description: Размер страницы
-        number:
-          type: integer
-          description: Номер текущей страницы
-        numberOfElements:
-          type: integer
-    Pageable:
-      type: object
-      properties:
-        page:
-          type: integer
-          format: int32
-        size:
-          type: integer
-          format: int32
-        sort:
-          type: string
+            $ref: '#/components/schemas/CommentDto'
     SaveImageResponse:
       description: Id of saved image
       type: object

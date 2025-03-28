@@ -6,7 +6,6 @@ import java.time.LocalDate;
 public record CreateAdRequestDto(
         String title,
         BigDecimal price,
-        Integer rating,
         LocalDate publicationDate
 ) {
 }

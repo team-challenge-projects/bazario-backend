@@ -25,9 +25,3 @@ databaseChangeLog:
               - column:
                   name: description_pattern
                   type: varchar(50)
-              - column:
-                  name: parent_id
-                  type: bigint
-                  constraints:
-                    foreignKeyName: fk_type_ad_param_type_ad_param
-                    references: type_ad_parameters(id)
