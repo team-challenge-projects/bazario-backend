@@ -32,7 +32,7 @@ tags:
       Endpoints for users reset password.
   - name: Favorite
     description: |
-      Endpoints for users to manage favotite ad on the website.
+      Endpoints for users to manage favorite ad on the website.
   - name: Comment
     description: |
       Endpoints for managing museum data in the admin API.
@@ -61,7 +61,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AuthenticationRequst'
+              $ref: '#/components/schemas/AuthenticationRequest'
         required: true
       responses:
         200:
@@ -145,7 +145,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RegistrationRequst'
+              $ref: '#/components/schemas/RegistrationRequest'
         required: true
       responses:
         204:
@@ -265,7 +265,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/PrivateUserInformation'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -315,7 +315,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -357,7 +357,7 @@ paths:
         204:
           description: User deleted successfully
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -405,7 +405,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -458,7 +458,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -511,7 +511,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -560,7 +560,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -603,7 +603,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -684,7 +684,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -722,7 +722,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -765,7 +765,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -793,13 +793,13 @@ paths:
       tags:
         - Comment
       summary: Get total rating of user by user`s id
-      description: Get total rating of user by user`s id from coment list of user
+      description: Get total rating of user by user`s id from comment list of user
       operationId: getTotalRating
       parameters:
         - $ref: '#/components/parameters/idParam'
       responses:
         200:
-          description: Get coment successfully
+          description: Get comment successfully
           content:
             text/plain:
               schema:
@@ -812,7 +812,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -839,9 +839,9 @@ paths:
     get:
       tags:
         - Comment
-      summary: Get coments for user by user`s id
-      description: Get coments for user by user`s id from coment list of user
-      operationId: getComents
+      summary: Get comments for user by user`s id
+      description: Get comments for user by user`s id from comment list of user
+      operationId: getComments
       parameters:
         - $ref: '#/components/parameters/idParam'
         - $ref: '#/components/parameters/pageParam'
@@ -849,7 +849,7 @@ paths:
         - $ref: '#/components/parameters/sortParam'
       responses:
         200:
-          description: Get coment successfully
+          description: Get comment successfully
           content:
             application/json:
               schema:
@@ -863,7 +863,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -892,9 +892,9 @@ paths:
         -  bearerAuth: []
       tags:
         - Comment
-      summary: Add coment for user by user`s id
-      description: Add coment for user by user`s id to coment list of user
-      operationId: addComent
+      summary: Add comment for user by user`s id
+      description: Add comment for user by user`s id to comment list of user
+      operationId: addComment
       parameters:
         - $ref: '#/components/parameters/idParam'
       requestBody:
@@ -904,7 +904,7 @@ paths:
               $ref: '#/components/schemas/CommentDto'
       responses:
         204:
-          description: Add coment successfully
+          description: Add comment successfully
         400:
           description: Invalid input
           content:
@@ -912,7 +912,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -940,9 +940,9 @@ paths:
         -  bearerAuth: []
       tags:
         - Comment
-      summary: Put coment for user by user`s id
-      description: Put coment for user by user`s id to coment list of user
-      operationId: putComent
+      summary: Put comment for user by user`s id
+      description: Put comment for user by user`s id to comment list of user
+      operationId: putComment
       parameters:
         - $ref: '#/components/parameters/idParam'
       requestBody:
@@ -952,7 +952,7 @@ paths:
               $ref: '#/components/schemas/CommentDto'
       responses:
         204:
-          description: Add coment successfully
+          description: Add comment successfully
         400:
           description: Invalid input
           content:
@@ -960,7 +960,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -988,14 +988,14 @@ paths:
         -  bearerAuth: []
       tags:
         - Comment
-      summary: Delete coment by id
-      description: Delete coment by id from coment list of user
-      operationId: deleteComent
+      summary: Delete comment by id
+      description: Delete comment by id from comment list of user
+      operationId: deleteComment
       parameters:
         - $ref: '#/components/parameters/idParam'
       responses:
         204:
-          description: Delete coment successfully
+          description: Delete comment successfully
         400:
           description: Invalid input
           content:
@@ -1003,7 +1003,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -1032,9 +1032,9 @@ paths:
         -  bearerAuth: []
       tags:
         - Comment
-      summary: Put coment for user by user`s id
-      description: Put coment for user by user`s id to coment list of user
-      operationId: putComentByAdmin
+      summary: Put comment for user by user`s id
+      description: Put comment for user by user`s id to comment list of user
+      operationId: putCommentByAdmin
       parameters:
         - in: path
           required: true
@@ -1057,7 +1057,7 @@ paths:
               $ref: '#/components/schemas/CommentDto'
       responses:
         204:
-          description: Add coment successfully
+          description: Add comment successfully
         400:
           description: Invalid input
           content:
@@ -1065,7 +1065,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -1198,7 +1198,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -1247,7 +1247,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -1290,7 +1290,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -1337,7 +1337,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -1386,7 +1386,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -1429,7 +1429,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -1464,8 +1464,8 @@ paths:
         - $ref: '#/components/parameters/sizeParam'
         - $ref: '#/components/parameters/sortParam'
         - in: query
-          name: titel
-          description: Scherch by word
+          name: title
+          description: Search by word
           schema:
             type: string
           required: false
@@ -1554,7 +1554,7 @@ paths:
     get:
       tags:
         - Ad
-      summary: Copmpares ad
+      summary: Compares ad
       description: Compares ad parameter by ads
       operationId: comparesAd
       parameters:
@@ -1623,7 +1623,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -1666,7 +1666,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -1709,7 +1709,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -1810,7 +1810,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -1841,7 +1841,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -1854,7 +1854,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
-    AuthenticationRequst:
+    AuthenticationRequest:
       description:  Authentication form
       type: object
       properties:
@@ -1888,15 +1888,15 @@ components:
     ResetPassword:
       description: Reset password
       allOf:
-        - $ref: '#/components/schemas/AuthenticationRequst'
+        - $ref: '#/components/schemas/AuthenticationRequest'
       properties:
         hex:
           type: string
-    RegistrationRequst:
+    RegistrationRequest:
       description: Registration user
       allOf:
         - $ref: '#/components/schemas/UserInformation'
-        - $ref: '#/components/schemas/AuthenticationRequst'
+        - $ref: '#/components/schemas/AuthenticationRequest'
     UserInformation:
       description: Registration user
       type: object
@@ -1928,14 +1928,14 @@ components:
         - $ref: '#/components/schemas/UserInformation'
       type: object
       properties:
-        pararmeters:
+        parameters:
           type: array
           items:
             $ref: '#/components/schemas/BasisUserParameter'
     PatchUser:
       description: Patch user field
       allOf:
-        - $ref: '#/components/schemas/RegistrationRequst'
+        - $ref: '#/components/schemas/RegistrationRequest'
       type: object
       properties:
         cityCoordinate:
@@ -1991,7 +1991,7 @@ components:
       properties:
         name:
           type: string
-        adPrameterIds:
+        adParameterIds:
           type: array
           items:
             type: integer
@@ -2005,7 +2005,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/BasisUserParameter'
-        userPrameters:
+        userParameters:
           type: array
           items:
             $ref: '#/components/schemas/BasisUserParameter'
@@ -2013,7 +2013,7 @@ components:
       description: A user's comment about another user who added an ad
       type: object
       properties:
-        raiting:
+        rating:
           type: integer
           format: int32
           minimum: 0
@@ -2025,7 +2025,7 @@ components:
       description: Ad information
       type: object
       properties:
-        titel:
+        title:
           type: string
           pattern: '^(?!.*\d{9,})[\w\s]{3,20}$'
           nullable: true
@@ -2066,7 +2066,7 @@ components:
         id:
           type: integer
           format: int64
-        titel:
+        title:
           type: string
         description:
           type: string

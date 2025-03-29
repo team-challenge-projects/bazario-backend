@@ -2,8 +2,8 @@ package org.cyberrealm.tech.bazario.backend.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record UserForgotPasswordRequestDto(
+public record UserVerifyPasswordResetTokenRequestDto(
         @NotBlank
-        String email
+        String token
 ) {
 }

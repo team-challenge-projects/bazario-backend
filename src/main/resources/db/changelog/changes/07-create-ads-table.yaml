@@ -60,4 +60,3 @@ databaseChangeLog:
             indexName: idx_title
             schemaName: public
             tableName: ads
-            tablespace: A String
