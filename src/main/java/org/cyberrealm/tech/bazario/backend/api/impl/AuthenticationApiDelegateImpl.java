@@ -6,7 +6,9 @@ import org.cyberrealm.tech.bazario.backend.dto.AuthenticationRequst;
 import org.cyberrealm.tech.bazario.backend.security.AuthenticationService;
 import org.cyberrealm.tech.bazario.backend.security.CookieService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
+@Service
 @RequiredArgsConstructor
 public class AuthenticationApiDelegateImpl implements AuthenticationApiDelegate {
     private final AuthenticationService authenticationService;

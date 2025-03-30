@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.dto.UserRegistrationRequestDto;
 import org.cyberrealm.tech.bazario.backend.dto.UserResponseDto;
-import org.cyberrealm.tech.bazario.backend.exception.RegistrationException;
+import org.cyberrealm.tech.bazario.backend.exception.custom.RegistrationException;
 import org.cyberrealm.tech.bazario.backend.mapper.UserMapper;
 import org.cyberrealm.tech.bazario.backend.model.User;
 import org.cyberrealm.tech.bazario.backend.model.enums.Role;

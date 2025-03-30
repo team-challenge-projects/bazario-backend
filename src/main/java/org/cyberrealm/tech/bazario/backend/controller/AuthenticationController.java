@@ -12,7 +12,7 @@ import org.cyberrealm.tech.bazario.backend.dto.UserLoginResponseDto;
 import org.cyberrealm.tech.bazario.backend.dto.UserRegistrationRequestDto;
 import org.cyberrealm.tech.bazario.backend.dto.UserResponseDto;
 import org.cyberrealm.tech.bazario.backend.dto.UserVerifyCodeRequestDto;
-import org.cyberrealm.tech.bazario.backend.exception.RegistrationException;
+import org.cyberrealm.tech.bazario.backend.exception.custom.RegistrationException;
 import org.cyberrealm.tech.bazario.backend.security.AuthenticationService;
 import org.cyberrealm.tech.bazario.backend.security.CookieService;
 import org.cyberrealm.tech.bazario.backend.service.UserService;

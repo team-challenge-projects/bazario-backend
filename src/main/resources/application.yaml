@@ -72,6 +72,13 @@ user:
       password: 'rooT1#root'
       cityName: 'Lviv'
       cityCoordinate: '49,5017|24,0123'
+bucket:
+  global:
+    tokens: 10
+    duration: 60
+  limited-security:
+    tokens: 3
+    duration: 180
 
 frontend:
   reset:
