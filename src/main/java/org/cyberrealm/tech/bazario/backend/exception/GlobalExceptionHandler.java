@@ -2,17 +2,18 @@ package org.cyberrealm.tech.bazario.backend.exception;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.cyberrealm.tech.bazario.backend.exception.custom.BasicApplicationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @ControllerAdvice
 @Slf4j
@@ -47,13 +48,13 @@ public class GlobalExceptionHandler {
     @ApiResponse(responseCode = "400", description = "Invalid Input")
     public ResponseEntity<ErrorResponse> handleValidationExceptions(
             MethodArgumentNotValidException ex) {
-       String errors = ex.getBindingResult().getAllErrors().stream()
-               .map(error ->
-                       ((FieldError) error).getField() + DELIMITER_KEY_VALUE
-                       + Optional.ofNullable(error.getDefaultMessage())
-                       .orElse("Not message"))
-               .collect(Collectors.joining(DELIMITER_ERRORS, PREFIX_ARRAY_ERRORS,
-                       SUFFIX_ARRAY_ERRORS));
+        Function<ObjectError, String> errorStringFunction = error ->
+                ((FieldError) error).getField() + DELIMITER_KEY_VALUE
+                        + Optional.ofNullable(error.getDefaultMessage())
+                                .orElse("Not message");
+        String errors = ex.getBindingResult().getAllErrors().stream()
+                    .map(errorStringFunction).collect(Collectors.joining(
+                            DELIMITER_ERRORS, PREFIX_ARRAY_ERRORS,SUFFIX_ARRAY_ERRORS));
 
         ErrorResponse response = new ErrorResponse(errors, LocalDateTime.now());
         return ResponseEntity.badRequest().body(response);

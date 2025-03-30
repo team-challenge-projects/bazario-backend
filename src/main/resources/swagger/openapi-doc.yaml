@@ -32,7 +32,7 @@ tags:
       Endpoints for users reset password.
   - name: Favorite
     description: |
-      Endpoints for users to manage favotite ad on the website.
+      Endpoints for users to manage favorite ad on the website.
   - name: Comment
     description: |
       Endpoints for managing museum data in the admin API.
@@ -61,7 +61,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AuthenticationRequst'
+              $ref: '#/components/schemas/AuthenticationRequest'
         required: true
       responses:
         200:
@@ -134,6 +134,45 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /private/logout:
+    post:
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []
+      description: User logout endpoint
+      operationId: logoutToken
+      parameters:
+        - in: cookie
+          name: refreshToken
+          schema:
+            type: string
+      responses:
+        204:
+          description: Authenticated successfully. Get token.
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: JWT_REFRESH_TOKEN=abcs123
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /public/registration:
     post:
       tags:
@@ -145,7 +184,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RegistrationRequst'
+              $ref: '#/components/schemas/RegistrationRequest'
         required: true
       responses:
         204:
@@ -211,8 +250,6 @@ paths:
       summary: Verify Email
       description: Verify Email after registration user
       operationId: verifyEmail
-      parameters:
-        - $ref: '#/components/parameters/typeEmailMessage'
       requestBody:
         content:
           application/json:
@@ -1854,7 +1891,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
-    AuthenticationRequst:
+    AuthenticationRequest:
       description:  Authentication form
       type: object
       properties:
@@ -1882,46 +1919,44 @@ components:
         email:
           type: string
           format: email
-        code:
+        hex:
           type: string
-          pattern: '^\w{6}$'
     ResetPassword:
       description: Reset password
       allOf:
-        - $ref: '#/components/schemas/AuthenticationRequst'
+        - $ref: '#/components/schemas/AuthenticationRequest'
       properties:
         hex:
           type: string
-    RegistrationRequst:
+    RegistrationRequest:
       description: Registration user
       allOf:
-        - $ref: '#/components/schemas/UserInformation'
-        - $ref: '#/components/schemas/AuthenticationRequst'
-    UserInformation:
-      description: Registration user
+        - $ref: '#/components/schemas/AuthenticationRequest'
       type: object
       properties:
         firstName:
           type: string
           pattern: '^[A-ZА-ЯІЇЄ][a-zа-яіїє]{1,20}$'
           nullable: true
-        lastName:
-          type: string
-          pattern: '^[A-ZА-ЯІЇЄ][a-zа-яіїє]{1,20}$'
-          nullable: true
-        email:
-          type: string
-          format: email
-          nullable: true
         phoneNumber:
           type: string
           pattern: '^(\+38|38|8)?0\d{9}$'
           nullable: true
+    UserInformation:
+      description: Registration user
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        phoneNumber:
+          type: string
         cityName:
           type: string
-          minLength: 3
-          maxLength: 100
-          nullable: true
     PrivateUserInformation:
       description: Registration user
       allOf:
@@ -1935,9 +1970,14 @@ components:
     PatchUser:
       description: Patch user field
       allOf:
-        - $ref: '#/components/schemas/RegistrationRequst'
+        - $ref: '#/components/schemas/RegistrationRequest'
       type: object
       properties:
+        cityName:
+          type: string
+          minLength: 3
+          maxLength: 100
+          nullable: true
         cityCoordinate:
           type: string
           pattern: '^\d+,?\d*\|\d,?\d*$'

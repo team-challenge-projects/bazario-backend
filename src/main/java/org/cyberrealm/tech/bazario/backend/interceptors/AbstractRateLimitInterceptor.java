@@ -4,15 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.bucket4j.Bucket;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.exception.ErrorResponse;
-import org.cyberrealm.tech.bazario.backend.security.BucketBuilderService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-
-import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
@@ -22,13 +19,17 @@ public abstract class AbstractRateLimitInterceptor implements HandlerInterceptor
     private final ObjectMapper mapper;
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
+                             Object handler) throws Exception {
         var ip = request.getRemoteAddr();
-        if (ip == null || ip.isBlank()) {return false;}
+        if (ip == null || ip.isBlank()) {
+            return false;
+        }
         var bucket = getBucket(ip);
         var probe = bucket.tryConsumeAndReturnRemaining(NUM_TOKENS_OF_PROBE);
         if (probe.isConsumed()) {
-            response.addHeader("X-Rate-Limit-Remaining", String.valueOf(probe.getRemainingTokens()));
+            response.addHeader("X-Rate-Limit-Remaining",
+                    String.valueOf(probe.getRemainingTokens()));
             return true;
         } else {
             long waitForRefill = probe.getNanosToWaitForRefill() / DIVISOR_TO_SECONDS;

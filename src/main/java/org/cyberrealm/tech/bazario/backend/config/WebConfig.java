@@ -1,7 +1,6 @@
 package org.cyberrealm.tech.bazario.backend.config;
 
 import lombok.RequiredArgsConstructor;
-import org.cyberrealm.tech.bazario.backend.interceptors.AbstractRateLimitInterceptor;
 import org.cyberrealm.tech.bazario.backend.interceptors.GlobalRateLimitInterceptor;
 import org.cyberrealm.tech.bazario.backend.interceptors.LimitedSecurityRateLimitInterceptor;
 import org.springframework.context.annotation.Configuration;

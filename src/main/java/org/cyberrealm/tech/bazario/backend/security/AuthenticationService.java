@@ -2,7 +2,7 @@ package org.cyberrealm.tech.bazario.backend.security;
 
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
-import org.cyberrealm.tech.bazario.backend.dto.AuthenticationRequst;
+import org.cyberrealm.tech.bazario.backend.dto.AuthenticationRequest;
 import org.cyberrealm.tech.bazario.backend.dto.UserLoginResponseDto;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,7 +15,7 @@ public class AuthenticationService {
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
 
-    public UserLoginResponseDto authenticate(AuthenticationRequst request) {
+    public UserLoginResponseDto authenticate(AuthenticationRequest request) {
         final Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail().get(),
                         request.getPassword().get())

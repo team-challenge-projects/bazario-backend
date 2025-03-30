@@ -2,14 +2,15 @@ package org.cyberrealm.tech.bazario.backend.interceptors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.bucket4j.Bucket;
-import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.security.BucketBuilderService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class GlobalRateLimitInterceptor extends AbstractRateLimitInterceptor{
+public class GlobalRateLimitInterceptor extends AbstractRateLimitInterceptor {
+
     private static final String PREFIX_GLOBAL = "Global_";
+
     @Value("${bucket.global.tokens}")
     private int tokens;
     @Value("${bucket.global.duration}")
@@ -20,7 +21,6 @@ public class GlobalRateLimitInterceptor extends AbstractRateLimitInterceptor{
         super(mapper);
         this.builderService = builderService;
     }
-
 
     @Override
     protected Bucket getBucket(String ip) {

@@ -2,11 +2,10 @@ package org.cyberrealm.tech.bazario.backend.config;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-import java.util.List;
-
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.security.SecuritySchemes;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.model.enums.Role;
 import org.cyberrealm.tech.bazario.backend.security.JwtAuthenticationFilter;

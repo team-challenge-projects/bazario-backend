@@ -70,10 +70,10 @@ public class PasswordResetService {
     }
 
     private static boolean isNotNullOrBlankAllArgument(ResetPassword resetPassword) {
-        return resetPassword.getEmail().isPresent() &&
-                resetPassword.getEmail().get().isBlank() &&
-                resetPassword.getPassword().isPresent() &&
-                resetPassword.getPassword().get().isBlank() &&
-                resetPassword.getHex().isBlank();
+        return resetPassword.getEmail().isPresent()
+                && resetPassword.getEmail().get().isBlank()
+                && resetPassword.getPassword().isPresent()
+                && resetPassword.getPassword().get().isBlank()
+                && resetPassword.getHex().isBlank();
     }
 }
