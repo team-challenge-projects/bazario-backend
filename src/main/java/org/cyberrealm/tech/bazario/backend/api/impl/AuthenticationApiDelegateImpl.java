@@ -26,4 +26,11 @@ public class AuthenticationApiDelegateImpl implements AuthenticationApiDelegate 
     public ResponseEntity<String> refreshToken(String refreshToken) {
         return ResponseEntity.ok(authenticationService.refreshAccessToken(refreshToken));
     }
+
+    @Override
+    public ResponseEntity<Void> logoutToken(String refreshToken) {
+        return ResponseEntity.noContent()
+                .headers(cookieService.clearRefreshTokenCookie(refreshToken))
+                .build();
+    }
 }

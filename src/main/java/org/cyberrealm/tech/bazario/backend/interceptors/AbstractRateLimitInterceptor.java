@@ -8,10 +8,8 @@ import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.exception.ErrorResponse;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-@Component
 @RequiredArgsConstructor
 public abstract class AbstractRateLimitInterceptor implements HandlerInterceptor {
     public static final int NUM_TOKENS_OF_PROBE = 1;

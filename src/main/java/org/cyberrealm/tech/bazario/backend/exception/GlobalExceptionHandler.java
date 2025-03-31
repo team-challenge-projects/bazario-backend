@@ -8,12 +8,14 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.cyberrealm.tech.bazario.backend.exception.custom.BasicApplicationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 @ControllerAdvice
 @Slf4j
@@ -56,8 +58,21 @@ public class GlobalExceptionHandler {
                     .map(errorStringFunction).collect(Collectors.joining(
                             DELIMITER_ERRORS, PREFIX_ARRAY_ERRORS,SUFFIX_ARRAY_ERRORS));
 
+        log.error(ex.getClass().getSimpleName(), errors);
         ErrorResponse response = new ErrorResponse(errors, LocalDateTime.now());
         return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    @ApiResponse(responseCode = "413", description = "Payload too large")
+    public ResponseEntity<ErrorResponse> handleMaxSizeException(
+            MaxUploadSizeExceededException ex) {
+        String message = "The file size is too large. Maximum file size allowed:"
+                + ex.getMaxUploadSize() + " bytes";
+        log.error(ex.getClass().getSimpleName(), message);
+        ErrorResponse response = new ErrorResponse(message, LocalDateTime.now());
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
+                .body(response);
     }
 
     /**

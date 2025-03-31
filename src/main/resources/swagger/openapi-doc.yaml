@@ -1808,6 +1808,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        413:
+          description: Payload too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         500:
           description: Internal Server Error
           content:
@@ -1848,6 +1854,12 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
           description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        413:
+          description: Payload too large
           content:
             application/json:
               schema:

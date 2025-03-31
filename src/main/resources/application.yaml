@@ -1,6 +1,9 @@
 server:
   servlet:
     context-path: /api
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 10MB
 
 spring:
   config:
@@ -77,9 +80,12 @@ bucket:
     tokens: 10
     duration: 60
   limited-security:
-    tokens: 3
+    tokens: 6
     duration: 180
-
+cloudinary:
+  name: ${CLOUDINARY_NAME}
+  key: ${CLOUDINARY_KEY}
+  secret: ${CLOUDINARY_SECRET}
 frontend:
   reset:
     password:
