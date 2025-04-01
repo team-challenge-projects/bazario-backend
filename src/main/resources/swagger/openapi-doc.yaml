@@ -537,7 +537,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BasisAdminParameter'
+              $ref: '#/components/schemas/BasicAdminParameter'
       responses:
         204:
           description: Send verification code to email
@@ -586,7 +586,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BasisAdminParameter'
+              $ref: '#/components/schemas/BasicAdminParameter'
       responses:
         204:
           description: Send verification code to email
@@ -1363,7 +1363,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BasisAdminParameter'
+              $ref: '#/components/schemas/BasicAdminParameter'
       responses:
         204:
           description: Send verification code to email
@@ -1412,7 +1412,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BasisAdminParameter'
+              $ref: '#/components/schemas/BasicAdminParameter'
       responses:
         204:
           description: Send verification code to email
@@ -1775,7 +1775,7 @@ paths:
         - bearerAuth: []
       tags:
         - Image
-      description: Load and save image. If typy is ad than parameter id is ad`s id. If type is avatar parameter id ignore.
+      description: Load and save image. If typy is ad than parameter id is ad\`s id. If type is avatar parameter id is user\`s id, just admin operation, another ignore.
       operationId: saveImage
       parameters:
         - $ref: '#/components/parameters/typeImage'
@@ -1795,7 +1795,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SaveImageResponse'
+                type:  string
         400:
           description: Bad Request
           content:
@@ -1825,7 +1825,7 @@ paths:
         - bearerAuth: []
       tags:
         - Image
-      description: Load and change image. Parameter id is image`s id
+      description: Load and change image.If typy is ad than parameter id is ad\`s id. If type is avatar parameter id is user\`s id, just admin operation, another ignore.
       operationId: changeImage
       parameters:
         - $ref: '#/components/parameters/typeImage'
@@ -1836,6 +1836,9 @@ paths:
             schema:
               type: object
               properties:
+                oldValue:
+                  type: string
+                  format: uri
                 file:
                   type: string
                   format: binary
@@ -1845,7 +1848,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SaveImageResponse'
+                type: string
         400:
           description: Bad Request
           content:
@@ -1875,11 +1878,12 @@ paths:
         - bearerAuth: []
       tags:
         - Image
-      description: Delete image. Parameter id is image`s id
+      description: Delete image. Parameter id is ad or user id. If typy is ad than parameter id is ad\`s id. If type is avatar parameter id is user\`s id, just admin operation, another ignore.
       operationId: deleteImage
       parameters:
         - $ref: '#/components/parameters/typeImage'
         - $ref: '#/components/parameters/idParam'
+        - $ref: '#/components/parameters/urlParameter'
       responses:
         204:
           description: Delete successful
@@ -1978,7 +1982,7 @@ components:
         pararmeters:
           type: array
           items:
-            $ref: '#/components/schemas/BasisUserParameter'
+            $ref: '#/components/schemas/BasicUserParameter'
     PatchUser:
       description: Patch user field
       allOf:
@@ -2002,14 +2006,14 @@ components:
         userParameters:
           type: array
           items:
-            $ref: '#/components/schemas/BasisUserParameter'
+            $ref: '#/components/schemas/BasicUserParameter'
           nullable: true
         role:
           type: string
         isLocked:
           type: boolean
           default: false
-    BasisUserParameter:
+    BasicUserParameter:
       description: Basis user parameter for user or ad
       type: object
       properties:
@@ -2020,7 +2024,7 @@ components:
           type: string
         value:
           type: string
-    BasisAdminParameter:
+    BasicAdminParameter:
       description: Basis admin parameter for user or ad
       type: object
       properties:
@@ -2032,7 +2036,7 @@ components:
           type: string
     AdParameterDto:
       allOf:
-        - $ref: '#/components/schemas/BasisAdminParameter'
+        - $ref: '#/components/schemas/BasicAdminParameter'
       type: object
       properties:
         id:
@@ -2056,11 +2060,11 @@ components:
         adParameters:
           type: array
           items:
-            $ref: '#/components/schemas/BasisUserParameter'
+            $ref: '#/components/schemas/BasicUserParameter'
         userPrameters:
           type: array
           items:
-            $ref: '#/components/schemas/BasisUserParameter'
+            $ref: '#/components/schemas/BasicUserParameter'
     CommentDto:
       description: A user's comment about another user who added an ad
       type: object
@@ -2097,7 +2101,7 @@ components:
         adParameters:
           type: array
           items:
-            $ref: '#/components/schemas/BasisUserParameter'
+            $ref: '#/components/schemas/BasicUserParameter'
           nullable: true
     PatchAd:
       description: Patch ad
@@ -2145,14 +2149,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CommentDto'
-    SaveImageResponse:
-      description: Id of saved image
-      type: object
-      properties:
-        imageId:
-          type: string
-        originalUrl:
-          type: string
   parameters:
     idParam:
       name: id
@@ -2196,6 +2192,13 @@ components:
                   format: int64
                 value:
                   type: string
+    urlParameter:
+      name: url
+      in: query
+      required: true
+      schema:
+        type: string
+        format: uri
     pageParam:
       name: page
       in: query
