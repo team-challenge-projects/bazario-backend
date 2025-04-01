@@ -17,6 +17,7 @@ public class ImageApiDelegateImpl implements ImageApiDelegate {
 
     @Override
     public ResponseEntity<String> changeImage(String type, Long id, URI oldValue, MultipartFile file) {
+        var url = imageService.change(type, id, oldValue, file);
         return ImageApiDelegate.super.changeImage(type, id, oldValue, file);
     }
 
@@ -27,7 +28,7 @@ public class ImageApiDelegateImpl implements ImageApiDelegate {
 
     @Override
     public ResponseEntity<String> saveImage(String type, Long id, MultipartFile file) {
-        var url = imageService.addImageInAd(id, file);
-        return ImageApiDelegate.super.saveImage(type, id, file);
+        var url = imageService.save(type, id, file);
+        return ResponseEntity.ok(url);
     }
 }
