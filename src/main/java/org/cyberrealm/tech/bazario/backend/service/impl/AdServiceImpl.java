@@ -89,9 +89,9 @@ public class AdServiceImpl implements AdService {
 
         var user = (User) authentication.getPrincipal();
         return user.isAccountNonLocked() && (
-                user.getRole().equals(Role.ROLE_ROOT)
-                        || user.getRole().equals(Role.ROLE_ADMIN)
-                        || (user.getRole().equals(Role.ROLE_USER)
+                user.getRole().equals(Role.ROOT)
+                        || user.getRole().equals(Role.ADMIN)
+                        || (user.getRole().equals(Role.USER)
                                 && ad.getUser().getId().equals(user.getId())));
     }
 }

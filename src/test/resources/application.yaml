@@ -1,4 +1,7 @@
 spring:
+  config:
+    activate:
+      on-profile: test
   datasource:
     url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
@@ -13,3 +16,55 @@ spring:
   h2:
     console:
       enabled: false
+  redis:
+    host: localhost
+    port: 6379
+    username: test-user
+    password: test-password
+    ssl: false
+
+    mail:
+      host: smtp.test.com
+      port: 587
+      username: test-mailtrap-user
+      password: test-mailtrap-password
+      properties:
+        mail:
+          smtp:
+            auth: true
+          starttls:
+            enable: true
+
+jwt:
+  expiration: 3600
+  secret: FDCE463BB7CBE40F45CCE6AB930DFC43849921CA3E0648369ADC203284BE2E68
+  refresh:
+    expiration: 7200
+user:
+  root:
+    credentials:
+      firstName: 'Test'
+      lastName: 'Test'
+      avatar: 'https://happy-tails-mantine.vercel.app/_next/image?url=https%3A%2F%2Fimgur.com%2FtH5pXEV.png&w=1920&q=75'
+      email: 'test@example.com'
+      phoneNumber: '+380982687965'
+      password: 'tesT1#test'
+      cityName: 'Lviv'
+      cityCoordinate: '49,5017|24,0123'
+bucket:
+  global:
+    tokens: 10
+    duration: 60
+  limited-security:
+    tokens: 6
+    duration: 180
+cloudinary:
+  name: cloud-name
+  key: cloud-key
+  secret: cloud-secret
+image:
+  max-num: 6
+frontend:
+  reset:
+    password:
+      url: https://frontend.yourapp.com/reset-password

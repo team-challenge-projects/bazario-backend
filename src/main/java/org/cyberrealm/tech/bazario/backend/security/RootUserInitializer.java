@@ -19,9 +19,9 @@ public class RootUserInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (!userRepository.existsByRole(Role.ROLE_ROOT)) {
+        if (!userRepository.existsByRole(Role.ROOT)) {
             var root = mapper.toUser(credentials);
-            root.setRole(Role.ROLE_ROOT);
+            root.setRole(Role.ROOT);
             root.setPassword(encoder.encode(root.getPassword()));
             userRepository.save(root);
         }

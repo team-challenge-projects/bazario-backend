@@ -129,8 +129,8 @@ public class ImageServiceImpl implements ImageService {
 
     private User getUser(Long id) {
         var currentUser = userService.getCurrentUser();
-        return currentUser.getRole().equals(Role.ROLE_ROOT)
-                || currentUser.getRole().equals(Role.ROLE_ADMIN)
+        return currentUser.getRole().equals(Role.ROOT)
+                || currentUser.getRole().equals(Role.ADMIN)
                 ? userService.getUserById(id) : currentUser;
     }
 

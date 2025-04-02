@@ -18,7 +18,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(globalInterceptor).addPathPatterns("/api/**");
         registry.addInterceptor(limitInterceptor).addPathPatterns(
                 "/api/public/login", "/api/public/refreshToken",
-                "/api/public/registration", "/public/send/**",
+                "/api/public/registration", "api/public/send/**",
                 "/api/public/email/verify", "/api/public/resetPassword");
     }
 }

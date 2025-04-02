@@ -53,8 +53,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         auth -> auth
                                 .requestMatchers("/api/admin/**").hasAnyRole(
-                                        Role.ROLE_ROOT.getAuthority(),
-                                        Role.ROLE_ADMIN.getAuthority())
+                                        Role.ROOT.getAuthority(),
+                                        Role.ADMIN.getAuthority())
                                 .requestMatchers(
                                         "/swagger-ui/**",
                                         "/v3/api-docs/**",
