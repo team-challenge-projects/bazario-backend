@@ -86,6 +86,8 @@ cloudinary:
   name: ${CLOUDINARY_NAME}
   key: ${CLOUDINARY_KEY}
   secret: ${CLOUDINARY_SECRET}
+image:
+  max-num: 6
 frontend:
   reset:
     password:

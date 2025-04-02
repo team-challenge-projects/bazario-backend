@@ -3,7 +3,6 @@ package org.cyberrealm.tech.bazario.backend.service.impl;
 import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.dto.ad.AdDto;
 import org.cyberrealm.tech.bazario.backend.dto.ad.CreateAdRequestDto;
@@ -44,6 +43,11 @@ public class AdServiceImpl implements AdService {
     }
 
     @Override
+    public void save(Ad ad) {
+        adRepository.save(ad);
+    }
+
+    @Override
     public List<AdDto> findAll(Pageable pageable) {
         return List.of();
     }
@@ -61,11 +65,6 @@ public class AdServiceImpl implements AdService {
     @Override
     public void deleteById(Long id) {
 
-    }
-
-    @Override
-    public void save(Ad ad) {
-        adRepository.save(ad);
     }
 
     @Override
@@ -92,9 +91,7 @@ public class AdServiceImpl implements AdService {
         return user.isAccountNonLocked() && (
                 user.getRole().equals(Role.ROLE_ROOT)
                         || user.getRole().equals(Role.ROLE_ADMIN)
-                        || (user.getRole().equals(Role.ROLE_USER) &&
-                        ad.getUser().getId().equals(user.getId()))
-        );
-
+                        || (user.getRole().equals(Role.ROLE_USER)
+                                && ad.getUser().getId().equals(user.getId())));
     }
 }

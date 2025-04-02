@@ -11,6 +11,8 @@ public interface AdService {
 
     AdDto save(CreateAdRequestDto requestDto);
 
+    void save(Ad ad);
+
     List<AdDto> findAll(Pageable pageable);
 
     AdDto findById(Long id);
@@ -20,6 +22,4 @@ public interface AdService {
     void deleteById(Long id);
 
     Ad getAd(Long id);
-
-    void save(Ad ad);
 }

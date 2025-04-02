@@ -20,7 +20,6 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
-
     private static final String DELIMITER_KEY_VALUE = "=";
     private static final String DELIMITER_ERRORS = ", ";
     private static final String PREFIX_ARRAY_ERRORS = "{";

@@ -1,9 +1,9 @@
 package org.cyberrealm.tech.bazario.backend.security;
 
+import java.time.Duration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
-import java.time.Duration;
 
 @Service
 public class CookieService {
