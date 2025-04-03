@@ -1,9 +1,10 @@
 # Builder stage
 # Stage 1: Build with Maven
-FROM maven:3.8.6-openjdk-17 AS builder
+FROM maven:3.9.9-eclipse-temurin-17 AS builder
 WORKDIR /application
 COPY pom.xml .
 COPY src ./src
+COPY checkstyle.xml .
 # Сборка проекта с помощью Maven
 RUN mvn clean package -DskipTests
 

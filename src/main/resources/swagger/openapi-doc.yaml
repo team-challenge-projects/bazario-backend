@@ -11,9 +11,9 @@ info:
   version: v0.0.1
 
 servers:
-  - url: https://bazario-mkur.onrender.com/api
+  - url: https://bazario-mkur.onrender.com
     description: Remote service for managing platform of the Bazario marketplace
-  - url: http://127.0.0.1:8080/api
+  - url: http://127.0.0.1:8080
     description: Local service for managing platform of the Bazario marketplace
 
 tags:

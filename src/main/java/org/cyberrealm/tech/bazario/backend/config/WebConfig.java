@@ -15,10 +15,10 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(globalInterceptor).addPathPatterns("/api/**");
+        registry.addInterceptor(globalInterceptor).addPathPatterns("/**");
         registry.addInterceptor(limitInterceptor).addPathPatterns(
-                "/api/public/login", "/api/public/refreshToken",
-                "/api/public/registration", "api/public/send/**",
-                "/api/public/email/verify", "/api/public/resetPassword");
+                "/public/login", "/public/refreshToken",
+                "/public/registration", "/public/send/**",
+                "/public/email/verify", "/public/resetPassword");
     }
 }

@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.cyberrealm.tech.bazario.backend.exception.custom.BasicApplicationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -43,6 +44,17 @@ public class GlobalExceptionHandler {
 
         ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now());
         return ResponseEntity.status(ex.getHttpStatus()).body(response);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "400", description = "Authentication fail")
+    })
+    public ResponseEntity<ErrorResponse> handleAuthException(final AuthenticationException ex) {
+        log.error(ex.getClass().getSimpleName(), ex.getMessage());
+
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

@@ -2,6 +2,7 @@ package org.cyberrealm.tech.bazario.backend.service.impl;
 
 import java.net.URI;
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -89,8 +90,7 @@ public class ImageServiceImpl implements ImageService {
         switch (getTypeImage(type)) {
             case AD -> deleteFromAd(id, url);
             case AVATAR -> deleteFromUser(id, url);
-            default -> throw new ArgumentNotValidException("Not found url: " + url
-                    + " of ad with id " + id);
+            default -> throw new ArgumentNotValidException("Not correct type");
         }
     }
 
@@ -114,9 +114,15 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public void deleteFile(URI oldValue) {
         String fileName = Path.of(oldValue.getPath()).getFileName().toString();
+        fileUpload.deleteFile(getFileNameWithoutExtension(fileName));
+    }
+
+    private static String getFileNameWithoutExtension(String fileName) {
+        if (fileName == null || fileName.isBlank()) {
+            throw new ArgumentNotValidException("File name is not null or blank");
+        }
         var lastDotIndex = fileName.indexOf(SEPARATOR_NAME_AND_EXTENSION);
-        var key = fileName.substring(0, lastDotIndex);
-        fileUpload.deleteFile(key);
+        return fileName.substring(0, lastDotIndex);
     }
 
     private static TypeImage getTypeImage(String type) {
@@ -129,14 +135,14 @@ public class ImageServiceImpl implements ImageService {
 
     private User getUser(Long id) {
         var currentUser = userService.getCurrentUser();
-        return currentUser.getRole().equals(Role.ROOT)
-                || currentUser.getRole().equals(Role.ADMIN)
+        return (currentUser.getRole().equals(Role.ROOT)
+                || currentUser.getRole().equals(Role.ADMIN))
+                && !currentUser.getId().equals(id)
                 ? userService.getUserById(id) : currentUser;
     }
 
     private String getAndSaveToAd(MultipartFile file, Set<String> images, Ad ad) {
-        var url = fileUpload.uploadFile(file, UUID.randomUUID() + SEPARATOR_NAME_AND_IMAGE
-                + file.getOriginalFilename());
+        var url = fileUpload.uploadFile(file, createKey(file));
         images.add(url);
         ad.setImages(images);
         adService.save(ad);
@@ -144,10 +150,16 @@ public class ImageServiceImpl implements ImageService {
     }
 
     private String getAndSaveToUser(MultipartFile file, User user) {
-        var url = fileUpload.uploadFile(file, UUID.randomUUID() + SEPARATOR_NAME_AND_IMAGE
-                + file.getOriginalFilename());
+        var url = fileUpload.uploadFile(file, createKey(file));
         user.setAvatar(url);
         userService.save(user);
         return url;
+    }
+
+    private static String createKey(MultipartFile file) {
+        return "%s%s%s".formatted(UUID.randomUUID(), SEPARATOR_NAME_AND_IMAGE,
+                getFileNameWithoutExtension(Optional.ofNullable(file.getOriginalFilename())
+                        .orElseThrow(() -> new ArgumentNotValidException(
+                                "File name is not null"))));
     }
 }

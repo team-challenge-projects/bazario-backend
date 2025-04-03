@@ -52,13 +52,13 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         auth -> auth
-                                .requestMatchers("/api/admin/**").hasAnyRole(
+                                .requestMatchers("/admin/**").hasAnyRole(
                                         Role.ROOT.getAuthority(),
                                         Role.ADMIN.getAuthority())
                                 .requestMatchers(
                                         "/swagger-ui/**",
                                         "/v3/api-docs/**",
-                                        "/api/public/**",
+                                        "/public/**",
                                         "/error"
                                 )
                                 .permitAll()

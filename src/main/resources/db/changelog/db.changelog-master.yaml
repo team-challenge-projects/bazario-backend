@@ -22,4 +22,4 @@ databaseChangeLog:
   - include:
       file: db/changelog/changes/12-create-reviews-table.yaml
   - include:
-      file: db/changelog/changes/13-create-refresh_tokens-table-table.yaml
+      file: db/changelog/changes/13-create-refresh_tokens-table.yaml
