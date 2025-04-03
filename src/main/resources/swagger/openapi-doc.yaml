@@ -1902,7 +1902,7 @@ components:
         password:
           type: string
           format: password
-          pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#@&])[\w#@&]{8,}$'
+#          pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#@&])[\w#@&]{8,}$'
           nullable: true
     ErrorResponse:
       description: Error message with timestamp

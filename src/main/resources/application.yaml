@@ -58,12 +58,22 @@ jwt:
   refresh:
     expiration: ${JWT_REFRESH_EXPIRATION}
 
+cookie:
+  refresh:
+    age: 604800 # 7 * 24 * 60 * 60
+
 password:
   reset:
     code:
       length: 6
       expiration:
         minutes: 3
+
+verify:
+  email:
+    code:
+      expiration:
+        hours: 24
 user:
   root:
     credentials:

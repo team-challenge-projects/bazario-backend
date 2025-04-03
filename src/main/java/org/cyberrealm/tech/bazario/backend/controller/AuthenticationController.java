@@ -11,7 +11,7 @@
 //import org.cyberrealm.tech.bazario.backend.dto.UserLoginResponseDto;
 //import org.cyberrealm.tech.bazario.backend.dto.UserRegistrationRequestDto;
 //import org.cyberrealm.tech.bazario.backend.dto.UserResponseDto;
-//import org.cyberrealm.tech.bazario.backend.dto.UserVerifyCodeRequestDto;
+//import org.cyberrealm.tech.bazario.backend.dto.UserVerifyPasswordResetTokenRequestDto;
 //import org.cyberrealm.tech.bazario.backend.exception.RegistrationException;
 //import org.cyberrealm.tech.bazario.backend.security.AuthenticationService;
 //import org.cyberrealm.tech.bazario.backend.security.CookieService;
@@ -22,7 +22,6 @@
 //import org.springframework.web.bind.annotation.PostMapping;
 //import org.springframework.web.bind.annotation.RequestBody;
 //import org.springframework.web.bind.annotation.RequestMapping;
-//import org.springframework.web.bind.annotation.RequestParam;
 //import org.springframework.web.bind.annotation.RestController;
 //
 //@Tag(name = "Authentication management", description =
@@ -70,13 +69,13 @@
 //    }
 //
 //    @PostMapping("/forgot-password")
-//    public void forgotPassword(@RequestBody UserForgotPasswordRequestDto requestDto) {
+//    public void forgotPassword(@RequestBody @Valid UserForgotPasswordRequestDto requestDto) {
 //        passwordResetService.generatePasswordResetCode(requestDto.email());
 //    }
 //
 //    @PostMapping("/verify-reset-code")
-//    public boolean verifyResetCode(@RequestParam UserVerifyCodeRequestDto requestDto) {
-//        return passwordResetService.verifyPasswordResetCode(requestDto.email(),
-//        requestDto.code());
+//    public boolean verifyResetCode(
+//            @RequestBody @Valid UserVerifyPasswordResetTokenRequestDto requestDto) {
+//        return passwordResetService.verifyPasswordResetToken(requestDto.token());
 //    }
 //}
