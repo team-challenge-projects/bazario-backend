@@ -1,7 +1,7 @@
 package org.cyberrealm.tech.bazario.backend.security;
 
 import lombok.RequiredArgsConstructor;
-import org.cyberrealm.tech.bazario.backend.exception.EntityNotFoundException;
+import org.cyberrealm.tech.bazario.backend.exception.custom.EntityNotFoundException;
 import org.cyberrealm.tech.bazario.backend.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

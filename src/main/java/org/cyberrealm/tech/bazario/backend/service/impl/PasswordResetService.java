@@ -5,32 +5,20 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.cyberrealm.tech.bazario.backend.exception.PasswordResetException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.cyberrealm.tech.bazario.backend.dto.ResetPassword;
+import org.cyberrealm.tech.bazario.backend.exception.custom.ArgumentNotValidException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PasswordResetService {
-    private static final int ZERO = 0;
-    private static final int ONE = 1;
-    private static final int DEFAULT_LENGTH = 2;
-    private static final String DELIMITER = ":";
-    private static final String TARGET = "-";
-    private static final String REPLACEMENT = "";
-    private static final String SUBJECT = "Password Reset";
-    private static final String TOKEN_PARAM = "?token=";
-    private static final Logger logger = LoggerFactory.getLogger(PasswordResetService.class);
+
     private final RedisTemplate<String, Object> redisTemplate;
     private final EmailService emailService;
-    private final PasswordEncoder passwordEncoder;
-    private final EncryptionUtils encryptionUtils;
+    private final PasswordEncoder encoder;
 
     @Value("${password.reset.code.length:6}")
     private int codeLength;
@@ -79,6 +67,28 @@ public class PasswordResetService {
 
     public void removePasswordResetCode(String email) {
         redisTemplate.delete(email);
+    }
+
+    public void changePassword(ResetPassword resetPassword) {
+        if (!isNotNullOrBlankAllArgument(resetPassword)) {
+            throw new ArgumentNotValidException("Dto arguments is not null or blank");
+        }
+
+        String storedCode = (String) redisTemplate.opsForValue()
+                .get(resetPassword.getEmail().get());
+        String rawHex = resetPassword.getEmail().get() + storedCode;
+
+        if (!encoder.matches(rawHex, resetPassword.getHex())) {
+            throw new ArgumentNotValidException("Entered arguments is not valid");
+        }
+    }
+
+    private static boolean isNotNullOrBlankAllArgument(ResetPassword resetPassword) {
+        return resetPassword.getEmail().isPresent()
+                && resetPassword.getEmail().get().isBlank()
+                && resetPassword.getPassword().isPresent()
+                && resetPassword.getPassword().get().isBlank()
+                && resetPassword.getHex().isBlank();
     }
 
     private String generateRandomCode(int length) {

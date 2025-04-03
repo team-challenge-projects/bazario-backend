@@ -1,6 +1,9 @@
 server:
   servlet:
     context-path: /api
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 10MB
 
 spring:
   config:
@@ -72,7 +75,19 @@ user:
       password: 'rooT1#root'
       cityName: 'Lviv'
       cityCoordinate: '49,5017|24,0123'
-
+bucket:
+  global:
+    tokens: 10
+    duration: 60
+  limited-security:
+    tokens: 6
+    duration: 180
+cloudinary:
+  name: ${CLOUDINARY_NAME}
+  key: ${CLOUDINARY_KEY}
+  secret: ${CLOUDINARY_SECRET}
+image:
+  max-num: 6
 frontend:
   reset:
     password:
