@@ -24,12 +24,12 @@ databaseChangeLog:
                   type: bigint
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_user_param_type_param
+                    foreignKeyName: fk_user_param_type_user_param
                     references: type_user_parameters(id)
               - column:
                   name: user_id
                   type: bigint
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_user_param_type_user
+                    foreignKeyName: fk_user_param_user
                     references: users(id)
