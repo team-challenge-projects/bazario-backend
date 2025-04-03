@@ -5,8 +5,11 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.cyberrealm.tech.bazario.backend.dto.ResetPassword;
+import org.cyberrealm.tech.bazario.backend.exception.custom.ArgumentNotValidException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,6 +18,7 @@ public class PasswordResetService {
 
     private final RedisTemplate<String, Object> redisTemplate;
     private final EmailService emailService;
+    private final PasswordEncoder encoder;
 
     @Value("${password.reset.code.length:6}")
     private int codeLength;
@@ -49,5 +53,27 @@ public class PasswordResetService {
 
     public void removePasswordResetCode(String email) {
         redisTemplate.delete(email);
+    }
+
+    public void changePassword(ResetPassword resetPassword) {
+        if (!isNotNullOrBlankAllArgument(resetPassword)) {
+            throw new ArgumentNotValidException("Dto arguments is not null or blank");
+        }
+
+        String storedCode = (String) redisTemplate.opsForValue()
+                .get(resetPassword.getEmail().get());
+        String rawHex = resetPassword.getEmail().get() + storedCode;
+
+        if (!encoder.matches(rawHex, resetPassword.getHex())) {
+            throw new ArgumentNotValidException("Entered arguments is not valid");
+        }
+    }
+
+    private static boolean isNotNullOrBlankAllArgument(ResetPassword resetPassword) {
+        return resetPassword.getEmail().isPresent()
+                && resetPassword.getEmail().get().isBlank()
+                && resetPassword.getPassword().isPresent()
+                && resetPassword.getPassword().get().isBlank()
+                && resetPassword.getHex().isBlank();
     }
 }

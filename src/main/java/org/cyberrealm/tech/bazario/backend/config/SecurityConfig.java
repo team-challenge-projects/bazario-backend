@@ -2,8 +2,12 @@ package org.cyberrealm.tech.bazario.backend.config;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.annotations.security.SecuritySchemes;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.cyberrealm.tech.bazario.backend.model.enums.Role;
 import org.cyberrealm.tech.bazario.backend.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +29,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableMethodSecurity
 @Configuration
 @RequiredArgsConstructor
+@SecuritySchemes(value = {
+        @SecurityScheme(
+                type = SecuritySchemeType.HTTP,
+                name = "bearerAuth",
+                bearerFormat = "JWT",
+                scheme = "bearer"
+        )})
 public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -41,10 +52,13 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         auth -> auth
+                                .requestMatchers("/api/admin/**").hasAnyRole(
+                                        Role.ROOT.getAuthority(),
+                                        Role.ADMIN.getAuthority())
                                 .requestMatchers(
                                         "/swagger-ui/**",
                                         "/v3/api-docs/**",
-                                        "/auth/**",
+                                        "/api/public/**",
                                         "/error"
                                 )
                                 .permitAll()

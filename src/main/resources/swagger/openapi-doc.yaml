@@ -32,7 +32,7 @@ tags:
       Endpoints for users reset password.
   - name: Favorite
     description: |
-      Endpoints for users to manage favotite ad on the website.
+      Endpoints for users to manage favorite ad on the website.
   - name: Comment
     description: |
       Endpoints for managing museum data in the admin API.
@@ -61,7 +61,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AuthenticationRequst'
+              $ref: '#/components/schemas/AuthenticationRequest'
         required: true
       responses:
         200:
@@ -134,6 +134,45 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /private/logout:
+    post:
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []
+      description: User logout endpoint
+      operationId: logoutToken
+      parameters:
+        - in: cookie
+          name: refreshToken
+          schema:
+            type: string
+      responses:
+        204:
+          description: Authenticated successfully. Get token.
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: JWT_REFRESH_TOKEN=abcs123
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /public/registration:
     post:
       tags:
@@ -145,7 +184,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RegistrationRequst'
+              $ref: '#/components/schemas/RegistrationRequest'
         required: true
       responses:
         204:
@@ -211,8 +250,6 @@ paths:
       summary: Verify Email
       description: Verify Email after registration user
       operationId: verifyEmail
-      parameters:
-        - $ref: '#/components/parameters/typeEmailMessage'
       requestBody:
         content:
           application/json:
@@ -500,7 +537,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BasisAdminParameter'
+              $ref: '#/components/schemas/BasicAdminParameter'
       responses:
         204:
           description: Send verification code to email
@@ -549,7 +586,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BasisAdminParameter'
+              $ref: '#/components/schemas/BasicAdminParameter'
       responses:
         204:
           description: Send verification code to email
@@ -840,13 +877,14 @@ paths:
       tags:
         - Comment
       summary: Get coments for user by user`s id
-      description: Get coments for user by user`s id from coment list of user
+      description: |
+        Get coments for user by user`s id from coment list of user<br>
+        A map of key-value pairs for filtering.<br>
+        Example Pageable:  "size":"16", "page":"0","sort":"raiting,decs"(field,asc|desc)<br>
       operationId: getComents
       parameters:
         - $ref: '#/components/parameters/idParam'
-        - $ref: '#/components/parameters/pageParam'
-        - $ref: '#/components/parameters/sizeParam'
-        - $ref: '#/components/parameters/sortParam'
+        - $ref: '#/components/parameters/filtersParameter'
       responses:
         200:
           description: Get coment successfully
@@ -1326,7 +1364,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BasisAdminParameter'
+              $ref: '#/components/schemas/BasicAdminParameter'
       responses:
         204:
           description: Send verification code to email
@@ -1375,7 +1413,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BasisAdminParameter'
+              $ref: '#/components/schemas/BasicAdminParameter'
       responses:
         204:
           description: Send verification code to email
@@ -1457,34 +1495,17 @@ paths:
       tags:
         - Ad
       summary: Get ads
-      description: Create ad parameter by user
+      description: |
+        Get ads by filter.<br>
+        A map of key-value pairs for filtering.<br>
+        Example Pageable:  "size":"16", "page":"0","sort":"price,decs"(field,asc|desc)<br>
+        Example search: "title":"abc"<br>
+        Example ad parameter: "ad_id_256":"Bosh|Samsung|LG"(ad_id_ is type ad id prefix, | is separator for multiparameter)<br>
+        Example user parameter: "user_id_35":"Student"(user_id is type user id prefix)<br>
+        Example price: "price":"10.53||156.20"(10.53<= price <=156.20, || is seperetor)<br>
       operationId: getAds
       parameters:
-        - $ref: '#/components/parameters/pageParam'
-        - $ref: '#/components/parameters/sizeParam'
-        - $ref: '#/components/parameters/sortParam'
-        - in: query
-          name: titel
-          description: Scherch by word
-          schema:
-            type: string
-          required: false
-        - $ref: '#/components/parameters/basisParameter'
-        - in: query
-          name: userParams
-          required: false
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                      format: int64
-                    value:
-                      type: string
+        - $ref: '#/components/parameters/filtersParameter'
       responses:
         200:
           description: Create ad successfully
@@ -1738,7 +1759,7 @@ paths:
         - bearerAuth: []
       tags:
         - Image
-      description: Load and save image. If typy is ad than parameter id is ad`s id. If type is avatar parameter id ignore.
+      description: Load and save image. If typy is ad than parameter id is ad\`s id. If type is avatar parameter id is user\`s id, just admin operation, another ignore.
       operationId: saveImage
       parameters:
         - $ref: '#/components/parameters/typeImage'
@@ -1758,7 +1779,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SaveImageResponse'
+                type:  string
         400:
           description: Bad Request
           content:
@@ -1767,6 +1788,12 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
           description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        413:
+          description: Payload too large
           content:
             application/json:
               schema:
@@ -1782,7 +1809,7 @@ paths:
         - bearerAuth: []
       tags:
         - Image
-      description: Load and change image. Parameter id is image`s id
+      description: Load and change image.If typy is ad than parameter id is ad\`s id. If type is avatar parameter id is user\`s id, just admin operation, another ignore.
       operationId: changeImage
       parameters:
         - $ref: '#/components/parameters/typeImage'
@@ -1793,6 +1820,9 @@ paths:
             schema:
               type: object
               properties:
+                oldValue:
+                  type: string
+                  format: uri
                 file:
                   type: string
                   format: binary
@@ -1802,7 +1832,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SaveImageResponse'
+                type: string
         400:
           description: Bad Request
           content:
@@ -1811,6 +1841,12 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
           description: Unauthorize
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        413:
+          description: Payload too large
           content:
             application/json:
               schema:
@@ -1826,11 +1862,12 @@ paths:
         - bearerAuth: []
       tags:
         - Image
-      description: Delete image. Parameter id is image`s id
+      description: Delete image. Parameter id is ad or user id. If typy is ad than parameter id is ad\`s id. If type is avatar parameter id is user\`s id, just admin operation, another ignore.
       operationId: deleteImage
       parameters:
         - $ref: '#/components/parameters/typeImage'
         - $ref: '#/components/parameters/idParam'
+        - $ref: '#/components/parameters/urlParameter'
       responses:
         204:
           description: Delete successful
@@ -1854,7 +1891,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
-    AuthenticationRequst:
+    AuthenticationRequest:
       description:  Authentication form
       type: object
       properties:
@@ -1882,46 +1919,44 @@ components:
         email:
           type: string
           format: email
-        code:
+        hex:
           type: string
-          pattern: '^\w{6}$'
     ResetPassword:
       description: Reset password
       allOf:
-        - $ref: '#/components/schemas/AuthenticationRequst'
+        - $ref: '#/components/schemas/AuthenticationRequest'
       properties:
         hex:
           type: string
-    RegistrationRequst:
+    RegistrationRequest:
       description: Registration user
       allOf:
-        - $ref: '#/components/schemas/UserInformation'
-        - $ref: '#/components/schemas/AuthenticationRequst'
-    UserInformation:
-      description: Registration user
+        - $ref: '#/components/schemas/AuthenticationRequest'
       type: object
       properties:
         firstName:
           type: string
           pattern: '^[A-ZА-ЯІЇЄ][a-zа-яіїє]{1,20}$'
           nullable: true
-        lastName:
-          type: string
-          pattern: '^[A-ZА-ЯІЇЄ][a-zа-яіїє]{1,20}$'
-          nullable: true
-        email:
-          type: string
-          format: email
-          nullable: true
         phoneNumber:
           type: string
           pattern: '^(\+38|38|8)?0\d{9}$'
           nullable: true
+    UserInformation:
+      description: Registration user
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        phoneNumber:
+          type: string
         cityName:
           type: string
-          minLength: 3
-          maxLength: 100
-          nullable: true
     PrivateUserInformation:
       description: Registration user
       allOf:
@@ -1931,13 +1966,18 @@ components:
         pararmeters:
           type: array
           items:
-            $ref: '#/components/schemas/BasisUserParameter'
+            $ref: '#/components/schemas/BasicUserParameter'
     PatchUser:
       description: Patch user field
       allOf:
-        - $ref: '#/components/schemas/RegistrationRequst'
+        - $ref: '#/components/schemas/RegistrationRequest'
       type: object
       properties:
+        cityName:
+          type: string
+          minLength: 3
+          maxLength: 100
+          nullable: true
         cityCoordinate:
           type: string
           pattern: '^\d+,?\d*\|\d,?\d*$'
@@ -1950,14 +1990,14 @@ components:
         userParameters:
           type: array
           items:
-            $ref: '#/components/schemas/BasisUserParameter'
+            $ref: '#/components/schemas/BasicUserParameter'
           nullable: true
         role:
           type: string
         isLocked:
           type: boolean
           default: false
-    BasisUserParameter:
+    BasicUserParameter:
       description: Basis user parameter for user or ad
       type: object
       properties:
@@ -1968,7 +2008,7 @@ components:
           type: string
         value:
           type: string
-    BasisAdminParameter:
+    BasicAdminParameter:
       description: Basis admin parameter for user or ad
       type: object
       properties:
@@ -1980,7 +2020,7 @@ components:
           type: string
     AdParameterDto:
       allOf:
-        - $ref: '#/components/schemas/BasisAdminParameter'
+        - $ref: '#/components/schemas/BasicAdminParameter'
       type: object
       properties:
         id:
@@ -2004,11 +2044,11 @@ components:
         adParameters:
           type: array
           items:
-            $ref: '#/components/schemas/BasisUserParameter'
+            $ref: '#/components/schemas/BasicUserParameter'
         userPrameters:
           type: array
           items:
-            $ref: '#/components/schemas/BasisUserParameter'
+            $ref: '#/components/schemas/BasicUserParameter'
     CommentDto:
       description: A user's comment about another user who added an ad
       type: object
@@ -2045,7 +2085,7 @@ components:
         adParameters:
           type: array
           items:
-            $ref: '#/components/schemas/BasisUserParameter'
+            $ref: '#/components/schemas/BasicUserParameter'
           nullable: true
     PatchAd:
       description: Patch ad
@@ -2093,14 +2133,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CommentDto'
-    SaveImageResponse:
-      description: Id of saved image
-      type: object
-      properties:
-        imageId:
-          type: string
-        originalUrl:
-          type: string
   parameters:
     idParam:
       name: id
@@ -2144,33 +2176,23 @@ components:
                   format: int64
                 value:
                   type: string
-    pageParam:
-      name: page
+    filtersParameter:
+      name: filters
       in: query
       required: false
-      description: Number of page
+      style: form
+      explode: true
       schema:
-        type: integer
-        format: int32
-        default: 0
-    sizeParam:
-      name: size
+        type: object
+        additionalProperties:
+          type: string
+    urlParameter:
+      name: url
       in: query
-      required: false
-      description: The number of elements on the page
-      schema:
-        type: integer
-        format: int32
-        default: 16
-    sortParam:
-      name: sort
-      in: query
-      required: false
-      description: The order of sorting elements by their fields
+      required: true
       schema:
         type: string
-        pattern: '^[A-Za-z]+,(asc|desc)$'
-        default: id,asc
+        format: uri
   securitySchemes:
     bearerAuth:
       type: http
