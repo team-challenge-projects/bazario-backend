@@ -69,5 +69,3 @@ public class UserServiceImpl implements UserService {
                 new EntityNotFoundException("User not found"));
     }
 }
-
-
