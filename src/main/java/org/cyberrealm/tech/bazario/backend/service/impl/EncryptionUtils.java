@@ -13,7 +13,7 @@ public class EncryptionUtils {
 
     private final byte[] key;
 
-    public EncryptionUtils(@Value("${jwt.secret}") String secret) {
+    public EncryptionUtils(@Value("${aes.secret}") String secret) {
         this.key = secret.getBytes(StandardCharsets.UTF_8);
     }
 
