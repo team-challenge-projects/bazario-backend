@@ -1,9 +1,9 @@
 package org.cyberrealm.tech.bazario.backend.service.impl;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
-import org.cyberrealm.tech.bazario.backend.dto.UserRegistrationRequestDto;
-import org.cyberrealm.tech.bazario.backend.dto.UserResponseDto;
+import org.cyberrealm.tech.bazario.backend.dto.RegistrationRequest;
 import org.cyberrealm.tech.bazario.backend.exception.custom.AuthenticationException;
 import org.cyberrealm.tech.bazario.backend.exception.custom.EntityNotFoundException;
 import org.cyberrealm.tech.bazario.backend.exception.custom.RegistrationException;
@@ -12,6 +12,8 @@ import org.cyberrealm.tech.bazario.backend.model.User;
 import org.cyberrealm.tech.bazario.backend.model.enums.Role;
 import org.cyberrealm.tech.bazario.backend.repository.UserRepository;
 import org.cyberrealm.tech.bazario.backend.service.UserService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,13 +24,16 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private static final Role DEFAULT_ROLE = Role.USER;
+    private final RedisTemplate<String, Object> redisTemplate;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    @Value("${token.expiration.minutes:15}")
+    private int expirationMinutes;
 
     @Transactional
     @Override
-    public UserResponseDto register(UserRegistrationRequestDto requestDto)
+    public void register(RegistrationRequest requestDto)
             throws RegistrationException {
         User user = userMapper.toModel(requestDto);
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
@@ -39,8 +44,9 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(DEFAULT_ROLE);
         user.setCreatedAt(LocalDateTime.now());
-        userRepository.save(user);
-        return userMapper.toUserResponse(user);
+        redisTemplate.opsForValue().set(user.getEmail(), user,
+                Duration.ofMinutes(expirationMinutes));
+        userMapper.toUserResponse(user);
     }
 
     @Override
