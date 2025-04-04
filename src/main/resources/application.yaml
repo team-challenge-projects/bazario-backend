@@ -58,6 +58,9 @@ jwt:
   refresh:
     expiration: ${JWT_REFRESH_EXPIRATION}
 
+aes:
+  secret: ${AES_SECRET}
+
 cookie:
   refresh:
     age: 604800 # 7 * 24 * 60 * 60
@@ -66,8 +69,10 @@ password:
   reset:
     code:
       length: 6
-      expiration:
-        minutes: 3
+
+token:
+  expiration:
+    minutes: 15
 
 verify:
   email:
@@ -102,3 +107,6 @@ frontend:
   reset:
     password:
       url: https://frontend.yourapp.com/reset-password
+  email:
+    verification:
+      url: https://frontend.yourapp.com/verify-email
