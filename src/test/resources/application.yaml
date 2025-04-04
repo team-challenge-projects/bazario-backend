@@ -64,6 +64,8 @@ cloudinary:
   secret: cloud-secret
 image:
   max-num: 6
+aes:
+  secret: 1234567891012133
 frontend:
   reset:
     password:
