@@ -37,6 +37,6 @@ class ResetPasswordApiDelegateImplTest {
         reset.setHex(null);
         mockMvc.perform(post("/api/public/resetPassword")
                         .requestAttr("resetPassword", reset))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isUnauthorized());
     }
 }
