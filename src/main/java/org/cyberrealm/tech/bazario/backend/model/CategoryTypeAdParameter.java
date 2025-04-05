@@ -25,6 +25,6 @@ public class CategoryTypeAdParameter {
     private Category category;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "type_ad_parameter_id")
+    @JoinColumn(name = "type_id")
     private TypeAdParameter type;
 }

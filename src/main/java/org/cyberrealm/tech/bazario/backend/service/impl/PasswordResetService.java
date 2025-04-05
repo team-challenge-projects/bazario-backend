@@ -1,79 +1,59 @@
 package org.cyberrealm.tech.bazario.backend.service.impl;
 
-import java.net.URLEncoder;
+import static org.cyberrealm.tech.bazario.backend.model.enums.MessageType.PASSWORD_RESET;
+
+import jakarta.transaction.Transactional;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.dto.ResetPassword;
 import org.cyberrealm.tech.bazario.backend.exception.custom.ArgumentNotValidException;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.cyberrealm.tech.bazario.backend.exception.custom.EntityNotFoundException;
+import org.cyberrealm.tech.bazario.backend.model.User;
+import org.cyberrealm.tech.bazario.backend.repository.UserRepository;
+import org.cyberrealm.tech.bazario.backend.service.TokenService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class PasswordResetService {
+    private final TokenService tokenService;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    private final RedisTemplate<String, Object> redisTemplate;
-    private final EmailService emailService;
-    private final PasswordEncoder encoder;
-
-    @Value("${password.reset.code.length:6}")
-    private int codeLength;
-
-    @Value("${password.reset.code.expiration.minutes:3}")
-    private int expirationMinutes;
-
-    @Value("${frontend.reset.password.url}")
-    private String frontendResetPasswordUrl;
-
-    public void generatePasswordResetCode(String email) {
-        String code = generateRandomCode(codeLength);
-        redisTemplate.opsForValue().set(email, code, Duration.ofMinutes(expirationMinutes));
-
-        String resetLink = frontendResetPasswordUrl
-                + "?email=" + URLEncoder.encode(email, StandardCharsets.UTF_8)
-                + "&code=" + URLEncoder.encode(code, StandardCharsets.UTF_8);
-
-        emailService.sendPasswordResetEmail(email, "Password Reset",
-                expirationMinutes, resetLink);
-    }
-
-    private String generateRandomCode(int length) {
-        String uuid = UUID.randomUUID().toString().replace("-", "");
-        return uuid.substring(0, Math.min(length, uuid.length()));
-    }
-
-    public boolean verifyPasswordResetCode(String email, String code) {
-        String storedCode = (String) redisTemplate.opsForValue().get(email);
-        return storedCode != null && storedCode.equals(code);
-    }
-
-    public void removePasswordResetCode(String email) {
-        redisTemplate.delete(email);
-    }
-
+    @Transactional
     public void changePassword(ResetPassword resetPassword) {
         if (!isNotNullOrBlankAllArgument(resetPassword)) {
             throw new ArgumentNotValidException("Dto arguments is not null or blank");
         }
+        String email = resetPassword.getEmail().get();
+        String token = URLDecoder.decode(resetPassword.getHex(), StandardCharsets.UTF_8);
 
-        String storedCode = (String) redisTemplate.opsForValue()
-                .get(resetPassword.getEmail().get());
-        String rawHex = resetPassword.getEmail().get() + storedCode;
+        boolean isValid = tokenService.verifyToken(token, email, PASSWORD_RESET);
 
-        if (!encoder.matches(rawHex, resetPassword.getHex())) {
+        if (!isValid) {
             throw new ArgumentNotValidException("Entered arguments is not valid");
         }
+        updatePassword(email, resetPassword.getPassword().get());
     }
 
     private static boolean isNotNullOrBlankAllArgument(ResetPassword resetPassword) {
         return resetPassword.getEmail().isPresent()
-                && resetPassword.getEmail().get().isBlank()
+                && !resetPassword.getEmail().get().isBlank()
                 && resetPassword.getPassword().isPresent()
-                && resetPassword.getPassword().get().isBlank()
-                && resetPassword.getHex().isBlank();
+                && !resetPassword.getPassword().get().isBlank()
+                && !resetPassword.getHex().isBlank();
     }
+
+    public void updatePassword(String email, String newPassword) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("User with email:%s not found", email))
+                );
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
 }
