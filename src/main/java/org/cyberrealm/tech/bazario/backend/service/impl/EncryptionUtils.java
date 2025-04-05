@@ -10,27 +10,28 @@ import org.springframework.stereotype.Component;
 @Component
 public class EncryptionUtils {
     private static final String ALGORITHM = "AES";
+    private final Cipher encryptionCipher;
+    private final Cipher decryptionCipher;
 
-    private final byte[] key;
+    public EncryptionUtils(@Value("${aes.secret}") String secret) throws Exception {
+        byte[] key = secret.getBytes(StandardCharsets.UTF_8);
+        SecretKeySpec keySpec = new SecretKeySpec(key, ALGORITHM);
 
-    public EncryptionUtils(@Value("${aes.secret}") String secret) {
-        this.key = secret.getBytes(StandardCharsets.UTF_8);
+        encryptionCipher = Cipher.getInstance(ALGORITHM);
+        encryptionCipher.init(Cipher.ENCRYPT_MODE, keySpec);
+
+        decryptionCipher = Cipher.getInstance(ALGORITHM);
+        decryptionCipher.init(Cipher.DECRYPT_MODE, keySpec);
     }
 
     public String encrypt(String data) throws Exception {
-        Cipher cipher = Cipher.getInstance(ALGORITHM);
-        SecretKeySpec keySpec = new SecretKeySpec(key, ALGORITHM);
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec);
-        byte[] encryptedBytes = cipher.doFinal(data.getBytes(StandardCharsets.UTF_8));
+        byte[] encryptedBytes = encryptionCipher.doFinal(data.getBytes(StandardCharsets.UTF_8));
         return Base64.getEncoder().encodeToString(encryptedBytes);
     }
 
     public String decrypt(String encryptedData) throws Exception {
-        Cipher cipher = Cipher.getInstance(ALGORITHM);
-        SecretKeySpec keySpec = new SecretKeySpec(key, ALGORITHM);
-        cipher.init(Cipher.DECRYPT_MODE, keySpec);
         byte[] decodedBytes = Base64.getDecoder().decode(encryptedData);
-        byte[] originalBytes = cipher.doFinal(decodedBytes);
+        byte[] originalBytes = decryptionCipher.doFinal(decodedBytes);
         return new String(originalBytes, StandardCharsets.UTF_8);
     }
 }
