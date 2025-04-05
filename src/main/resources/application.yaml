@@ -21,15 +21,15 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-#    #Cloud database
-#    url: ${POSTGRES_DB_URL}
-#    username: ${POSTGRES_USER}
-#    password: ${POSTGRES_ROOT_PASSWORD}
+    #Cloud database
+    url: ${POSTGRES_DB_URL}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_ROOT_PASSWORD}
 
-    #local
-    url: ${POSTGRES_LOCAL_DB_URL}
-    username: ${POSTGRES_LOCAL_USER}
-    password: ${POSTGRES_LOCAL_ROOT_PASSWORD}
+#    #local
+#    url: ${POSTGRES_LOCAL_DB_URL}
+#    username: ${POSTGRES_LOCAL_USER}
+#    password: ${POSTGRES_LOCAL_ROOT_PASSWORD}
 
   cache:
     type: redis
