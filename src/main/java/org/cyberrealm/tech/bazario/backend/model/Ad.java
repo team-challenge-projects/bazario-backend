@@ -31,16 +31,12 @@ public class Ad {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
-    private String title;
-    private String description;
-    @Column(nullable = false)
-    private BigDecimal price;
-    @Column(nullable = false)
-    private LocalDate publicationDate;
-    @Column(nullable = false)
+    private String title = "";
+    private String description = "";
+    private BigDecimal price = BigDecimal.ZERO;
+    private LocalDate publicationDate = LocalDate.now();
     @Enumerated(EnumType.STRING)
-    private StatusAd status;
+    private StatusAd status = StatusAd.NEW;
 
     @ElementCollection
     @CollectionTable(name = "ad_images", joinColumns = @JoinColumn(name = "ad_id"))
