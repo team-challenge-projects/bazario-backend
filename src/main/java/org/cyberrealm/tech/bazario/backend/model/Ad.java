@@ -21,7 +21,8 @@ import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
-import org.cyberrealm.tech.bazario.backend.model.enums.StatusAd;
+import org.cyberrealm.tech.bazario.backend.dto.AdStatus;
+
 
 @Entity
 @Getter
@@ -36,7 +37,7 @@ public class Ad {
     private BigDecimal price = BigDecimal.ZERO;
     private LocalDate publicationDate = LocalDate.now();
     @Enumerated(EnumType.STRING)
-    private StatusAd status = StatusAd.NEW;
+    private AdStatus status = AdStatus.NEW;
 
     @ElementCollection
     @CollectionTable(name = "ad_images", joinColumns = @JoinColumn(name = "ad_id"))

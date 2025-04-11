@@ -40,11 +40,11 @@ public class AdApiDelegateImpl implements AdApiDelegate {
 
     @Override
     public ResponseEntity<AdDto> getAd(Long id) {
-        return AdApiDelegate.super.getAd(id);
+        return ResponseEntity.ok(adService.findById(id));
     }
 
     @Override
     public ResponseEntity<Page> getAds(Map<String, String> filters) {
-        return AdApiDelegate.super.getAds(filters);
+        return ResponseEntity.ok(adService.findAll(filters));
     }
 }

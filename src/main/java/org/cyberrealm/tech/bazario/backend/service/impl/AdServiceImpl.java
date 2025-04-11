@@ -3,9 +3,12 @@ package org.cyberrealm.tech.bazario.backend.service.impl;
 import java.net.URI;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.dto.AdDto;
+import org.cyberrealm.tech.bazario.backend.dto.AdResponseDto;
+import org.cyberrealm.tech.bazario.backend.dto.AdStatus;
 import org.cyberrealm.tech.bazario.backend.dto.PatchAd;
 import org.cyberrealm.tech.bazario.backend.dto.ad.CreateAdRequestDto;
 import org.cyberrealm.tech.bazario.backend.exception.custom.AuthenticationException;
@@ -15,7 +18,6 @@ import org.cyberrealm.tech.bazario.backend.mapper.AdMapper;
 import org.cyberrealm.tech.bazario.backend.model.Ad;
 import org.cyberrealm.tech.bazario.backend.model.User;
 import org.cyberrealm.tech.bazario.backend.model.enums.Role;
-import org.cyberrealm.tech.bazario.backend.model.enums.StatusAd;
 import org.cyberrealm.tech.bazario.backend.repository.AdRepository;
 import org.cyberrealm.tech.bazario.backend.service.AdService;
 import org.cyberrealm.tech.bazario.backend.service.ImageService;
@@ -59,7 +61,7 @@ public class AdServiceImpl implements AdService {
 
     @Override
     public AdDto findById(Long id) {
-        return null;
+        return adMapper.toDto(getAd(id));
     }
 
     @Override
@@ -87,7 +89,7 @@ public class AdServiceImpl implements AdService {
                 Duration.ofMinutes(15));
         var ad = (Ad) redisTemplate.opsForValue().get(key);
         if (isNotAccessAd(ad)) {
-            throw new ForbiddenException("Not access to ad by id " + id);
+            throw new ForbiddenException("User not access to ad by id " + id);
         }
         return ad;
     }
@@ -99,7 +101,7 @@ public class AdServiceImpl implements AdService {
         if (isNotAccessAd(ad)) {
             throw new ForbiddenException("The user not access to ad");
         }
-        if (ad.getStatus().equals(StatusAd.DELETE)) {
+        if (ad.getStatus().equals(AdStatus.DELETE)) {
             ad.getImages().forEach(urlImage ->
                     imageService.deleteFile(URI.create(urlImage)));
         }
@@ -108,8 +110,16 @@ public class AdServiceImpl implements AdService {
     }
 
     @Override
+    public Page<AdResponseDto> findAll(Map<String, String> filters) {
+
+        return null;
+    }
+
+
+
+    @Override
     public AdDto createOrGet() {
-        Ad ad = adRepository.findByStatus(StatusAd.NEW).orElseGet(() ->
+        Ad ad = adRepository.findByStatus(AdStatus.NEW).orElseGet(() ->
                 adRepository.save(new Ad()));
         return adMapper.toDto(ad);
     }
