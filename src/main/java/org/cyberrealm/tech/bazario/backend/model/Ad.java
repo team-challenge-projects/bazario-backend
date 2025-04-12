@@ -23,7 +23,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.cyberrealm.tech.bazario.backend.dto.AdStatus;
 
-
 @Entity
 @Getter
 @Setter

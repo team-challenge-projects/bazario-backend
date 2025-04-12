@@ -3,11 +3,9 @@ package org.cyberrealm.tech.bazario.backend.service.impl;
 import java.net.URI;
 import java.time.Duration;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.dto.AdDto;
-import org.cyberrealm.tech.bazario.backend.dto.AdResponseDto;
 import org.cyberrealm.tech.bazario.backend.dto.AdStatus;
 import org.cyberrealm.tech.bazario.backend.dto.PatchAd;
 import org.cyberrealm.tech.bazario.backend.dto.ad.CreateAdRequestDto;
@@ -108,14 +106,6 @@ public class AdServiceImpl implements AdService {
         adMapper.updateAdFromDto(patchAd, ad);
         adRepository.save(ad);
     }
-
-    @Override
-    public Page<AdResponseDto> findAll(Map<String, String> filters) {
-
-        return null;
-    }
-
-
 
     @Override
     public AdDto createOrGet() {

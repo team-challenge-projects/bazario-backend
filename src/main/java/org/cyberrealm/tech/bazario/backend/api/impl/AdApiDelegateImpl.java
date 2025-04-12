@@ -1,21 +1,23 @@
 package org.cyberrealm.tech.bazario.backend.api.impl;
 
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.api.AdApiDelegate;
 import org.cyberrealm.tech.bazario.backend.dto.AdDto;
 import org.cyberrealm.tech.bazario.backend.dto.PatchAd;
 import org.cyberrealm.tech.bazario.backend.service.AdService;
+import org.cyberrealm.tech.bazario.backend.service.AdsService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class AdApiDelegateImpl implements AdApiDelegate {
     private final AdService adService;
+    private final AdsService adsService;
+
     @Override
     public ResponseEntity<List<AdDto>> comparesAd(List<Long> ids) {
         return AdApiDelegate.super.comparesAd(ids);
@@ -45,6 +47,6 @@ public class AdApiDelegateImpl implements AdApiDelegate {
 
     @Override
     public ResponseEntity<Page> getAds(Map<String, String> filters) {
-        return ResponseEntity.ok(adService.findAll(filters));
+        return ResponseEntity.ok(adsService.findAll(filters));
     }
 }
