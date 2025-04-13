@@ -15,8 +15,8 @@ public class AuthenticationApiDelegateImpl implements AuthenticationApiDelegate 
     private final CookieService cookieService;
 
     @Override
-    public ResponseEntity<String> login(AuthenticationRequest authenticationRequst) {
-        var loginResponse = authenticationService.authenticate(authenticationRequst);
+    public ResponseEntity<String> login(AuthenticationRequest authenticationRequest) {
+        var loginResponse = authenticationService.authenticate(authenticationRequest);
         return ResponseEntity.ok()
                 .headers(cookieService.getCookieHeader(loginResponse.refreshToken()))
                 .body(loginResponse.accessToken());

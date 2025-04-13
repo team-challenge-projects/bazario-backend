@@ -305,7 +305,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/PrivateUserInformation'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -356,7 +356,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -398,7 +398,7 @@ paths:
         204:
           description: User deleted successfully
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -446,7 +446,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -500,7 +500,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -554,7 +554,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -604,7 +604,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -647,7 +647,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -729,7 +729,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -767,7 +767,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -810,7 +810,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -857,7 +857,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -909,7 +909,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -959,7 +959,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -1008,7 +1008,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -1051,7 +1051,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -1106,7 +1106,7 @@ paths:
         required: true
       responses:
         204:
-          description: Add coment successfully
+          description: Add comment successfully
         400:
           description: Invalid input
           content:
@@ -1114,7 +1114,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -1260,7 +1260,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -1310,7 +1310,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -1353,7 +1353,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -1401,7 +1401,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -1451,7 +1451,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -1494,7 +1494,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -1525,11 +1525,11 @@ paths:
       description: |
         Get ads by filter.<br>
         A map of key-value pairs for filtering.<br>
-        Example Pageable:  "size":"16", "page":"0","sort":"price,decs"(field,asc|desc)<br>
+        Example Pageable:  "size":"16", "page":"0","sort":"price,desc"(field,asc|desc)<br>
         Example search: "title":"abc"<br>
-        Example ad parameter: "ad_id_256":"Bosh|Samsung|LG"(ad_id_ is type ad id prefix, | is separator for multiparameter)<br>
+        Example ad parameter: "ad_id_256":"Bosh|Samsung|LG"(ad_id_ is type ad id prefix, | is separator for multi parameter)<br>
         Example user parameter: "user_id_35":"Student"(user_id is type user id prefix)<br>
-        Example price: "price":"10.53||156.20"(10.53<= price <=156.20, || is seperetor)<br>
+        Example price: "price":"10.53||156.20"(10.53<= price <=156.20, || is separator)<br>
       operationId: getAds
       parameters:
         - $ref: '#/components/parameters/filtersParameter'
@@ -1670,7 +1670,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -1714,7 +1714,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -1757,7 +1757,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -1786,7 +1786,7 @@ paths:
         - bearerAuth: []
       tags:
         - Image
-      description: Load and save image. If typy is ad than parameter id is ad\`s id. If type is avatar parameter id is user\`s id, just admin operation, another ignore.
+      description: Load and save image. If type is ad than parameter id is ad\`s id. If type is avatar parameter id is user\`s id, just admin operation, another ignore.
       operationId: saveImage
       parameters:
         - $ref: '#/components/parameters/typeImage'
@@ -1815,7 +1815,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -1837,7 +1837,7 @@ paths:
         - bearerAuth: []
       tags:
         - Image
-      description: Load and change image.If typy is ad than parameter id is ad\`s id. If type is avatar parameter id is user\`s id, just admin operation, another ignore.
+      description: Load and change image.If type is ad than parameter id is ad\`s id. If type is avatar parameter id is user\`s id, just admin operation, another ignore.
       operationId: changeImage
       parameters:
         - $ref: '#/components/parameters/typeImage'
@@ -1869,7 +1869,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -1891,7 +1891,7 @@ paths:
         - bearerAuth: []
       tags:
         - Image
-      description: Delete image. Parameter id is ad or user id. If typy is ad than parameter id is ad\`s id. If type is avatar parameter id is user\`s id, just admin operation, another ignore.
+      description: Delete image. Parameter id is ad or user id. If type is ad than parameter id is ad\`s id. If type is avatar parameter id is user\`s id, just admin operation, another ignore.
       operationId: deleteImage
       parameters:
         - $ref: '#/components/parameters/typeImage'
@@ -1907,7 +1907,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
-          description: Unauthorize
+          description: Unauthorized
           content:
             application/json:
               schema:
