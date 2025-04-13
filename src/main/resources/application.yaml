@@ -26,10 +26,10 @@ spring:
     username: ${POSTGRES_USER}
     password: ${POSTGRES_ROOT_PASSWORD}
 
-    ##local
-    #spring.datasource.url=jdbc:postgresql://localhost:5432/bazario?serverTimezone=UTC
-    #spring.datasource.username=${POSTGRES_LOCAL_USER}
-    #spring.datasource.password=${POSTGRES_LOCAL_ROOT_PASSWORD}
+#    #local
+#    url: ${POSTGRES_LOCAL_DB_URL}
+#    username: ${POSTGRES_LOCAL_USER}
+#    password: ${POSTGRES_LOCAL_ROOT_PASSWORD}
 
   cache:
     type: redis
@@ -58,12 +58,27 @@ jwt:
   refresh:
     expiration: ${JWT_REFRESH_EXPIRATION}
 
+aes:
+  secret: ${AES_SECRET}
+
+cookie:
+  refresh:
+    age: 604800 # 7 * 24 * 60 * 60
+
 password:
   reset:
     code:
       length: 6
+
+token:
+  expiration:
+    minutes: 15
+
+verify:
+  email:
+    code:
       expiration:
-        minutes: 3
+        hours: 24
 user:
   root:
     credentials:
@@ -92,3 +107,6 @@ frontend:
   reset:
     password:
       url: https://frontend.yourapp.com/reset-password
+  email:
+    verification:
+      url: https://frontend.yourapp.com/verify-email

@@ -15,7 +15,7 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: value
+                  name: parameter_value
                   type: varchar(100)
                   constraints:
                     nullable: false
