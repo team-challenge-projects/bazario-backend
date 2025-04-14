@@ -7,7 +7,6 @@ import org.cyberrealm.tech.bazario.backend.config.MapperConfig;
 import org.cyberrealm.tech.bazario.backend.dto.AdDto;
 import org.cyberrealm.tech.bazario.backend.dto.AdResponseDto;
 import org.cyberrealm.tech.bazario.backend.dto.PatchAd;
-import org.cyberrealm.tech.bazario.backend.dto.ad.CreateAdRequestDto;
 import org.cyberrealm.tech.bazario.backend.model.Ad;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -22,8 +21,6 @@ public interface AdMapper {
     @Mapping(target = "imageUrl", expression =
             "java(URI.create(ad.getImages().stream().findFirst().orElse(\"test/test.jpg\")))")
     AdResponseDto toResponseDto(Ad ad);
-
-    Ad toEntity(CreateAdRequestDto requestDto);
 
     List<URI> toListUri(Set<String> uris);
 

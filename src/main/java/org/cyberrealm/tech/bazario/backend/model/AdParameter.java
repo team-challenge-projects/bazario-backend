@@ -23,7 +23,8 @@ public class AdParameter {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parameter_id")
     private TypeAdParameter parameter;
-    private String value;
+
+    private String parameterValue;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ad_id")

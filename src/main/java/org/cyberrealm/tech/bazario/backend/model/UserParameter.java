@@ -19,7 +19,8 @@ public class UserParameter {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String value;
+
+    private String parameterValue;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parameter_id")

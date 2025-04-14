@@ -11,7 +11,7 @@ import org.cyberrealm.tech.bazario.backend.exception.custom.ForbiddenException;
 import org.cyberrealm.tech.bazario.backend.model.Ad;
 import org.cyberrealm.tech.bazario.backend.model.User;
 import org.cyberrealm.tech.bazario.backend.model.enums.Role;
-import org.cyberrealm.tech.bazario.backend.service.AdService;
+import org.cyberrealm.tech.bazario.backend.service.AccessAdService;
 import org.cyberrealm.tech.bazario.backend.service.FileUpload;
 import org.cyberrealm.tech.bazario.backend.service.ImageService;
 import org.cyberrealm.tech.bazario.backend.service.UserService;
@@ -29,7 +29,7 @@ public class ImageServiceImpl implements ImageService {
     @Value("${image.max-num}")
     private int maxNumImages;
 
-    private final AdService adService;
+    private final AccessAdService adService;
     private final UserService userService;
     private final FileUpload fileUpload;
 

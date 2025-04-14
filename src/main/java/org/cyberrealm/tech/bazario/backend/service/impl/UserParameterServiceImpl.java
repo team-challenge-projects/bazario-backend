@@ -29,7 +29,7 @@ public class UserParameterServiceImpl implements UserParameterService {
                 return builder.and(idParam, value);
             }).reduce(builder::and).orElse(builder.conjunction());
         };
-        return parameterRepository.findAll(spec, UserIdProjection.class).stream()
+        return parameterRepository.findBy(spec, UserIdProjection.class).stream()
                 .map(UserIdProjection::getUserId).toList();
     }
 }

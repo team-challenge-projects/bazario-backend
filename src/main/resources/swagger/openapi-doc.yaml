@@ -2035,7 +2035,7 @@ components:
           format: int64
         name:
           type: string
-        value:
+        parameterValue:
           type: string
     BasicAdminParameter:
       description: Basis admin parameter for user or ad
