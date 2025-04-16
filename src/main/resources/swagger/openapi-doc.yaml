@@ -2035,6 +2035,9 @@ components:
           format: int64
         name:
           type: string
+        parameterId:
+          type: integer
+          format: int64
         parameterValue:
           type: string
     BasicAdminParameter:
@@ -2131,6 +2134,9 @@ components:
         price:
           type: number
           nullable: true
+        categoryId:
+          type: integer
+          format: int64
         adParameters:
           type: array
           items:
