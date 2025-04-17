@@ -16,9 +16,8 @@ public class CategoryApiDelegateImpl implements CategoryApiDelegate {
     private final CategoryService categoryService;
 
     @Override
-    public ResponseEntity<Void> addCategory(CategoryRequestDto categoryRequestDto) {
-        categoryService.add(categoryRequestDto);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Long> addCategory(CategoryRequestDto categoryRequestDto) {
+        return ResponseEntity.ok(categoryService.add(categoryRequestDto));
     }
 
     @Override

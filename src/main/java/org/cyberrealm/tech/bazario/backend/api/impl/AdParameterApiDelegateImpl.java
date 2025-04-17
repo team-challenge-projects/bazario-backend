@@ -13,9 +13,8 @@ public class AdParameterApiDelegateImpl implements AdParameterApiDelegate {
     private final TypeAdParameterService parameterService;
 
     @Override
-    public ResponseEntity<Void> createAdParameter(BasicAdminParameter basicAdminParameter) {
-        parameterService.create(basicAdminParameter);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Long> createAdParameter(BasicAdminParameter basicAdminParameter) {
+        return ResponseEntity.ok(parameterService.create(basicAdminParameter));
     }
 
     @Override

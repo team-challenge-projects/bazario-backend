@@ -4,7 +4,6 @@ import java.util.HashSet;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.dto.CategoryRequestDto;
 import org.cyberrealm.tech.bazario.backend.exception.custom.EntityNotFoundException;
-import org.cyberrealm.tech.bazario.backend.exception.custom.NotFoundResourceException;
 import org.cyberrealm.tech.bazario.backend.model.Category;
 import org.cyberrealm.tech.bazario.backend.repository.CategoryRepository;
 import org.cyberrealm.tech.bazario.backend.repository.TypeAdParameterRepository;
@@ -18,14 +17,13 @@ public class CategoryServiceImpl implements CategoryService {
     private final TypeAdParameterRepository parameterRepository;
 
     @Override
-    public void add(CategoryRequestDto categoryRequestDto) {
+    public Long add(CategoryRequestDto categoryRequestDto) {
         var parameters = parameterRepository.findAllById(
                 categoryRequestDto.getAdParameterIds());
         Category category = new Category();
         category.setName(categoryRequestDto.getName());
         category.setAdParameters(new HashSet<>(parameters));
-        categoryRepository.save(category);
-
+        return categoryRepository.save(category).getId();
     }
 
     @Override
@@ -44,11 +42,5 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("Not found catalog with id :" + id));
         categoryRepository.delete(category);
-    }
-
-    @Override
-    public Category findFirst() {
-        return categoryRepository.findAll().stream().findFirst().orElseThrow(() ->
-                new NotFoundResourceException("List is empty"));
     }
 }
