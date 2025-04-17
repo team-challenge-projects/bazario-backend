@@ -10,10 +10,11 @@ import org.cyberrealm.tech.bazario.backend.dto.BasicUserParameter;
 import org.cyberrealm.tech.bazario.backend.dto.PatchAd;
 import org.cyberrealm.tech.bazario.backend.model.Ad;
 import org.cyberrealm.tech.bazario.backend.model.AdParameter;
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.openapitools.jackson.nullable.JsonNullable;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(config = MapperConfig.class)
 public interface AdMapper {
@@ -30,9 +31,10 @@ public interface AdMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "publicationDate", ignore = true)
     @Mapping(target = "images", ignore = true)
-    @Mapping(target = "category.id", source = "categoryId")
+    @Mapping(target = "category", ignore = true)
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "parameters", source = "adParameters")
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateAdFromDto(PatchAd patchAd, @MappingTarget Ad ad);
 
     @Mapping(target = "ad", ignore = true)
@@ -43,15 +45,7 @@ public interface AdMapper {
     @Mapping(target = "name", source = "parameter.name")
     BasicUserParameter toDtoFromAdParameter(AdParameter adParameter);
 
-    Set<AdParameter> dtoListToAdParameterSet(List<BasicUserParameter> dtoList);
-
-    List<BasicUserParameter> adParameterSetToDtoList(Set<AdParameter> parameters);
-
     default URI mapStringToUri(String value) {
         return URI.create(value);
-    }
-
-    default <T> T mapJsonNullableToString(JsonNullable<T> value) {
-        return value.orElse(null);
     }
 }

@@ -12,7 +12,9 @@ import org.cyberrealm.tech.bazario.backend.exception.custom.EntityNotFoundExcept
 import org.cyberrealm.tech.bazario.backend.exception.custom.ForbiddenException;
 import org.cyberrealm.tech.bazario.backend.mapper.AdMapper;
 import org.cyberrealm.tech.bazario.backend.model.Ad;
+import org.cyberrealm.tech.bazario.backend.model.User;
 import org.cyberrealm.tech.bazario.backend.repository.AdRepository;
+import org.cyberrealm.tech.bazario.backend.repository.CategoryRepository;
 import org.cyberrealm.tech.bazario.backend.service.AccessAdService;
 import org.cyberrealm.tech.bazario.backend.service.AdService;
 import org.cyberrealm.tech.bazario.backend.service.ImageService;
@@ -27,6 +29,7 @@ public class AdServiceImpl implements AdService {
     private final AdMapper adMapper;
     private final AccessAdService accessAdService;
     private final ImageService imageService;
+    private final CategoryRepository categoryRepository;
 
     @Override
     public List<AdDto> findPopular(Pageable pageable) {
@@ -69,7 +72,7 @@ public class AdServiceImpl implements AdService {
 
     @Override
     public void patchById(Long id, PatchAd patchAd) {
-        var ad = adRepository.findById(id).orElseThrow(() ->
+        var ad = adRepository.findByIdWithParameters(id).orElseThrow(() ->
                 new EntityNotFoundException("Ad with id " + id + "not found"));
         if (accessAdService.isNotAccessAd(ad)) {
             throw new ForbiddenException("The user not access to ad");
@@ -78,14 +81,27 @@ public class AdServiceImpl implements AdService {
             ad.getImages().forEach(urlImage ->
                     imageService.deleteFile(URI.create(urlImage)));
         }
+
         adMapper.updateAdFromDto(patchAd, ad);
+
+        Long categoryId = patchAd.getCategoryId();
+        if (categoryId != null && !ad.getCategory().getId().equals(categoryId)) {
+            ad.setCategory(categoryRepository.findById(categoryId).orElseThrow(() ->
+                    new EntityNotFoundException("Not category with id " + id)));
+        }
         adRepository.save(ad);
     }
 
     @Override
     public AdDto createOrGet() {
-        Ad ad = adRepository.findByStatus(AdStatus.NEW).orElseGet(() ->
-                adRepository.save(new Ad()));
+        User user = accessAdService.getUser();
+        Ad ad = adRepository.findByStatusAndUser(AdStatus.NEW, user).orElseGet(() -> {
+            Ad newAd = new Ad();
+            newAd.setUser(user);
+            newAd.setCategory(categoryRepository.findAll().stream().findFirst()
+                    .orElseThrow());
+            return adRepository.save(newAd);
+        });
         return adMapper.toDto(ad);
     }
 }

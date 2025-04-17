@@ -27,7 +27,7 @@ public class PasswordResetService {
         if (!isNotNullOrBlankAllArgument(resetPassword)) {
             throw new ArgumentNotValidException("Dto arguments is not null or blank");
         }
-        String email = resetPassword.getEmail().get();
+        String email = resetPassword.getEmail();
         String token = URLDecoder.decode(resetPassword.getHex(), StandardCharsets.UTF_8);
 
         boolean isValid = tokenService.verifyToken(token, email, PASSWORD_RESET);
@@ -35,14 +35,15 @@ public class PasswordResetService {
         if (!isValid) {
             throw new ArgumentNotValidException("Entered arguments is not valid");
         }
-        updatePassword(email, resetPassword.getPassword().get());
+        updatePassword(email, resetPassword.getPassword());
     }
 
     private static boolean isNotNullOrBlankAllArgument(ResetPassword resetPassword) {
-        return resetPassword.getEmail().isPresent()
-                && !resetPassword.getEmail().get().isBlank()
-                && resetPassword.getPassword().isPresent()
-                && !resetPassword.getPassword().get().isBlank()
+        return resetPassword.getEmail() != null
+                && !resetPassword.getEmail().isBlank()
+                && resetPassword.getPassword() != null
+                && !resetPassword.getPassword().isBlank()
+                && resetPassword.getHex() != null
                 && !resetPassword.getHex().isBlank();
     }
 

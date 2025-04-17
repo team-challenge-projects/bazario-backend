@@ -42,16 +42,21 @@ public class AccessAdServiceImpl implements AccessAdService {
 
     @Override
     public boolean isNotAccessAd(Ad ad) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new AuthenticationException("User not authenticated");
-        }
-
-        var user = (User) authentication.getPrincipal();
+        var user = getUser();
         return !(user.isAccountNonLocked() && (
                 user.getRole().equals(Role.ROOT)
                         || user.getRole().equals(Role.ADMIN)
                         || (user.getRole().equals(Role.USER)
                         && ad.getUser().getId().equals(user.getId()))));
+    }
+
+    @Override
+    public User getUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AuthenticationException("User not authenticated");
+        }
+
+        return (User) authentication.getPrincipal();
     }
 }

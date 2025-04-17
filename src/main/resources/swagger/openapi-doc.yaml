@@ -51,7 +51,7 @@ tags:
       Endpoints for users to manage image on the website.
 
 paths:
-  /public/login:
+  /anonymous/login:
     post:
       tags:
         - Authentication
@@ -174,7 +174,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /public/registration:
+  /anonymous/registration:
     post:
       tags:
         - User
@@ -245,7 +245,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /public/email/verify:
+  /anonymous/email/verify:
     post:
       tags:
         - User
@@ -670,7 +670,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /public/resetPassword:
+  /anonymous/resetPassword:
     post:
       tags:
         - Reset Password
@@ -1927,12 +1927,10 @@ components:
         email:
           type: string
           format: email
-          nullable: true
         password:
           type: string
           format: password
           pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#@&])[\w#@&]{8,}$'
-          nullable: true
     ErrorResponse:
       description: Error message with timestamp
       type: object
@@ -1966,11 +1964,9 @@ components:
         firstName:
           type: string
           pattern: '^[A-ZА-ЯІЇЄ][a-zа-яіїє]{1,20}$'
-          nullable: true
         phoneNumber:
           type: string
           pattern: '^(\+38|38|8)?0\d{9}$'
-          nullable: true
     UserInformation:
       description: Registration user
       type: object
@@ -2006,26 +2002,21 @@ components:
           type: string
           minLength: 3
           maxLength: 100
-          nullable: true
         cityCoordinate:
           type: string
           pattern: '^\d+,?\d*\|\d,?\d*$'
-          nullable: true
         verificationCode:
           type: string
           pattern: '^\w{6}$'
           description: Verification code from email of user
-          nullable: true
         userParameters:
           type: array
           items:
             $ref: '#/components/schemas/BasicUserParameter'
-          nullable: true
         role:
           type: string
         isLocked:
           type: boolean
-          default: false
     BasicUserParameter:
       description: Basis user parameter for user or ad
       type: object
@@ -2126,14 +2117,11 @@ components:
         title:
           type: string
           pattern: '^(?!.*\d{9,})[\w\s]{3,20}$'
-          nullable: true
         description:
           type: string
           pattern: '^(?!.*\d{9,})[\w\s]{3,200}$'
-          nullable: true
         price:
           type: number
-          nullable: true
         categoryId:
           type: integer
           format: int64
@@ -2141,7 +2129,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/BasicUserParameter'
-          nullable: true
         status:
           $ref: '#/components/schemas/AdStatus'
     AdStatus:
@@ -2151,7 +2138,6 @@ components:
         - ACTIVE
         - DISABLE
         - DELETE
-      nullable: true
     AdResponseDto:
       type: object
       properties:
