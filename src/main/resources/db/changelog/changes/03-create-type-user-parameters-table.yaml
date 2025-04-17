@@ -21,7 +21,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: restriction_pattern
-                  type: varchar(50)
+                  type: varchar(150)
               - column:
                   name: description_pattern
-                  type: varchar(50)
+                  type: varchar(250)

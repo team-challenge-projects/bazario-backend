@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface UserParameterRepository extends JpaRepository<UserParameter, Long>,
         JpaSpecificationExecutor<UserParameter> {
-    <T> List<T> findAll(Specification<UserParameter> spec, Class<T> projectionClass);
+    <T> List<T> findBy(Specification<UserParameter> spec, Class<T> projectionClass);
 }

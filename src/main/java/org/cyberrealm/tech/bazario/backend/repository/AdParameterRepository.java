@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface AdParameterRepository extends JpaRepository<AdParameter, Long>,
         JpaSpecificationExecutor<AdParameter> {
-    <T> List<T> findAll(Specification<AdParameter> spec, Class<T> projectionClass);
+    <T> List<T> findBy(Specification<AdParameter> spec, Class<T> projectionClass);
 }

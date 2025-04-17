@@ -8,8 +8,8 @@ import org.mapstruct.Mapping;
 
 @Mapper(config = MapperConfig.class)
 public interface TypeAdParameterMapper {
+    @Mapping(target = "id", ignore = true)
     TypeAdParameter toTypeAdParameter(BasicAdminParameter parameter);
 
-    @Mapping(target = "id", source = "id")
     TypeAdParameter toTypeAdParameter(Long id, BasicAdminParameter parameter);
 }

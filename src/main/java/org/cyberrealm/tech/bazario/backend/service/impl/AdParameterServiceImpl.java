@@ -29,7 +29,7 @@ public class AdParameterServiceImpl implements AdParameterService {
                 return builder.and(idParam, value);
             }).reduce(builder::or).orElse(builder.conjunction());
         };
-        return parameterRepository.findAll(spec, AdIdProjection.class).stream()
+        return parameterRepository.findBy(spec, AdIdProjection.class).stream()
                 .map(AdIdProjection::getAdId).toList();
     }
 }

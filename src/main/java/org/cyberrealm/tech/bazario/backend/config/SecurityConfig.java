@@ -52,7 +52,10 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         auth -> auth
-                                .requestMatchers("/admin/**").hasAnyRole(
+                                .requestMatchers(
+                                        "/anonymous/**"
+                                        ).anonymous()
+                                .requestMatchers("/api/admin/**").hasAnyRole(
                                         Role.ROOT.getAuthority(),
                                         Role.ADMIN.getAuthority())
                                 .requestMatchers(

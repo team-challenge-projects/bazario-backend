@@ -14,8 +14,9 @@ public class TypeAdParameterServiceImpl implements TypeAdParameterService {
     private final TypeAdParameterMapper mapper;
 
     @Override
-    public void create(BasicAdminParameter parameter) {
-        parameterRepository.save(mapper.toTypeAdParameter(parameter));
+    public Long create(BasicAdminParameter parameter) {
+        return parameterRepository.save(mapper.toTypeAdParameter(parameter))
+                .getId();
     }
 
     @Override
