@@ -5,7 +5,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cyberrealm.tech.bazario.backend.dto.ResetPassword;
-import org.cyberrealm.tech.bazario.backend.service.impl.EmailService;
+import org.cyberrealm.tech.bazario.backend.service.EmailSender;
 import org.cyberrealm.tech.bazario.backend.service.impl.PasswordResetService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,14 +25,14 @@ class ResetPasswordApiDelegateImplTest {
     @MockitoBean
     private PasswordResetService passwordResetService;
     @MockitoBean
-    private EmailService emailService;
+    private EmailSender emailSender;
     @Autowired
     private ObjectMapper objectMapper;
 
     @Test
     void resetPassword() throws Exception {
         var reset = new ResetPassword();
-        mockMvc.perform(post("/public/resetPassword")
+        mockMvc.perform(post("/anonymous/resetPassword")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(reset)))
                 .andExpect(status().isNoContent());

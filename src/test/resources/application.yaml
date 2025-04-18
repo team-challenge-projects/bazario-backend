@@ -2,6 +2,11 @@ spring:
   config:
     activate:
       on-profile: test
+  servlet:
+    context-path: /api
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 10MB
   datasource:
     url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
@@ -70,3 +75,6 @@ frontend:
   reset:
     password:
       url: https://frontend.yourapp.com/reset-password
+  email:
+    verification:
+      url: https://frontend.yourapp.com/verify-email
