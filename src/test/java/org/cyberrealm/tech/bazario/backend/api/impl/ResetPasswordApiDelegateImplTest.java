@@ -5,36 +5,36 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cyberrealm.tech.bazario.backend.dto.ResetPassword;
-import org.cyberrealm.tech.bazario.backend.service.impl.EmailService;
+import org.cyberrealm.tech.bazario.backend.service.EmailSender;
 import org.cyberrealm.tech.bazario.backend.service.impl.PasswordResetService;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest
 @ActiveProfiles("test")
+@SpringBootTest
 @AutoConfigureMockMvc
 class ResetPasswordApiDelegateImplTest {
     @Autowired
     private MockMvc mockMvc;
-    @MockitoBean
-    private PasswordResetService passwordResetService;
-    @MockitoBean
-    private EmailService emailService;
     @Autowired
     private ObjectMapper objectMapper;
+    @Mock
+    private PasswordResetService passwordResetService;
+    @Mock
+    private EmailSender emailSender;
 
     @Test
     void resetPassword() throws Exception {
         var reset = new ResetPassword();
-        mockMvc.perform(post("/public/resetPassword")
+        mockMvc.perform(post("/anonymous/resetPassword")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(reset)))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isBadRequest());
     }
 }

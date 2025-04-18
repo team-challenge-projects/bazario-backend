@@ -24,17 +24,17 @@ spring:
     password: test-password
     ssl: false
 
-    mail:
-      host: smtp.test.com
-      port: 587
-      username: test-mailtrap-user
-      password: test-mailtrap-password
-      properties:
-        mail:
-          smtp:
-            auth: true
-          starttls:
-            enable: true
+  mail:
+    host: smtp.test.com
+    port: 587
+    username: test-mailtrap-user
+    password: test-mailtrap-password
+    properties:
+      mail:
+        smtp:
+          auth: true
+        starttls:
+          enable: true
 
 jwt:
   expiration: 3600
@@ -71,3 +71,6 @@ frontend:
   reset:
     password:
       url: https://frontend.yourapp.com/reset-password
+  email:
+    verification:
+      url: https://frontend.yourapp.com/verify-email
