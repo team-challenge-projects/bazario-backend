@@ -70,7 +70,7 @@ cloudinary:
 image:
   max-num: 6
 aes:
-  secret: 1234567891012133
+  secret: FDCE463BB7CBE40F
 frontend:
   reset:
     password:
