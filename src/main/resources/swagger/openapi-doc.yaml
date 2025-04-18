@@ -546,7 +546,12 @@ paths:
         required: true
       responses:
         204:
-          description: Send verification code to email
+          description: Get id of user parameter
+          content:
+            text/plain:
+              schema:
+                type: integer
+                format: int64
         400:
           description: Invalid input
           content:
@@ -932,7 +937,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /private/comment/{id}:
+  /private/comment/user/{id}:
     post:
       security:
         -  bearerAuth: []
@@ -951,7 +956,12 @@ paths:
         required: true
       responses:
         204:
-          description: Add comment successfully
+          description: Add comment successfully. Get id of comment
+          content:
+            text/plain:
+              schema:
+                type: integer
+                format: int64
         400:
           description: Invalid input
           content:
@@ -982,13 +992,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /private/comment/{id}:
     put:
       security:
         -  bearerAuth: []
       tags:
         - Comment
-      summary: Put comment for user by user`s id
-      description: Put comment for user by user`s id to comment list of user
+      summary: Put comment for user by id
+      description: Put comment for user by id to comment list of user
       operationId: putComment
       parameters:
         - $ref: '#/components/parameters/idParam'
@@ -1251,8 +1262,13 @@ paths:
               $ref: '#/components/schemas/CategoryRequestDto'
         required: true
       responses:
-        204:
-          description: Add category successfully
+        200:
+          description: Add category successfully. Get id of category
+          content:
+            text/plain:
+              schema:
+                type: integer
+                format: int64
         400:
           description: Invalid input
           content:
@@ -1392,8 +1408,13 @@ paths:
               $ref: '#/components/schemas/BasicAdminParameter'
         required: true
       responses:
-        204:
-          description: Send verification code to email
+        200:
+          description: Get id of ad parameter
+          content:
+            text/plain:
+              schema:
+                type: integer
+                format: int64
         400:
           description: Invalid input
           content:
