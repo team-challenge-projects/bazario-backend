@@ -1253,6 +1253,10 @@ paths:
       responses:
         204:
           description: Add category successfully
+          content:
+            text/plain:
+              schema:
+                type: long
         400:
           description: Invalid input
           content:
@@ -1394,6 +1398,10 @@ paths:
       responses:
         204:
           description: Send verification code to email
+          content:
+            text/plain:
+              schema:
+                type: long
         400:
           description: Invalid input
           content:
