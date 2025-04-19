@@ -545,10 +545,10 @@ paths:
               $ref: '#/components/schemas/BasicAdminParameter'
         required: true
       responses:
-        204:
+        201:
           description: Get id of user parameter
           content:
-            text/plain:
+            application/json:
               schema:
                 type: integer
                 format: int64
@@ -1224,10 +1224,10 @@ paths:
               $ref: '#/components/schemas/CategoryRequestDto'
         required: true
       responses:
-        200:
+        201:
           description: Add category successfully. Get id of category
           content:
-            text/plain:
+            application/json:
               schema:
                 type: integer
                 format: int64
@@ -1370,10 +1370,10 @@ paths:
               $ref: '#/components/schemas/BasicAdminParameter'
         required: true
       responses:
-        200:
+        201:
           description: Get id of ad parameter
           content:
-            text/plain:
+            application/json:
               schema:
                 type: integer
                 format: int64
