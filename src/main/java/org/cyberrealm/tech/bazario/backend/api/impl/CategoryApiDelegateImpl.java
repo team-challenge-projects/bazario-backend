@@ -3,7 +3,7 @@ package org.cyberrealm.tech.bazario.backend.api.impl;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.api.CategoryApiDelegate;
-import org.cyberrealm.tech.bazario.backend.dto.AdParameterDto;
+import org.cyberrealm.tech.bazario.backend.dto.CategoryDto;
 import org.cyberrealm.tech.bazario.backend.dto.CategoryRequestDto;
 import org.cyberrealm.tech.bazario.backend.dto.CategoryResponseDto;
 import org.cyberrealm.tech.bazario.backend.service.CategoryService;
@@ -21,24 +21,19 @@ public class CategoryApiDelegateImpl implements CategoryApiDelegate {
     }
 
     @Override
+    public ResponseEntity<List<CategoryDto>> getCategories() {
+        return ResponseEntity.ok(categoryService.getAll());
+    }
+
+    @Override
     public ResponseEntity<Void> deleteCategory(Long id) {
         categoryService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
     @Override
-    public ResponseEntity<List<String>> getCategories() {
-        return CategoryApiDelegate.super.getCategories();
-    }
-
-    @Override
     public ResponseEntity<CategoryResponseDto> getCategory(Long id) {
-        return CategoryApiDelegate.super.getCategory(id);
-    }
-
-    @Override
-    public ResponseEntity<List<AdParameterDto>> getCategoryAdParameter(Long id) {
-        return CategoryApiDelegate.super.getCategoryAdParameter(id);
+        return ResponseEntity.ok(categoryService.getCategoryWithParameters(id));
     }
 
     @Override

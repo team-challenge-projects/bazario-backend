@@ -23,3 +23,5 @@ databaseChangeLog:
       file: db/changelog/changes/12-create-reviews-table.yaml
   - include:
       file: db/changelog/changes/13-create-refresh_tokens-table.yaml
+  - include:
+      file: db/changelog/changes/14-create-category-type-user-parameters-table.yaml

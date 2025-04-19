@@ -2,6 +2,11 @@ spring:
   config:
     activate:
       on-profile: test
+  servlet:
+    context-path: /api
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 10MB
   datasource:
     url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
@@ -63,10 +68,14 @@ cloudinary:
   key: cloud-key
   secret: cloud-secret
 image:
+  min-num: 1
   max-num: 6
 aes:
-  secret: 1234567891012133
+  secret: FDCE463BB7CBE40F
 frontend:
   reset:
     password:
       url: https://frontend.yourapp.com/reset-password
+  email:
+    verification:
+      url: https://frontend.yourapp.com/verify-email

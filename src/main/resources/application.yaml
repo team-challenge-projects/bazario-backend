@@ -102,6 +102,7 @@ cloudinary:
   key: ${CLOUDINARY_KEY}
   secret: ${CLOUDINARY_SECRET}
 image:
+  min-num: 1
   max-num: 6
 frontend:
   reset:
