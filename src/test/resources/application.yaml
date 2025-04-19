@@ -68,6 +68,7 @@ cloudinary:
   key: cloud-key
   secret: cloud-secret
 image:
+  min-num: 1
   max-num: 6
 aes:
   secret: FDCE463BB7CBE40F
