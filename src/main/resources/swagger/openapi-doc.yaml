@@ -904,9 +904,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PageComment'
+                $ref: '#/components/schemas/PageComment'
         400:
           description: Invalid input
           content:
