@@ -29,4 +29,10 @@ public class Category {
             joinColumns = @JoinColumn(name = "category_id"),
             inverseJoinColumns = @JoinColumn(name = "type_id"))
     private Set<TypeAdParameter> adParameters;
+
+    @ManyToMany
+    @JoinTable(name = "category_type_user_parameters",
+            joinColumns = @JoinColumn(name = "category_id"),
+            inverseJoinColumns = @JoinColumn(name = "type_id"))
+    private Set<TypeUserParameter> userParameters;
 }

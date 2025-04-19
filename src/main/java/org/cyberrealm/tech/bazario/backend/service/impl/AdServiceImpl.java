@@ -18,6 +18,7 @@ import org.cyberrealm.tech.bazario.backend.repository.CategoryRepository;
 import org.cyberrealm.tech.bazario.backend.service.AccessAdService;
 import org.cyberrealm.tech.bazario.backend.service.AdService;
 import org.cyberrealm.tech.bazario.backend.service.ImageService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,9 @@ public class AdServiceImpl implements AdService {
     private final AccessAdService accessAdService;
     private final ImageService imageService;
     private final CategoryRepository categoryRepository;
+
+    @Value("${image.min-num}")
+    private int minNumImages;
 
     @Override
     public List<AdDto> findPopular(Pageable pageable) {
@@ -88,6 +92,10 @@ public class AdServiceImpl implements AdService {
         if (categoryId != null && !ad.getCategory().getId().equals(categoryId)) {
             ad.setCategory(categoryRepository.findById(categoryId).orElseThrow(() ->
                     new EntityNotFoundException("Not category with id " + id)));
+        }
+        if (ad.getStatus().equals(AdStatus.ACTIVE)
+                && ad.getImages().size() < minNumImages) {
+            throw new ForbiddenException("Minimum size of images is " + minNumImages);
         }
         adRepository.save(ad);
     }
