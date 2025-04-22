@@ -545,8 +545,13 @@ paths:
               $ref: '#/components/schemas/BasicAdminParameter'
         required: true
       responses:
-        204:
-          description: Send verification code to email
+        201:
+          description: Get id of user parameter
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
         400:
           description: Invalid input
           content:
@@ -899,9 +904,62 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PageComment'
+                $ref: '#/components/schemas/PageComment'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /private/comment/user/{id}:
+    post:
+      security:
+        -  bearerAuth: []
+      tags:
+        - Comment
+      summary: Add comment for user by user`s id
+      description: Add comment for user by user`s id to comment list of user
+      operationId: addComment
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentDto'
+        required: true
+      responses:
+        204:
+          description: Add comment successfully. Get id of comment
+          content:
+            text/plain:
+              schema:
+                type: integer
+                format: int64
         400:
           description: Invalid input
           content:
@@ -933,62 +991,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
   /private/comment/{id}:
-    post:
-      security:
-        -  bearerAuth: []
-      tags:
-        - Comment
-      summary: Add comment for user by user`s id
-      description: Add comment for user by user`s id to comment list of user
-      operationId: addComment
-      parameters:
-        - $ref: '#/components/parameters/idParam'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CommentDto'
-        required: true
-      responses:
-        204:
-          description: Add comment successfully
-        400:
-          description: Invalid input
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        404:
-          description: User not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        429:
-          description: Too many request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        500:
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
     put:
       security:
         -  bearerAuth: []
       tags:
         - Comment
-      summary: Put comment for user by user`s id
-      description: Put comment for user by user`s id to comment list of user
+      summary: Put comment for user by id
+      description: Put comment for user by id to comment list of user
       operationId: putComment
       parameters:
         - $ref: '#/components/parameters/idParam'
@@ -1152,7 +1161,7 @@ paths:
               schema:
                 type: array
                 items:
-                  type: string
+                  $ref: '#/components/schemas/CategoryDto'
         429:
           description: Too many request
           content:
@@ -1199,42 +1208,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /public/category/{id}/ad/parameters:
-    get:
-      tags:
-        - Category
-      summary: Get ad parameters by category id
-      description: Get ad parameters by category id. Use create ad.
-      operationId: getCategoryAdParameter
-      parameters:
-        - $ref: '#/components/parameters/idParam'
-      responses:
-        200:
-          description: Get categories successfully
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/AdParameterDto'
-        400:
-          description: Invalid input
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        429:
-          description: Too many request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        500:
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
   /admin/category:
     post:
       security:
@@ -1251,8 +1224,13 @@ paths:
               $ref: '#/components/schemas/CategoryRequestDto'
         required: true
       responses:
-        204:
-          description: Add category successfully
+        201:
+          description: Add category successfully. Get id of category
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
         400:
           description: Invalid input
           content:
@@ -1392,8 +1370,13 @@ paths:
               $ref: '#/components/schemas/BasicAdminParameter'
         required: true
       responses:
-        204:
-          description: Send verification code to email
+        201:
+          description: Get id of ad parameter
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
         400:
           description: Invalid input
           content:
@@ -2041,11 +2024,7 @@ components:
           type: string
         descriptionPattern:
           type: string
-    BasicParameter:
-      allOf:
-        - $ref: '#/components/schemas/BasicUserParameter'
-        - $ref: '#/components/schemas/BasicAdminParameter'
-    AdParameterDto:
+    BasicAdminParameterResponse:
       allOf:
         - $ref: '#/components/schemas/BasicAdminParameter'
       type: object
@@ -2053,12 +2032,29 @@ components:
         id:
           type: integer
           format: int64
+    BasicParameter:
+      allOf:
+        - $ref: '#/components/schemas/BasicUserParameter'
+        - $ref: '#/components/schemas/BasicAdminParameter'
+    CategoryDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
     CategoryRequestDto:
       type: object
       properties:
         name:
           type: string
         adParameterIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+        userParameterIds:
           type: array
           items:
             type: integer
@@ -2071,11 +2067,11 @@ components:
         adParameters:
           type: array
           items:
-            $ref: '#/components/schemas/BasicParameter'
+            $ref: '#/components/schemas/BasicAdminParameterResponse'
         userParameters:
           type: array
           items:
-            $ref: '#/components/schemas/BasicParameter'
+            $ref: '#/components/schemas/BasicAdminParameterResponse'
     CommentDto:
       description: A user's comment about another user who added an ad
       type: object

@@ -14,4 +14,7 @@ public interface AdRepository extends JpaRepository<Ad, Long>, JpaSpecificationE
 
     @Query("SELECT ad FROM Ad ad LEFT JOIN FETCH ad.parameters WHERE ad.id = :id")
     Optional<Ad> findByIdWithParameters(@Param("id") Long id);
+
+    @Query("SELECT ad FROM Ad ad LEFT JOIN FETCH ad.images WHERE ad.id = :id")
+    Optional<Ad> findByIdWithImages(@Param("id") Long id);
 }
