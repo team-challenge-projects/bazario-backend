@@ -44,21 +44,21 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-#      - name: Build and push Docker image
-#        uses: docker/build-push-action@v3
-#        with:
-#          context: .
-#          file: Dockerfile
-#          push: true
-#          tags: vitalii454/bazario:latest
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: vitalii454/bazario:latest
 
-#      - name: Trigger Render Deployment
-#        run: |
-#          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }} \
-#          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-#          -H "Content-Type: application/json" \
-#          -d '{}'
-#
+      - name: Trigger Render Deployment
+        run: |
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }} \
+          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+          -H "Content-Type: application/json" \
+          -d '{}'
+
 #      - name: Verify Render Deployment
 #        run: |
 #          curl -X GET "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}" \
