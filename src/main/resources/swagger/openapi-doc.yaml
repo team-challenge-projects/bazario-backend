@@ -2044,6 +2044,8 @@ components:
           format: int64
         name:
           type: string
+        image:
+          type: string
     CategoryRequestDto:
       type: object
       properties:
@@ -2063,6 +2065,8 @@ components:
       type: object
       properties:
         name:
+          type: string
+        image:
           type: string
         adParameters:
           type: array
@@ -2134,6 +2138,17 @@ components:
         - ACTIVE
         - DISABLE
         - DELETE
+    TypeImage:
+      type: string
+      enum:
+        - AD
+        - AVATAR
+        - CATEGORY
+    TypeEmailMessage:
+      type: string
+      enum:
+        - VERIFY
+        - RESET
     AdResponseDto:
       type: object
       properties:
@@ -2149,6 +2164,9 @@ components:
           format: uri
         price:
           type: number
+        category:
+          type: integer
+          format: int64
     PageAd:
       type: object
       description: return Page<AdResponseDto>
@@ -2181,19 +2199,13 @@ components:
       in: path
       required: true
       schema:
-        type: string
-        enum:
-          - ad
-          - avatar
+        $ref:  '#/components/schemas/TypeImage'
     typeEmailMessage:
       name: type
       in: path
       required: true
       schema:
-        type: string
-        enum:
-          - verify
-          - reset
+        $ref: '#/components/schemas/TypeEmailMessage'
     basisParameter:
       name: params
       in: query
@@ -2213,7 +2225,7 @@ components:
     filtersParameter:
       name: filters
       in: query
-      required: false
+      required: true
       style: form
       explode: true
       schema:

@@ -23,7 +23,9 @@ public interface AdMapper {
     AdDto toDto(Ad ad);
 
     @Mapping(target = "imageUrl", expression =
-            "java(URI.create(ad.getImages().stream().findFirst().orElse(\"test/test.jpg\")))")
+            "java(URI.create(ad.getImages().stream().findFirst().orElse(\"\")))")
+
+    @Mapping(target = "category", source = "category.id")
     AdResponseDto toResponseDto(Ad ad);
 
     List<URI> toListUri(Set<String> uris);

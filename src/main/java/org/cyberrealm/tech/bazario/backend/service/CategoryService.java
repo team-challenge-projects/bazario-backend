@@ -4,6 +4,7 @@ import java.util.List;
 import org.cyberrealm.tech.bazario.backend.dto.CategoryDto;
 import org.cyberrealm.tech.bazario.backend.dto.CategoryRequestDto;
 import org.cyberrealm.tech.bazario.backend.dto.CategoryResponseDto;
+import org.cyberrealm.tech.bazario.backend.model.Category;
 
 public interface CategoryService {
 
@@ -16,4 +17,8 @@ public interface CategoryService {
     CategoryResponseDto getCategoryWithParameters(Long id);
 
     List<CategoryDto> getAll();
+
+    Category get(Long id);
+
+    void save(Category category);
 }

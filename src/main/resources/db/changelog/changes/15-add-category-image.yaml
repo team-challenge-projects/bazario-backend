@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-category-image
+      author: Andrey Sitarskiy
+      changes:
+        - addColumn:
+            tableName: categories
+            ifNotExists: true
+            columns:
+              - column:
+                  name: image
+                  type: varchar(150)
+                  defaultValue: ""

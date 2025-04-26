@@ -17,8 +17,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(globalInterceptor).addPathPatterns("/**");
         registry.addInterceptor(limitInterceptor).addPathPatterns(
-                "/public/login", "/public/refreshToken",
-                "/public/registration", "/public/send/**",
-                "/public/email/verify", "/public/resetPassword");
+                "/anonymous/**", "/public/refreshToken",
+                 "/public/send/**");
     }
 }

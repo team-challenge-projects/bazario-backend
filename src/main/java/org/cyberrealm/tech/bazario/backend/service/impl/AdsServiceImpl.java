@@ -16,6 +16,7 @@ import org.cyberrealm.tech.bazario.backend.exception.custom.ArgumentNotValidExce
 import org.cyberrealm.tech.bazario.backend.mapper.AdMapper;
 import org.cyberrealm.tech.bazario.backend.model.Ad;
 import org.cyberrealm.tech.bazario.backend.repository.AdRepository;
+import org.cyberrealm.tech.bazario.backend.service.AccessAdService;
 import org.cyberrealm.tech.bazario.backend.service.AdParameterService;
 import org.cyberrealm.tech.bazario.backend.service.AdsService;
 import org.cyberrealm.tech.bazario.backend.service.UserParameterService;
@@ -43,18 +44,21 @@ public class AdsServiceImpl implements AdsService {
     private static final String PREFIX_USER_PARAM = "user_id_";
     private static final int INDEX_KEY = 0;
     private static final int INDEX_VALUE = 1;
+    private static final String REGEX_BETWEEN_DELIMITER = "\\|\\|";
+    private static final String BETWEEN_DELIMITER = "||";
 
     private final UserParameterService userParameterService;
     private final AdParameterService adParameterService;
     private final AdRepository adRepository;
     private final AdMapper adMapper;
+    private final AccessAdService accessAdService;
 
     @Override
     public Page<AdResponseDto> findAll(Map<String, String> filters) {
         Pageable pageable = getPageable(filters);
         Specification<Ad> spec = (root, query, builder) -> {
-            var predicateByUser = getPredicateByUser(root, filters);
-            var predicateByAdParam = getByAdParam(root, filters);
+            var predicateByUser = getPredicateByUser(root, builder, filters);
+            var predicateByAdParam = getByAdParam(root, builder, filters);
             var predicateByFields = getPredicateByFields(root, builder, filters);
             return builder.and(predicateByUser, predicateByAdParam, predicateByFields);
         };
@@ -70,57 +74,80 @@ public class AdsServiceImpl implements AdsService {
         filters.forEach((key, value) -> {
             switch (key) {
                 case "price" -> {
-                    if (value.contains("||")) {
-                        var parts = value.split("\\|\\|");
-                        var pricePredicate = builder.between(root.get("price"),
-                                BigDecimal.valueOf(Double.parseDouble(parts[INDEX_KEY])),
-                                BigDecimal.valueOf(Double.parseDouble(parts[INDEX_VALUE])));
-                        predicate.add(pricePredicate);
+                    if (value.contains(BETWEEN_DELIMITER)) {
+                        try {
+                            var parts = value.split(REGEX_BETWEEN_DELIMITER);
+                            var pricePredicate = builder.between(root.get("price"),
+                                    BigDecimal.valueOf(Double.parseDouble(parts[INDEX_KEY])),
+                                    BigDecimal.valueOf(Double.parseDouble(parts[INDEX_VALUE])));
+                            predicate.add(pricePredicate);
+                        } catch (NumberFormatException e) {
+                            builder.conjunction();
+                        }
                     }
                 }
                 case "publicationDate" -> {
-                    if (value.contains("||")) {
-                        var parts = value.split("\\|\\|");
-                        var datePredicate = builder.between(root.get("publicationDate"),
-                                LocalDate.parse(parts[INDEX_KEY]),
-                                LocalDate.parse(parts[INDEX_VALUE]));
-                        predicate.add(datePredicate);
+                    if (value.contains(BETWEEN_DELIMITER)) {
+                        try {
+                            var parts = value.split(REGEX_BETWEEN_DELIMITER);
+                            var datePredicate = builder.between(root.get("publicationDate"),
+                                    LocalDate.parse(parts[INDEX_KEY]),
+                                    LocalDate.parse(parts[INDEX_VALUE]));
+                            predicate.add(datePredicate);
+                        } catch (Exception e) {
+                            builder.conjunction();
+                        }
                     }
                 }
                 case "category" -> {
-                    predicate.add(builder.equal(root.get("category").get("id"),
-                            Long.getLong(value)));
+                    try {
+                        predicate.add(builder.equal(root.get("category").get("id"),
+                                Long.parseLong(value)));
+                    } catch (NumberFormatException e) {
+                        builder.conjunction();
+                    }
                 }
                 case "status" -> {
-                    predicate.add(builder.equal(root.get("status"),
-                            AdStatus.fromValue(value.toUpperCase())));
+                    AdStatus status = AdStatus.fromValue(value.toUpperCase());
+                    if (status.equals(AdStatus.ACTIVE) || accessAdService.isAdmin()
+                            || (!status.equals(AdStatus.DELETE)
+                            && accessAdService.isAuthenticationUser())) {
+                        predicate.add(builder.equal(root.get("status"),
+                                status));
+                    }
                 }
-                default -> { }
+                default -> builder.conjunction();
             }
         });
         return builder.and(predicate.toArray(jakarta.persistence.criteria.Predicate[]::new));
     }
 
     private jakarta.persistence.criteria.Predicate getByAdParam(
-            Root<Ad> root, Map<String, String> filters) {
+            Root<Ad> root, CriteriaBuilder builder, Map<String, String> filters) {
         var adParamFieldFilter = filters.entrySet().stream()
                 .filter(getParamPredicate(PREFIX_AD_PARAM))
                 .collect(Collectors.toMap(entry ->
-                                Long.getLong(entry.getKey()
+                                Long.parseLong(entry.getKey()
                                         .replaceFirst(PREFIX_AD_PARAM, REPLACEMENT)),
                         Map.Entry::getValue));
+        if (adParamFieldFilter.isEmpty()) {
+            return builder.conjunction();
+        }
         var adIdsFiltered = adParameterService.filterByParam(adParamFieldFilter);
         return root.get("id").in(adIdsFiltered);
     }
 
     private jakarta.persistence.criteria.Predicate getPredicateByUser(
-            Root<Ad> root, Map<String, String> filters) {
+            Root<Ad> root, CriteriaBuilder builder, Map<String, String> filters) {
         var userParamFieldFilter = filters.entrySet().stream()
                 .filter(getParamPredicate(PREFIX_USER_PARAM))
                 .collect(Collectors.toMap(entry ->
-                                Long.getLong(entry.getKey()
+                                Long.parseLong(entry.getKey()
                                         .replaceFirst(PREFIX_USER_PARAM, REPLACEMENT)),
                         Map.Entry::getValue));
+        if (userParamFieldFilter.isEmpty()) {
+            return builder.conjunction();
+        }
         var userIdsFiltered = userParameterService.filterByParam(userParamFieldFilter);
         return root.get("user").get("id").in(userIdsFiltered);
     }
@@ -130,9 +157,9 @@ public class AdsServiceImpl implements AdsService {
             if (!entry.getKey().startsWith(prefix)) {
                 return false;
             }
-            Long adParamId;
+            long adParamId;
             try {
-                adParamId = Long.getLong(entry.getKey().replaceFirst(prefix, REPLACEMENT));
+                adParamId = Long.parseLong(entry.getKey().replaceFirst(prefix, REPLACEMENT));
             } catch (Exception e) {
                 adParamId = -1L;
             }
@@ -147,17 +174,19 @@ public class AdsServiceImpl implements AdsService {
         }
         var parts = sort.split(DELIMITER);
         var direction = Sort.Direction.fromString(parts[INDEX_DIRECTION]);
-        Integer page;
+        int page;
         try {
-            page = Integer.getInteger(Optional.ofNullable(filters.get("page"))
-                    .orElse(DEFAULT_PAGE));
+            String pageString = Optional.ofNullable(filters.get("page"))
+                    .orElse(DEFAULT_PAGE);
+            page = Integer.parseInt(pageString);
         } catch (Exception e) {
             page = DEFAULT_INT_PAGE;
         }
-        Integer size;
+        int size;
         try {
-            size = Integer.getInteger(Optional.ofNullable(filters.get("size"))
-                    .orElse(DEFAULT_SIZE));
+            String sizeString = Optional.ofNullable(filters.get("size"))
+                    .orElse(DEFAULT_SIZE);
+            size = Integer.parseInt(sizeString);
         } catch (Exception e) {
             size = DEFAULT_INT_SIZE;
         }

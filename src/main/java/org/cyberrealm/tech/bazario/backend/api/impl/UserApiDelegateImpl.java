@@ -5,6 +5,7 @@ import org.cyberrealm.tech.bazario.backend.api.UserApiDelegate;
 import org.cyberrealm.tech.bazario.backend.dto.PatchUser;
 import org.cyberrealm.tech.bazario.backend.dto.PrivateUserInformation;
 import org.cyberrealm.tech.bazario.backend.dto.RegistrationRequest;
+import org.cyberrealm.tech.bazario.backend.dto.TypeEmailMessage;
 import org.cyberrealm.tech.bazario.backend.dto.UserInformation;
 import org.cyberrealm.tech.bazario.backend.dto.VerificationEmail;
 import org.cyberrealm.tech.bazario.backend.service.UserService;
@@ -43,7 +44,7 @@ public class UserApiDelegateImpl implements UserApiDelegate {
     }
 
     @Override
-    public ResponseEntity<Void> sendMessage(String type, String body) {
+    public ResponseEntity<Void> sendMessage(TypeEmailMessage type, String body) {
         notificationService.sendNotification(type, body);
         return ResponseEntity.noContent().build();
     }

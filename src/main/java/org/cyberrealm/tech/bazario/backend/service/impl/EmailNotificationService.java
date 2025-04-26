@@ -3,6 +3,7 @@ package org.cyberrealm.tech.bazario.backend.service.impl;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
+import org.cyberrealm.tech.bazario.backend.dto.TypeEmailMessage;
 import org.cyberrealm.tech.bazario.backend.model.enums.MessageType;
 import org.cyberrealm.tech.bazario.backend.service.EmailSender;
 import org.cyberrealm.tech.bazario.backend.service.EmailTemplateBuilder;
@@ -30,10 +31,10 @@ public class EmailNotificationService {
     @Value("${token.expiration.minutes:15}")
     private int expirationMinutes;
 
-    public void sendNotification(String messageType, String email) {
-        if (MessageType.PASSWORD_RESET.name().equalsIgnoreCase(messageType)) {
+    public void sendNotification(TypeEmailMessage messageType, String email) {
+        if (messageType.equals(TypeEmailMessage.RESET)) {
             sendPasswordResetEmail(email);
-        } else if (MessageType.EMAIL_VERIFICATION.name().equalsIgnoreCase(messageType)) {
+        } else if (messageType.equals(TypeEmailMessage.VERIFY)) {
             sendEmailVerification(email);
         } else {
             throw new IllegalArgumentException("Unsupported message type: " + messageType);
