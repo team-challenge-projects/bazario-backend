@@ -38,6 +38,14 @@ jobs:
           CLOUDINARY_KEY: ${{ secrets.CLOUDINARY_KEY }}
           CLOUDINARY_SECRET: ${{ secrets.CLOUDINARY_SECRET }}
 
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -58,8 +66,3 @@ jobs:
           -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
           -H "Content-Type: application/json" \
           -d '{}'
-
-#      - name: Verify Render Deployment
-#        run: |
-#          curl -X GET "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}" \
-#          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}"
