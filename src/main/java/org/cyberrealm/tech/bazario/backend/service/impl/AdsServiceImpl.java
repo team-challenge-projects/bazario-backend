@@ -6,39 +6,29 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.dto.AdResponseDto;
 import org.cyberrealm.tech.bazario.backend.dto.AdStatus;
-import org.cyberrealm.tech.bazario.backend.exception.custom.ArgumentNotValidException;
 import org.cyberrealm.tech.bazario.backend.mapper.AdMapper;
 import org.cyberrealm.tech.bazario.backend.model.Ad;
+import org.cyberrealm.tech.bazario.backend.model.User;
+import org.cyberrealm.tech.bazario.backend.model.enums.Role;
 import org.cyberrealm.tech.bazario.backend.repository.AdRepository;
 import org.cyberrealm.tech.bazario.backend.service.AccessAdService;
 import org.cyberrealm.tech.bazario.backend.service.AdParameterService;
 import org.cyberrealm.tech.bazario.backend.service.AdsService;
+import org.cyberrealm.tech.bazario.backend.service.PageableService;
 import org.cyberrealm.tech.bazario.backend.service.UserParameterService;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class AdsServiceImpl implements AdsService {
-    private static final int INDEX_DIRECTION = 1;
-    private static final int INDEX_FIELD_NAME = 0;
-    private static final String DEFAULT_SORT = "id,asc";
-    private static final String DELIMITER = ",";
-    private static final String DEFAULT_PAGE = "0";
-    private static final String DEFAULT_SIZE = "16";
-    private static final String PATTER_SORT = "^[A-Za-z]+,(asc|desc)$";
-    private static final int DEFAULT_INT_PAGE = 0;
-    private static final int DEFAULT_INT_SIZE = 16;
     private static final String PREFIX_AD_PARAM = "ad_id_";
     private static final String REPLACEMENT = "";
     private static final String PREFIX_USER_PARAM = "user_id_";
@@ -52,16 +42,17 @@ public class AdsServiceImpl implements AdsService {
     private final AdRepository adRepository;
     private final AdMapper adMapper;
     private final AccessAdService accessAdService;
+    private final PageableService pageableService;
 
     @Override
     public Page<AdResponseDto> findAll(Map<String, String> filters) {
-        Pageable pageable = getPageable(filters);
-        Specification<Ad> spec = (root, query, builder) -> {
-            var predicateByUser = getPredicateByUser(root, builder, filters);
-            var predicateByAdParam = getByAdParam(root, builder, filters);
-            var predicateByFields = getPredicateByFields(root, builder, filters);
-            return builder.and(predicateByUser, predicateByAdParam, predicateByFields);
-        };
+        Pageable pageable = pageableService.get(filters);
+        Specification<Ad> spec = (root, query, builder) ->
+                builder.and(
+                        getPredicateByUser(root, builder, filters),
+                        getByAdParam(root, builder, filters),
+                        getPredicateByFields(root, builder, filters));
+
         return adRepository.findAll(spec, pageable).map(adMapper::toResponseDto);
     }
 
@@ -107,25 +98,56 @@ public class AdsServiceImpl implements AdsService {
                         builder.conjunction();
                     }
                 }
-                case "status" -> {
-                    AdStatus status = AdStatus.fromValue(value.toUpperCase());
-                    if (status.equals(AdStatus.ACTIVE) || accessAdService.isAdmin()
-                            || (!status.equals(AdStatus.DELETE)
-                            && accessAdService.isAuthenticationUser())) {
-                        predicate.add(builder.equal(root.get("status"),
-                                status));
+                case "user" -> {
+                    try {
+                        predicate.add(builder.equal(root.get("user").get("id"),
+                                Long.parseLong(value)));
+                    } catch (NumberFormatException e) {
+                        builder.conjunction();
                     }
                 }
+                case "status" -> setPredicateStatus(root, builder, value, predicate);
                 default -> builder.conjunction();
             }
         });
         return builder.and(predicate.toArray(jakarta.persistence.criteria.Predicate[]::new));
     }
 
+    private void setPredicateStatus(Root<Ad> root, CriteriaBuilder builder, String value,
+                                    ArrayList<jakarta.persistence.criteria.Predicate> predicate) {
+        if (value.equals("*")) {
+            if (accessAdService.isAdmin()) {
+                return;
+            } else if (accessAdService.isAuthenticationUser()) {
+                predicate.add(builder.equal(root.get("status"), AdStatus.NEW));
+                predicate.add(builder.equal(root.get("status"), AdStatus.ACTIVE));
+                predicate.add(builder.equal(root.get("status"), AdStatus.DISABLE));
+            } else {
+                predicate.add(builder.equal(root.get("status"), AdStatus.ACTIVE));
+            }
+            return;
+        }
+        AdStatus status = AdStatus.fromValue(value.toUpperCase());
+        if (accessAdService.isAdmin()
+                || (!status.equals(AdStatus.DELETE)
+                && accessAdService.isAuthenticationUser())) {
+            predicate.add(builder.equal(root.get("status"),
+                    status));
+        } else {
+            predicate.add(builder.equal(root.get("status"), AdStatus.ACTIVE));
+        }
+
+        User user = accessAdService.getUser();
+        if (user.getRole().equals(Role.USER)
+                && (status.equals(AdStatus.NEW) || status.equals(AdStatus.DISABLE))) {
+            predicate.add(builder.equal(root.get("user"), user));
+        }
+    }
+
     private jakarta.persistence.criteria.Predicate getByAdParam(
             Root<Ad> root, CriteriaBuilder builder, Map<String, String> filters) {
         var adParamFieldFilter = filters.entrySet().stream()
-                .filter(getParamPredicate(PREFIX_AD_PARAM))
+                .filter(exceptNonNumeric(PREFIX_AD_PARAM))
                 .collect(Collectors.toMap(entry ->
                                 Long.parseLong(entry.getKey()
                                         .replaceFirst(PREFIX_AD_PARAM, REPLACEMENT)),
@@ -140,7 +162,7 @@ public class AdsServiceImpl implements AdsService {
     private jakarta.persistence.criteria.Predicate getPredicateByUser(
             Root<Ad> root, CriteriaBuilder builder, Map<String, String> filters) {
         var userParamFieldFilter = filters.entrySet().stream()
-                .filter(getParamPredicate(PREFIX_USER_PARAM))
+                .filter(exceptNonNumeric(PREFIX_USER_PARAM))
                 .collect(Collectors.toMap(entry ->
                                 Long.parseLong(entry.getKey()
                                         .replaceFirst(PREFIX_USER_PARAM, REPLACEMENT)),
@@ -152,7 +174,7 @@ public class AdsServiceImpl implements AdsService {
         return root.get("user").get("id").in(userIdsFiltered);
     }
 
-    private Predicate<Map.Entry<String, String>> getParamPredicate(String prefix) {
+    private Predicate<Map.Entry<String, String>> exceptNonNumeric(String prefix) {
         return entry -> {
             if (!entry.getKey().startsWith(prefix)) {
                 return false;
@@ -165,31 +187,5 @@ public class AdsServiceImpl implements AdsService {
             }
             return adParamId >= 0L;
         };
-    }
-
-    private Pageable getPageable(Map<String, String> filters) {
-        String sort = Optional.ofNullable(filters.get("sort")).orElse(DEFAULT_SORT);
-        if (!sort.matches(PATTER_SORT)) {
-            throw new ArgumentNotValidException("String of sort contains: (fieldName,asc|desc)");
-        }
-        var parts = sort.split(DELIMITER);
-        var direction = Sort.Direction.fromString(parts[INDEX_DIRECTION]);
-        int page;
-        try {
-            String pageString = Optional.ofNullable(filters.get("page"))
-                    .orElse(DEFAULT_PAGE);
-            page = Integer.parseInt(pageString);
-        } catch (Exception e) {
-            page = DEFAULT_INT_PAGE;
-        }
-        int size;
-        try {
-            String sizeString = Optional.ofNullable(filters.get("size"))
-                    .orElse(DEFAULT_SIZE);
-            size = Integer.parseInt(sizeString);
-        } catch (Exception e) {
-            size = DEFAULT_INT_SIZE;
-        }
-        return PageRequest.of(page, size, Sort.by(direction, parts[INDEX_FIELD_NAME]));
     }
 }

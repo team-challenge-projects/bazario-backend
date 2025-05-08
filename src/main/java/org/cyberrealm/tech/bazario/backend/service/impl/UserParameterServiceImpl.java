@@ -25,8 +25,9 @@ public class UserParameterServiceImpl implements UserParameterService {
                 return filters.entrySet().stream().map(entry -> {
                     var idParam = builder.equal(root.get("parameter").get("id"), entry.getKey());
                     var value = entry.getValue().contains("|")
-                            ? root.get("value").in((Object[]) entry.getValue().split("\\|"))
-                            : builder.equal(root.get("value"), entry.getValue());
+                            ? root.get("parameterValue").in((Object[]) entry.getValue()
+                            .split("\\|"))
+                            : builder.equal(root.get("parameterValue"), entry.getValue());
                     return builder.and(idParam, value);
                 }).reduce(builder::and).orElse(builder.conjunction());
             } catch (Exception e) {

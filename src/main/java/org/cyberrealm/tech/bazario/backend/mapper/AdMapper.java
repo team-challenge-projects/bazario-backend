@@ -1,15 +1,20 @@
 package org.cyberrealm.tech.bazario.backend.mapper;
 
 import java.net.URI;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.cyberrealm.tech.bazario.backend.config.MapperConfig;
 import org.cyberrealm.tech.bazario.backend.dto.AdDto;
 import org.cyberrealm.tech.bazario.backend.dto.AdResponseDto;
 import org.cyberrealm.tech.bazario.backend.dto.BasicUserParameter;
 import org.cyberrealm.tech.bazario.backend.dto.PatchAd;
+import org.cyberrealm.tech.bazario.backend.dto.script.AdCredentials;
 import org.cyberrealm.tech.bazario.backend.model.Ad;
 import org.cyberrealm.tech.bazario.backend.model.AdParameter;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -35,9 +40,14 @@ public interface AdMapper {
     @Mapping(target = "images", ignore = true)
     @Mapping(target = "category", ignore = true)
     @Mapping(target = "user", ignore = true)
-    @Mapping(target = "parameters", source = "adParameters")
+    @Mapping(target = "parameters", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateAdFromDto(PatchAd patchAd, @MappingTarget Ad ad);
+
+    @Mapping(target = "ad", ignore = true)
+    @Mapping(target = "parameter.id", source = "parameterId")
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateAdParameterFromDto(BasicUserParameter dto, @MappingTarget AdParameter adParameter);
 
     @Mapping(target = "ad", ignore = true)
     @Mapping(target = "parameter.id", source = "parameterId")
@@ -49,5 +59,49 @@ public interface AdMapper {
 
     default URI mapStringToUri(String value) {
         return URI.create(value);
+    }
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "publicationDate", ignore = true)
+    @Mapping(target = "images", ignore = true)
+    @Mapping(target = "category", ignore = true)
+    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "parameters", ignore = true)
+    Ad toAd(AdCredentials credentials);
+
+    @AfterMapping
+    default void updateOrAddAdParameter(PatchAd patchAd, @MappingTarget Ad ad) {
+        var dtoParameters = patchAd.getAdParameters();
+        var parameters = ad.getParameters();
+
+        if (dtoParameters == null) {
+            return;
+        }
+        if (parameters == null) {
+            ad.setParameters(dtoParameters.stream().map(dto -> {
+                var adParameter = toAdParameterFromDto(dto);
+                adParameter.setAd(ad);
+                return adParameter;
+            }).collect(Collectors.toSet()));
+            return;
+        }
+        Set<AdParameter> toRemove = new HashSet<>(parameters);
+        for (BasicUserParameter dto : dtoParameters) {
+            boolean found = false;
+            for (AdParameter parameter : parameters) {
+                if (Objects.equals(dto.getId(), parameter.getId())) {
+                    updateAdParameterFromDto(dto, parameter);
+                    toRemove.remove(parameter);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                AdParameter adParameter = toAdParameterFromDto(dto);
+                adParameter.setAd(ad);
+                parameters.add(adParameter);
+            }
+        }
+        parameters.removeAll(toRemove);
     }
 }

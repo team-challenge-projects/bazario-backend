@@ -1,14 +1,18 @@
 package org.cyberrealm.tech.bazario.backend.service.impl;
 
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.dto.BasicAdminParameter;
+import org.cyberrealm.tech.bazario.backend.dto.BasicAdminParameterResponse;
 import org.cyberrealm.tech.bazario.backend.dto.BasicUserParameter;
 import org.cyberrealm.tech.bazario.backend.exception.custom.ArgumentNotValidException;
 import org.cyberrealm.tech.bazario.backend.mapper.TypeAdParameterMapper;
 import org.cyberrealm.tech.bazario.backend.repository.TypeAdParameterRepository;
+import org.cyberrealm.tech.bazario.backend.service.PageableService;
 import org.cyberrealm.tech.bazario.backend.service.TypeAdParameterService;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,6 +23,13 @@ public class TypeAdParameterServiceImpl implements TypeAdParameterService {
 
     private final TypeAdParameterRepository parameterRepository;
     private final TypeAdParameterMapper mapper;
+    private final PageableService pageableService;
+
+    @Override
+    public Page<BasicAdminParameterResponse> getAll(Map<String, String> filters) {
+        return parameterRepository.findAll(pageableService.get(filters))
+                .map(mapper::toBasicAdminParameter);
+    }
 
     @Override
     public Long create(BasicAdminParameter parameter) {

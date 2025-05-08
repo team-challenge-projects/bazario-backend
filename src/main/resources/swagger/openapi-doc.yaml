@@ -55,6 +55,8 @@ paths:
     post:
       tags:
         - Authentication
+      security:
+        - bearerAuth: [ ]
       description: User login endpoint
       operationId: login
       requestBody:
@@ -178,6 +180,8 @@ paths:
     post:
       tags:
         - User
+      security:
+        - bearerAuth: [ ]
       summary: Create user
       description: Creates user with the provided information.
       operationId: createUser
@@ -249,6 +253,8 @@ paths:
     post:
       tags:
         - User
+      security:
+        - bearerAuth: [ ]
       summary: Verify Email
       description: Verify Email after registration user
       operationId: verifyEmail
@@ -679,6 +685,8 @@ paths:
     post:
       tags:
         - Reset Password
+      security:
+        - bearerAuth: [ ]
       summary: Reset password of user
       description: Reset password of user by hex.
       operationId: resetPassword
@@ -1354,6 +1362,42 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /admin/ad/parameters:
+    get:
+      tags:
+        - AdParameter
+      security:
+        - bearerAuth: [ ]
+      summary: Get page of ad parameter
+      description: Get page of ad parameter
+      operationId: getAdParameters
+      parameters:
+        - $ref: '#/components/parameters/filtersParameter'
+      responses:
+        200:
+          description: Get ad parameters successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageParameters'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /admin/ad/parameter:
     post:
       tags:
@@ -1504,6 +1548,8 @@ paths:
     get:
       tags:
         - Ad
+      security:
+        - bearerAuth: [ ]
       summary: Get ads
       description: |
         Get ads by filter.<br>
@@ -1545,6 +1591,8 @@ paths:
     get:
       tags:
         - Ad
+      security:
+        - bearerAuth: [ ]
       summary: Get ad
       description: Get ad parameter by user
       operationId: getAd
@@ -1581,10 +1629,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /public/ad/{ids}:
+  /public/compares/ad/{ids}:
     get:
       tags:
         - Ad
+      security:
+        - bearerAuth: [ ]
       summary: Compares ad
       description: Compares ad parameter by ads
       operationId: comparesAd
@@ -2116,10 +2166,10 @@ components:
       properties:
         title:
           type: string
-          pattern: '^(?!.*\d{9,})[\w\s]{3,20}$'
+          pattern: '^(?!.*\d{9,})[А-ЯІЇЄа-яіїє\w\s]{3,20}$'
         description:
           type: string
-          pattern: '^(?!.*\d{9,})[\w\s]{3,200}$'
+          pattern: '^(?!.*\d{9,})[А-ЯІЇЄа-яіїє\w\s]{3,200}$'
         price:
           type: number
         categoryId:
@@ -2167,6 +2217,15 @@ components:
         category:
           type: integer
           format: int64
+    PageParameters:
+      type: object
+      description: return Page<BasicAdminParameterResponse>
+      x-extends: BasisPage
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/BasicAdminParameterResponse'
     PageAd:
       type: object
       description: return Page<AdResponseDto>

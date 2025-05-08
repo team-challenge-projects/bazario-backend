@@ -1,6 +1,7 @@
 package org.cyberrealm.tech.bazario.backend.service.impl;
 
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.dto.AdStatus;
@@ -33,7 +34,7 @@ public class AccessAdServiceImpl implements AccessAdService {
 
     private Ad getAdFromCache(Long id) {
         String key = "AD_ID_" + id;
-        cache.computeIfAbsent(key, k -> adRepository.findByIdWithImages(id)
+        cache.computeIfAbsent(key, k -> adRepository.findByIdWithParameters(id)
                 .orElseThrow(() -> new EntityNotFoundException("Ad by id " + id
                         + " not found")));
         return cache.get(key);
@@ -46,6 +47,9 @@ public class AccessAdServiceImpl implements AccessAdService {
 
     @Override
     public boolean isNotAccessAd(Ad ad) {
+        if (!isAuthenticationUser()) {
+            return true;
+        }
         var user = getUser();
         return !(user.isAccountNonLocked() && (
                 user.getRole().equals(Role.ROOT)
@@ -67,7 +71,16 @@ public class AccessAdServiceImpl implements AccessAdService {
     @Override
     public boolean isAuthenticationUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication != null && authentication.isAuthenticated();
+        if (authentication == null) {
+            return false;
+        }
+        try {
+            Role.valueOf(authentication.getAuthorities().stream()
+                    .findFirst().orElseThrow().getAuthority());
+        } catch (NoSuchElementException | IllegalArgumentException e) {
+            return false;
+        }
+        return true;
     }
 
     @Override
