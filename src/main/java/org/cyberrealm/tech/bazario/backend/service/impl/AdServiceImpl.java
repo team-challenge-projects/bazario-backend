@@ -18,6 +18,7 @@ import org.cyberrealm.tech.bazario.backend.repository.CategoryRepository;
 import org.cyberrealm.tech.bazario.backend.service.AccessAdService;
 import org.cyberrealm.tech.bazario.backend.service.AdService;
 import org.cyberrealm.tech.bazario.backend.service.ImageService;
+import org.cyberrealm.tech.bazario.backend.service.TypeAdParameterService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +32,7 @@ public class AdServiceImpl implements AdService {
     private final AccessAdService accessAdService;
     private final ImageService imageService;
     private final CategoryRepository categoryRepository;
+    private final TypeAdParameterService typeAdParameterService;
 
     @Value("${image.min-num}")
     private int minNumImages;
@@ -55,7 +57,7 @@ public class AdServiceImpl implements AdService {
 
     @Override
     public AdDto findById(Long id) {
-        return adMapper.toDto(accessAdService.getAd(id));
+        return adMapper.toDto(accessAdService.getPublicAd(id));
     }
 
     @Override
@@ -76,6 +78,7 @@ public class AdServiceImpl implements AdService {
 
     @Override
     public void patchById(Long id, PatchAd patchAd) {
+        typeAdParameterService.checkParameters(patchAd.getAdParameters());
         var ad = adRepository.findByIdWithParameters(id).orElseThrow(() ->
                 new EntityNotFoundException("Ad with id " + id + "not found"));
         if (accessAdService.isNotAccessAd(ad)) {

@@ -38,7 +38,7 @@ public class Ad {
     @Enumerated(EnumType.STRING)
     private AdStatus status = AdStatus.NEW;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "ad_images", joinColumns = @JoinColumn(name = "ad_id"))
     @Column(name = "url")
     private Set<String> images = new HashSet<>();

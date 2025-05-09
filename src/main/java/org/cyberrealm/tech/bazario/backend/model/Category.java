@@ -23,6 +23,7 @@ public class Category {
     private Long id;
     @Column(nullable = false)
     private String name;
+    private String image = "";
 
     @ManyToMany
     @JoinTable(name = "category_type_ad_parameters",

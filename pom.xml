@@ -230,6 +230,7 @@
 							<typeMappings>
 								<typeMapping>PageComment=org.springframework.data.domain.Page</typeMapping>
 								<typeMapping>PageAd=org.springframework.data.domain.Page</typeMapping>
+								<typeMapping>PageParameters=org.springframework.data.domain.Page</typeMapping>
 							</typeMappings>
 							<importMappings>
 								<importMapping>BasisPage=org.springframework.data.domain.Page</importMapping>

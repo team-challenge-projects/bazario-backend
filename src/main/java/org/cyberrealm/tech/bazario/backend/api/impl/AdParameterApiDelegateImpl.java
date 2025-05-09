@@ -1,9 +1,11 @@
 package org.cyberrealm.tech.bazario.backend.api.impl;
 
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.api.AdParameterApiDelegate;
 import org.cyberrealm.tech.bazario.backend.dto.BasicAdminParameter;
 import org.cyberrealm.tech.bazario.backend.service.TypeAdParameterService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AdParameterApiDelegateImpl implements AdParameterApiDelegate {
     private final TypeAdParameterService parameterService;
+
+    @Override
+    public ResponseEntity<Page> getAdParameters(Map<String, String> filters) {
+        return ResponseEntity.ok(parameterService.getAll(filters));
+    }
 
     @Override
     public ResponseEntity<Long> createAdParameter(BasicAdminParameter basicAdminParameter) {

@@ -16,4 +16,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     @Query(CATEGORY_WITH_PARAMETERS)
     Optional<Category> findByIdWithParameters(@Param("id") Long id);
+
+    Optional<Category> findByName(String name);
 }

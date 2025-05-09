@@ -7,7 +7,9 @@ server:
 
 spring:
   config:
-    import: optional:file:.env[.properties]
+    import:
+      - optional:file:.env[.properties]
+      - classpath:script-credentials.yaml
 
   application:
     name: bazario-backend
@@ -52,6 +54,11 @@ spring:
           auth: true
         starttls:
           enable: true
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug
 jwt:
   expiration: ${JWT_EXPIRATION}
   secret: ${JWT_SECRET}
