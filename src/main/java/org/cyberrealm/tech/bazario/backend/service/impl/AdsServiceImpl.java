@@ -5,7 +5,10 @@ import jakarta.persistence.criteria.Root;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -13,12 +16,12 @@ import org.cyberrealm.tech.bazario.backend.dto.AdResponseDto;
 import org.cyberrealm.tech.bazario.backend.dto.AdStatus;
 import org.cyberrealm.tech.bazario.backend.mapper.AdMapper;
 import org.cyberrealm.tech.bazario.backend.model.Ad;
-import org.cyberrealm.tech.bazario.backend.model.User;
 import org.cyberrealm.tech.bazario.backend.model.enums.Role;
 import org.cyberrealm.tech.bazario.backend.repository.AdRepository;
-import org.cyberrealm.tech.bazario.backend.service.AccessAdService;
 import org.cyberrealm.tech.bazario.backend.service.AdParameterService;
 import org.cyberrealm.tech.bazario.backend.service.AdsService;
+import org.cyberrealm.tech.bazario.backend.service.AuthenticationUserService;
+import org.cyberrealm.tech.bazario.backend.service.CommentService;
 import org.cyberrealm.tech.bazario.backend.service.PageableService;
 import org.cyberrealm.tech.bazario.backend.service.UserParameterService;
 import org.springframework.data.domain.Page;
@@ -32,17 +35,22 @@ public class AdsServiceImpl implements AdsService {
     private static final String PREFIX_AD_PARAM = "ad_id_";
     private static final String REPLACEMENT = "";
     private static final String PREFIX_USER_PARAM = "user_id_";
+    private static final int INDEX_FROM = 0;
+    private static final int INDEX_TO = 1;
     private static final int INDEX_KEY = 0;
     private static final int INDEX_VALUE = 1;
     private static final String REGEX_BETWEEN_DELIMITER = "\\|\\|";
+    private static final String REGEX_BETWEEN = "^\\d+\\|\\|\\d+$";
     private static final String BETWEEN_DELIMITER = "||";
+    private static final String START_STRING = "^";
 
     private final UserParameterService userParameterService;
     private final AdParameterService adParameterService;
     private final AdRepository adRepository;
     private final AdMapper adMapper;
-    private final AccessAdService accessAdService;
+    private final AuthenticationUserService authUserService;
     private final PageableService pageableService;
+    private final CommentService commentService;
 
     @Override
     public Page<AdResponseDto> findAll(Map<String, String> filters) {
@@ -115,32 +123,36 @@ public class AdsServiceImpl implements AdsService {
 
     private void setPredicateStatus(Root<Ad> root, CriteriaBuilder builder, String value,
                                     ArrayList<jakarta.persistence.criteria.Predicate> predicate) {
+        boolean isFilterUser = false;
         if (value.equals("*")) {
-            if (accessAdService.isAdmin()) {
-                return;
-            } else if (accessAdService.isAuthenticationUser()) {
-                predicate.add(builder.equal(root.get("status"), AdStatus.NEW));
-                predicate.add(builder.equal(root.get("status"), AdStatus.ACTIVE));
-                predicate.add(builder.equal(root.get("status"), AdStatus.DISABLE));
+            if (!authUserService.isAdmin()) {
+                if (authUserService.isAuthenticationUser()) {
+                    predicate.add(root.get("status").in(AdStatus.NEW, AdStatus.ACTIVE,
+                            AdStatus.DISABLE));
+                    isFilterUser = true;
+                } else {
+                    predicate.add(builder.equal(root.get("status"), AdStatus.ACTIVE));
+                }
+            }
+        } else {
+            AdStatus status = Arrays.stream(AdStatus.values())
+                    .filter(s -> s.getValue().equals(value.toUpperCase()))
+                    .findFirst().orElse(AdStatus.ACTIVE);
+
+            if (authUserService.isAdmin()
+                    || (!status.equals(AdStatus.DELETE)
+                    && authUserService.isAuthenticationUser())) {
+                predicate.add(builder.equal(root.get("status"),
+                        status));
+                isFilterUser = authUserService.getCurrentUser().getRole().equals(Role.USER)
+                        && (status.equals(AdStatus.NEW) || status.equals(AdStatus.DISABLE));
             } else {
                 predicate.add(builder.equal(root.get("status"), AdStatus.ACTIVE));
             }
-            return;
-        }
-        AdStatus status = AdStatus.fromValue(value.toUpperCase());
-        if (accessAdService.isAdmin()
-                || (!status.equals(AdStatus.DELETE)
-                && accessAdService.isAuthenticationUser())) {
-            predicate.add(builder.equal(root.get("status"),
-                    status));
-        } else {
-            predicate.add(builder.equal(root.get("status"), AdStatus.ACTIVE));
         }
 
-        User user = accessAdService.getUser();
-        if (user.getRole().equals(Role.USER)
-                && (status.equals(AdStatus.NEW) || status.equals(AdStatus.DISABLE))) {
-            predicate.add(builder.equal(root.get("user"), user));
+        if (isFilterUser) {
+            predicate.add(builder.equal(root.get("user"), authUserService.getCurrentUser()));
         }
     }
 
@@ -161,31 +173,33 @@ public class AdsServiceImpl implements AdsService {
 
     private jakarta.persistence.criteria.Predicate getPredicateByUser(
             Root<Ad> root, CriteriaBuilder builder, Map<String, String> filters) {
+        Set<Long> userIds = new HashSet<>();
         var userParamFieldFilter = filters.entrySet().stream()
                 .filter(exceptNonNumeric(PREFIX_USER_PARAM))
                 .collect(Collectors.toMap(entry ->
                                 Long.parseLong(entry.getKey()
                                         .replaceFirst(PREFIX_USER_PARAM, REPLACEMENT)),
                         Map.Entry::getValue));
-        if (userParamFieldFilter.isEmpty()) {
-            return builder.conjunction();
+        filters.entrySet().stream().filter(entry ->
+                        entry.getKey().equals("rating") && entry.getValue().matches(REGEX_BETWEEN))
+                .map(Map.Entry::getValue).findFirst()
+                .ifPresent(rating -> {
+                    var range = rating.split(REGEX_BETWEEN_DELIMITER);
+                    userIds.addAll(commentService.getUserIdsByRangeRating(
+                            Integer.parseInt(range[INDEX_FROM]),
+                            Integer.parseInt(range[INDEX_TO])));
+                });
+        if (!userParamFieldFilter.isEmpty()) {
+            userIds.addAll(userParameterService.filterByParam(userParamFieldFilter));
+
         }
-        var userIdsFiltered = userParameterService.filterByParam(userParamFieldFilter);
-        return root.get("user").get("id").in(userIdsFiltered);
+        return root.get("user").get("id").in(userIds);
     }
 
     private Predicate<Map.Entry<String, String>> exceptNonNumeric(String prefix) {
         return entry -> {
-            if (!entry.getKey().startsWith(prefix)) {
-                return false;
-            }
-            long adParamId;
-            try {
-                adParamId = Long.parseLong(entry.getKey().replaceFirst(prefix, REPLACEMENT));
-            } catch (Exception e) {
-                adParamId = -1L;
-            }
-            return adParamId >= 0L;
+            var regex = "^%s%s".formatted(prefix, REGEX_BETWEEN.replace(START_STRING, REPLACEMENT));
+            return entry.getKey().matches(regex);
         };
     }
 }

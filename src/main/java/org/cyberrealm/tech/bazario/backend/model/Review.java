@@ -21,7 +21,7 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String reviewText;
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
     private Integer rating;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

@@ -7,8 +7,6 @@ import org.cyberrealm.tech.bazario.backend.model.User;
 public interface UserService {
     void register(RegistrationRequest requestDto) throws RegistrationException;
 
-    User getCurrentUser();
-
     void save(User user);
 
     User getUserById(Long id);

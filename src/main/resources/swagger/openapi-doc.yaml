@@ -846,7 +846,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /public/comment/{id}/totalRating:
+  /public/comment/user/{id}/totalRating:
     get:
       tags:
         - Comment
@@ -893,7 +893,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /public/comment/{id}:
+  /public/comment/user/{id}:
     get:
       tags:
         - Comment
@@ -1061,69 +1061,6 @@ paths:
       responses:
         204:
           description: Delete comment successfully
-        400:
-          description: Invalid input
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        404:
-          description: User not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        429:
-          description: Too many request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        500:
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-  /admin/comment/{idEvaluator}/{idEvaluated}:
-    put:
-      security:
-        -  bearerAuth: []
-      tags:
-        - Comment
-      summary: Put comment for user by user`s id
-      description: Put comment for user by user`s id to comment list of user
-      operationId: putCommentByAdmin
-      parameters:
-        - in: path
-          required: true
-          description: Unique identifier of entity
-          schema:
-            type: integer
-            format: int64
-          name: idEvaluator
-        - in: path
-          required: true
-          description: Unique identifier of entity
-          schema:
-            type: integer
-            format: int64
-          name: idEvaluated
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CommentDto'
-        required: true
-      responses:
-        204:
-          description: Add comment successfully
         400:
           description: Invalid input
           content:
@@ -2188,6 +2125,7 @@ components:
         - ACTIVE
         - DISABLE
         - DELETE
+      default: "ACTIVE"
     TypeImage:
       type: string
       enum:
