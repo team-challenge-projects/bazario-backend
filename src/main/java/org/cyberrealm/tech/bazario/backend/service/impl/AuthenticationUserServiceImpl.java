@@ -7,11 +7,13 @@ import org.cyberrealm.tech.bazario.backend.model.enums.Role;
 import org.cyberrealm.tech.bazario.backend.service.AuthenticationUserService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AuthenticationUserServiceImpl implements AuthenticationUserService {
     @Override
     public User getCurrentUser() {
-        if (isAuthenticationUser()) {
+        if (!isAuthenticationUser()) {
             throw new AuthenticationException("User not authenticated");
         }
         return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

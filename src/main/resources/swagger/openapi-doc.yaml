@@ -961,10 +961,10 @@ paths:
               $ref: '#/components/schemas/CommentDto'
         required: true
       responses:
-        204:
+        200:
           description: Add comment successfully. Get id of comment
           content:
-            text/plain:
+            application/json:
               schema:
                 type: integer
                 format: int64
@@ -2074,7 +2074,7 @@ components:
           maximum: 9
         description:
           type: string
-          pattern: '^(?!.*\d{9,})[\w\s]{3,200}$'
+          pattern: '^(?!.*\d{9,})[А-ЯІЇЄа-яіїє\w\s]{3,200}$'
     AdDto:
       description: Ad information
       type: object
