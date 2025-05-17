@@ -2,6 +2,7 @@ package org.cyberrealm.tech.bazario.backend.api.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.api.UserApiDelegate;
+import org.cyberrealm.tech.bazario.backend.dto.EmailRequest;
 import org.cyberrealm.tech.bazario.backend.dto.PatchUser;
 import org.cyberrealm.tech.bazario.backend.dto.PrivateUserInformation;
 import org.cyberrealm.tech.bazario.backend.dto.RegistrationRequest;
@@ -44,8 +45,8 @@ public class UserApiDelegateImpl implements UserApiDelegate {
     }
 
     @Override
-    public ResponseEntity<Void> sendMessage(TypeEmailMessage type, String body) {
-        notificationService.sendNotification(type, body);
+    public ResponseEntity<Void> sendMessage(TypeEmailMessage type, EmailRequest emailRequest) {
+        notificationService.sendNotification(type, emailRequest.getEmail());
         return ResponseEntity.noContent().build();
     }
 

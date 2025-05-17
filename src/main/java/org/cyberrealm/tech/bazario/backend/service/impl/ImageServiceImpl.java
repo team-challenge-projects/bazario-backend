@@ -15,6 +15,7 @@ import org.cyberrealm.tech.bazario.backend.model.Category;
 import org.cyberrealm.tech.bazario.backend.model.User;
 import org.cyberrealm.tech.bazario.backend.model.enums.Role;
 import org.cyberrealm.tech.bazario.backend.service.AccessAdService;
+import org.cyberrealm.tech.bazario.backend.service.AuthenticationUserService;
 import org.cyberrealm.tech.bazario.backend.service.CategoryService;
 import org.cyberrealm.tech.bazario.backend.service.FileUpload;
 import org.cyberrealm.tech.bazario.backend.service.ImageService;
@@ -34,6 +35,7 @@ public class ImageServiceImpl implements ImageService {
     private int maxNumImages;
 
     private final AccessAdService adService;
+    private final AuthenticationUserService authUserService;
     private final UserService userService;
     private final CategoryService categoryService;
     private final FileUpload fileUpload;
@@ -160,7 +162,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     private User getUser(Long id) {
-        var currentUser = userService.getCurrentUser();
+        var currentUser = authUserService.getCurrentUser();
         return (currentUser.getRole().equals(Role.ROOT)
                 || currentUser.getRole().equals(Role.ADMIN))
                 && !currentUser.getId().equals(id)

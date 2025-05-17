@@ -17,6 +17,7 @@ import org.cyberrealm.tech.bazario.backend.repository.AdRepository;
 import org.cyberrealm.tech.bazario.backend.repository.CategoryRepository;
 import org.cyberrealm.tech.bazario.backend.service.AccessAdService;
 import org.cyberrealm.tech.bazario.backend.service.AdService;
+import org.cyberrealm.tech.bazario.backend.service.AuthenticationUserService;
 import org.cyberrealm.tech.bazario.backend.service.ImageService;
 import org.cyberrealm.tech.bazario.backend.service.TypeAdParameterService;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AdServiceImpl implements AdService {
     private final AdRepository adRepository;
+    private final AuthenticationUserService authUserService;
     private final AdMapper adMapper;
     private final AccessAdService accessAdService;
     private final ImageService imageService;
@@ -105,7 +107,7 @@ public class AdServiceImpl implements AdService {
 
     @Override
     public AdDto createOrGet() {
-        User user = accessAdService.getUser();
+        User user = authUserService.getCurrentUser();
         Ad ad = adRepository.findByStatusAndUser(AdStatus.NEW, user).orElseGet(() -> {
             Ad newAd = new Ad();
             newAd.setUser(user);
