@@ -225,8 +225,7 @@ paths:
         content:
           application/json:
             schema:
-              type: string
-              format: email
+              $ref: '#/components/schemas/EmailRequest'
         required: true
       responses:
         204:
@@ -1910,7 +1909,15 @@ components:
         timestamp:
           type: string
           format: date-time
+    EmailRequest:
+      type: object
+      description: Email for request
+      properties:
+        email:
+          type: string
+          format: email
     VerificationEmail:
+      type: object
       description: Verify email
       properties:
         email:

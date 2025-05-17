@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AdsServiceImpl implements AdsService {
     private static final String PREFIX_AD_PARAM = "ad_id_";
-    private static final String REPLACEMENT = "";
+    private static final String EMPTY = "";
     private static final String PREFIX_USER_PARAM = "user_id_";
     private static final int INDEX_FROM = 0;
     private static final int INDEX_TO = 1;
@@ -98,6 +98,7 @@ public class AdsServiceImpl implements AdsService {
                         }
                     }
                 }
+                case "title" -> predicate.add(builder.like(root.get("title"),"%" + value + "%"));
                 case "category" -> {
                     try {
                         predicate.add(builder.equal(root.get("category").get("id"),
@@ -162,7 +163,7 @@ public class AdsServiceImpl implements AdsService {
                 .filter(exceptNonNumeric(PREFIX_AD_PARAM))
                 .collect(Collectors.toMap(entry ->
                                 Long.parseLong(entry.getKey()
-                                        .replaceFirst(PREFIX_AD_PARAM, REPLACEMENT)),
+                                        .replaceFirst(PREFIX_AD_PARAM, EMPTY)),
                         Map.Entry::getValue));
         if (adParamFieldFilter.isEmpty()) {
             return builder.conjunction();
@@ -178,7 +179,7 @@ public class AdsServiceImpl implements AdsService {
                 .filter(exceptNonNumeric(PREFIX_USER_PARAM))
                 .collect(Collectors.toMap(entry ->
                                 Long.parseLong(entry.getKey()
-                                        .replaceFirst(PREFIX_USER_PARAM, REPLACEMENT)),
+                                        .replaceFirst(PREFIX_USER_PARAM, EMPTY)),
                         Map.Entry::getValue));
         filters.entrySet().stream().filter(entry ->
                         entry.getKey().equals("rating") && entry.getValue().matches(REGEX_BETWEEN))
@@ -193,12 +194,12 @@ public class AdsServiceImpl implements AdsService {
             userIds.addAll(userParameterService.filterByParam(userParamFieldFilter));
 
         }
-        return root.get("user").get("id").in(userIds);
+        return userIds.isEmpty() ? builder.conjunction() : root.get("user").get("id").in(userIds);
     }
 
     private Predicate<Map.Entry<String, String>> exceptNonNumeric(String prefix) {
         return entry -> {
-            var regex = "^%s%s".formatted(prefix, REGEX_BETWEEN.replace(START_STRING, REPLACEMENT));
+            var regex = "^%s%s".formatted(prefix, REGEX_BETWEEN.replace(START_STRING, EMPTY));
             return entry.getKey().matches(regex);
         };
     }
