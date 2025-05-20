@@ -21,4 +21,8 @@ public interface UserService {
     PrivateUserInformation update(PatchUser patchUser);
 
     PrivateUserInformation updateById(Long id, PatchUser patchUser);
+
+    void delete();
+
+    void deleteById(Long id);
 }

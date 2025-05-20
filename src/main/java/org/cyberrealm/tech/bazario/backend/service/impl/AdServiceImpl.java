@@ -1,7 +1,9 @@
 package org.cyberrealm.tech.bazario.backend.service.impl;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.dto.AdDto;
@@ -79,6 +81,28 @@ public class AdServiceImpl implements AdService {
     }
 
     @Override
+    public void changeStatusByUser(User user, AdStatus status) {
+        var ads = adRepository.findByUser(user);
+        if (!ads.isEmpty()) {
+            if (status.equals(AdStatus.DELETE)) {
+                ads.stream().map(Ad::getImages).flatMap(Collection::stream)
+                        .forEach(urlImage -> imageService.deleteFile(URI.create(urlImage)));
+                ads.forEach(ad -> ad.setImages(Set.of()));
+            }
+            adRepository.saveAll(ads.stream().peek(ad ->
+                    ad.setStatus(status)).toList());
+        }
+    }
+
+    @Override
+    public void deleteByUser(User user) {
+        var ads = adRepository.findByUser(user);
+        ads.stream().map(Ad::getImages).flatMap(Collection::stream)
+                .forEach(urlImage -> imageService.deleteFile(URI.create(urlImage)));
+        adRepository.deleteAll(ads);
+    }
+
+    @Override
     public void patchById(Long id, PatchAd patchAd) {
         typeAdParameterService.checkParameters(patchAd.getAdParameters());
         var ad = adRepository.findByIdWithParameters(id).orElseThrow(() ->
@@ -108,13 +132,14 @@ public class AdServiceImpl implements AdService {
     @Override
     public AdDto createOrGet() {
         User user = authUserService.getCurrentUser();
-        Ad ad = adRepository.findByStatusAndUser(AdStatus.NEW, user).orElseGet(() -> {
-            Ad newAd = new Ad();
-            newAd.setUser(user);
-            newAd.setCategory(categoryRepository.findAll().stream().findFirst()
-                    .orElseThrow());
-            return adRepository.save(newAd);
-        });
+        Ad ad = adRepository.findByStatusAndUser(AdStatus.NEW, user).stream()
+                .findFirst().orElseGet(() -> {
+                    Ad newAd = new Ad();
+                    newAd.setUser(user);
+                    newAd.setCategory(categoryRepository.findAll().stream().findFirst()
+                            .orElseThrow());
+                    return adRepository.save(newAd);
+                });
         return adMapper.toDto(ad);
     }
 }

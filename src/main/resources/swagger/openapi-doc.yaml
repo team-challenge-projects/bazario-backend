@@ -534,6 +534,43 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - User
+      summary: Delete user by admin
+      description: Deletes user by admin by user id.
+      operationId: deleteUserByAdmin
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        204:
+          description: User deleted successfully
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /admin/user/parameter:
     post:
       security:

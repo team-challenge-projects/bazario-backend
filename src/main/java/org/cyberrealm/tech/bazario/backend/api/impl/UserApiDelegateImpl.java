@@ -31,7 +31,14 @@ public class UserApiDelegateImpl implements UserApiDelegate {
 
     @Override
     public ResponseEntity<Void> deleteUser() {
-        return UserApiDelegate.super.deleteUser();
+        userService.delete();
+        return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteUserByAdmin(Long id) {
+        userService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
     @Override
