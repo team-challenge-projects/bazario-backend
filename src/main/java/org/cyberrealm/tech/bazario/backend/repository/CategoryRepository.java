@@ -1,5 +1,6 @@
 package org.cyberrealm.tech.bazario.backend.repository;
 
+import java.util.List;
 import java.util.Optional;
 import org.cyberrealm.tech.bazario.backend.model.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,4 +19,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     Optional<Category> findByIdWithParameters(@Param("id") Long id);
 
     Optional<Category> findByName(String name);
+
+    List<Category> findByNameIn(List<String> names);
 }

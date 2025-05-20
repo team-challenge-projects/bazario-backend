@@ -1,5 +1,8 @@
 package org.cyberrealm.tech.bazario.backend.scripts.service.impl;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.dto.script.UserCredentials;
 import org.cyberrealm.tech.bazario.backend.mapper.UserMapper;
@@ -20,6 +23,36 @@ public class UserInitializerImpl implements UserInitializer {
     public User getUser(UserCredentials credentials) {
         return userRepository.findByEmail(credentials.getEmail())
                 .orElseGet(() -> getCurrentUser(credentials));
+    }
+
+    @Override
+    public List<User> getUsers(List<UserCredentials> dtoUsers) {
+        var users = userRepository.findByEmailIn(dtoUsers.stream()
+                .map(UserCredentials::getEmail).toList());
+        List<UserCredentials> notExistCredentials = getNotExistCredentials(dtoUsers, users);
+
+        if (notExistCredentials.isEmpty()) {
+            return users;
+        }
+
+        var newUsers = createUsers(notExistCredentials);
+        return Stream.of(users, newUsers).flatMap(Collection::stream).toList();
+    }
+
+    private List<User> createUsers(List<UserCredentials> credentials) {
+        List<User> users = credentials.stream().map(dto -> {
+            var user = userMapper.toUser(dto);
+            user.setPassword(encoder.encode(dto.getPassword()));
+            return user;
+        }).toList();
+        return userRepository.saveAll(users);
+    }
+
+    private List<UserCredentials> getNotExistCredentials(List<UserCredentials> dtoUsers,
+                                                         List<User> users) {
+        var emails = users.stream().map(User::getEmail).toList();
+        return dtoUsers.stream().filter(dto ->
+                !emails.contains(dto.getEmail())).toList();
     }
 
     private User getCurrentUser(UserCredentials credentials) {

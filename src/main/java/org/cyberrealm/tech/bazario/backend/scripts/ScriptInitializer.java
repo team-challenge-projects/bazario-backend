@@ -23,12 +23,10 @@ public class ScriptInitializer implements CommandLineRunner {
         if (credentials == null) {
             return;
         }
-        var users = credentials.getUsers().stream().map(userInitializer::getUser).toList();
-        var adTypes = credentials.getAdTypeParameters().stream()
-                .map(adTypeInitializer::getAdType).toList();
-        var categories = credentials.getCategories().stream().map(category ->
-                categoryInitializer.getCategory(category, adTypes)).toList();
-        credentials.getAds().forEach(ad -> adInitializer.createAd(ad, users,categories, adTypes));
+        var users = userInitializer.getUsers(credentials.getUsers());
+        var adTypes = adTypeInitializer.getAdTypes(credentials.getAdTypeParameters());
+        var categories = categoryInitializer.getCategories(credentials.getCategories(),adTypes);
+        adInitializer.createAds(credentials.getAds(), users, categories, adTypes);
 
     }
 }

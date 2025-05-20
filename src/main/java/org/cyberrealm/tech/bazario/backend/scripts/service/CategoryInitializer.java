@@ -7,4 +7,7 @@ import org.cyberrealm.tech.bazario.backend.model.TypeAdParameter;
 
 public interface CategoryInitializer {
     Category getCategory(CategoryCredentials credentials, List<TypeAdParameter> parameters);
+
+    List<Category> getCategories(List<CategoryCredentials> credentials,
+                                 List<TypeAdParameter> parameters);
 }

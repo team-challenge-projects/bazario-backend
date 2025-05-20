@@ -351,9 +351,9 @@ paths:
         200:
           description: Registration successfully. Get token.
           content:
-            text/plain:
+            application/json:
               schema:
-                $ref: '#/components/schemas/UserInformation'
+                $ref: '#/components/schemas/PrivateUserInformation'
         400:
           description: Invalid input
           content:
@@ -495,9 +495,9 @@ paths:
         200:
           description: Registration successfully. Get token.
           content:
-            text/plain:
+            application/json:
               schema:
-                $ref: '#/components/schemas/UserInformation'
+                $ref: '#/components/schemas/PrivateUserInformation'
         400:
           description: Invalid input
           content:
@@ -1975,6 +1975,9 @@ components:
         - $ref: '#/components/schemas/RegistrationRequest'
       type: object
       properties:
+        lastName:
+          type: string
+          pattern: '^[A-ZА-ЯІЇЄ][a-zа-яіїє]{1,20}$'
         cityName:
           type: string
           minLength: 3

@@ -9,4 +9,7 @@ import org.cyberrealm.tech.bazario.backend.model.User;
 public interface AdInitializer {
     void createAd(AdCredentials ad, List<User> users, List<Category> categories,
                   List<TypeAdParameter> adTypes);
+
+    void createAds(List<AdCredentials> credentials, List<User> users,
+                   List<Category> categories, List<TypeAdParameter> adType);
 }

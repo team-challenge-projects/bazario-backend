@@ -36,12 +36,12 @@ public class UserApiDelegateImpl implements UserApiDelegate {
 
     @Override
     public ResponseEntity<UserInformation> getOtherUserInformation(Long id) {
-        return UserApiDelegate.super.getOtherUserInformation(id);
+        return ResponseEntity.ok(userService.getInformationById(id));
     }
 
     @Override
     public ResponseEntity<PrivateUserInformation> getUserInformation() {
-        return UserApiDelegate.super.getUserInformation();
+        return ResponseEntity.ok(userService.getInformation());
     }
 
     @Override
@@ -51,13 +51,13 @@ public class UserApiDelegateImpl implements UserApiDelegate {
     }
 
     @Override
-    public ResponseEntity<UserInformation> updateUser(PatchUser patchUser) {
-        return UserApiDelegate.super.updateUser(patchUser);
+    public ResponseEntity<PrivateUserInformation> updateUser(PatchUser patchUser) {
+        return ResponseEntity.ok(userService.update(patchUser));
     }
 
     @Override
-    public ResponseEntity<UserInformation> updateUserByAdmin(Long id, PatchUser patchUser) {
-        return UserApiDelegate.super.updateUserByAdmin(id, patchUser);
+    public ResponseEntity<PrivateUserInformation> updateUserByAdmin(Long id, PatchUser patchUser) {
+        return ResponseEntity.ok(userService.updateById(id, patchUser));
     }
 
     @Override
