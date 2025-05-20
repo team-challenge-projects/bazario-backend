@@ -2,10 +2,8 @@ package org.cyberrealm.tech.bazario.backend.service;
 
 import java.util.List;
 import org.cyberrealm.tech.bazario.backend.dto.AdDto;
-import org.cyberrealm.tech.bazario.backend.dto.AdStatus;
 import org.cyberrealm.tech.bazario.backend.dto.PatchAd;
 import org.cyberrealm.tech.bazario.backend.dto.ad.CreateAdRequestDto;
-import org.cyberrealm.tech.bazario.backend.model.User;
 import org.springframework.data.domain.Pageable;
 
 public interface AdService {
@@ -21,11 +19,7 @@ public interface AdService {
 
     void deleteById(Long id);
 
-    void changeStatusByUser(User user, AdStatus status);
-
     AdDto createOrGet();
 
     void patchById(Long id, PatchAd patchAd);
-
-    void deleteByUser(User user);
 }

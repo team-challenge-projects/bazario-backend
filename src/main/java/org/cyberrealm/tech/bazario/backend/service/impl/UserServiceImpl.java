@@ -15,6 +15,7 @@ import org.cyberrealm.tech.bazario.backend.mapper.UserMapper;
 import org.cyberrealm.tech.bazario.backend.model.User;
 import org.cyberrealm.tech.bazario.backend.model.enums.Role;
 import org.cyberrealm.tech.bazario.backend.repository.UserRepository;
+import org.cyberrealm.tech.bazario.backend.service.AdDeleteService;
 import org.cyberrealm.tech.bazario.backend.service.AdService;
 import org.cyberrealm.tech.bazario.backend.service.AuthenticationUserService;
 import org.cyberrealm.tech.bazario.backend.service.UserService;
@@ -34,6 +35,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationUserService authService;
     private final AdService adService;
+    private final AdDeleteService adDeleteService;
 
     @Value("${token.expiration.minutes:15}")
     private int expirationMinutes;
@@ -89,7 +91,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("User by id %d not found"
                         .formatted(id)));
-        adService.deleteByUser(user);
+        adDeleteService.deleteByUser(user);
         userRepository.delete(user);
     }
 
@@ -102,7 +104,7 @@ public class UserServiceImpl implements UserService {
         currentUser.setEmail("delete_" + currentUser.getEmail());
         currentUser.setParameters(Set.of());
         currentUser.setLocked(true);
-        adService.changeStatusByUser(currentUser, AdStatus.DELETE);
+        adDeleteService.changeStatusByUser(currentUser, AdStatus.DELETE);
         userRepository.save(currentUser);
     }
 

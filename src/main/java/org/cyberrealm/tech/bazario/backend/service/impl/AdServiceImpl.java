@@ -1,9 +1,7 @@
 package org.cyberrealm.tech.bazario.backend.service.impl;
 
 import java.net.URI;
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.dto.AdDto;
@@ -78,28 +76,6 @@ public class AdServiceImpl implements AdService {
         }
         ad.getImages().forEach(urlImage -> imageService.deleteFile(URI.create(urlImage)));
         adRepository.deleteById(id);
-    }
-
-    @Override
-    public void changeStatusByUser(User user, AdStatus status) {
-        var ads = adRepository.findByUser(user);
-        if (!ads.isEmpty()) {
-            if (status.equals(AdStatus.DELETE)) {
-                ads.stream().map(Ad::getImages).flatMap(Collection::stream)
-                        .forEach(urlImage -> imageService.deleteFile(URI.create(urlImage)));
-                ads.forEach(ad -> ad.setImages(Set.of()));
-            }
-            adRepository.saveAll(ads.stream().peek(ad ->
-                    ad.setStatus(status)).toList());
-        }
-    }
-
-    @Override
-    public void deleteByUser(User user) {
-        var ads = adRepository.findByUser(user);
-        ads.stream().map(Ad::getImages).flatMap(Collection::stream)
-                .forEach(urlImage -> imageService.deleteFile(URI.create(urlImage)));
-        adRepository.deleteAll(ads);
     }
 
     @Override
