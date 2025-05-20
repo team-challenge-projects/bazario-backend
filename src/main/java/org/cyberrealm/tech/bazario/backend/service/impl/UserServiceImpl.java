@@ -34,7 +34,6 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationUserService authService;
-    private final AdService adService;
     private final AdDeleteService adDeleteService;
 
     @Value("${token.expiration.minutes:15}")
