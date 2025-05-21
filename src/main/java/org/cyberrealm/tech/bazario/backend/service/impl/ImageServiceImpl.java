@@ -8,18 +8,19 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.dto.TypeImage;
 import org.cyberrealm.tech.bazario.backend.exception.custom.ArgumentNotValidException;
+import org.cyberrealm.tech.bazario.backend.exception.custom.EntityNotFoundException;
 import org.cyberrealm.tech.bazario.backend.exception.custom.ForbiddenException;
 import org.cyberrealm.tech.bazario.backend.exception.custom.NotFoundResourceException;
 import org.cyberrealm.tech.bazario.backend.model.Ad;
 import org.cyberrealm.tech.bazario.backend.model.Category;
 import org.cyberrealm.tech.bazario.backend.model.User;
 import org.cyberrealm.tech.bazario.backend.model.enums.Role;
+import org.cyberrealm.tech.bazario.backend.repository.UserRepository;
 import org.cyberrealm.tech.bazario.backend.service.AccessAdService;
 import org.cyberrealm.tech.bazario.backend.service.AuthenticationUserService;
 import org.cyberrealm.tech.bazario.backend.service.CategoryService;
 import org.cyberrealm.tech.bazario.backend.service.FileUpload;
 import org.cyberrealm.tech.bazario.backend.service.ImageService;
-import org.cyberrealm.tech.bazario.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,7 +37,7 @@ public class ImageServiceImpl implements ImageService {
 
     private final AccessAdService adService;
     private final AuthenticationUserService authUserService;
-    private final UserService userService;
+    private final UserRepository userRepository;
     private final CategoryService categoryService;
     private final FileUpload fileUpload;
 
@@ -125,7 +126,7 @@ public class ImageServiceImpl implements ImageService {
         var user = getUser(id);
         deleteFile(url);
         user.setAvatar(BLANK_VALUE);
-        userService.save(user);
+        userRepository.save(user);
     }
 
     private void deleteFromAd(Long id, URI url) {
@@ -166,7 +167,9 @@ public class ImageServiceImpl implements ImageService {
         return (currentUser.getRole().equals(Role.ROOT)
                 || currentUser.getRole().equals(Role.ADMIN))
                 && !currentUser.getId().equals(id)
-                ? userService.getUserById(id) : currentUser;
+                ? userRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException("User not found"))
+                : currentUser;
     }
 
     private String getAndSaveToAd(MultipartFile file, Set<String> images, Ad ad) {
@@ -180,7 +183,7 @@ public class ImageServiceImpl implements ImageService {
     private String getAndSaveToUser(MultipartFile file, User user) {
         var url = fileUpload.uploadFile(file, createKey(file));
         user.setAvatar(url);
-        userService.save(user);
+        userRepository.save(user);
         return url;
     }
 

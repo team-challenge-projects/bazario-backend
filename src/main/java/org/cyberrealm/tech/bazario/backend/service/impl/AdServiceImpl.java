@@ -108,13 +108,14 @@ public class AdServiceImpl implements AdService {
     @Override
     public AdDto createOrGet() {
         User user = authUserService.getCurrentUser();
-        Ad ad = adRepository.findByStatusAndUser(AdStatus.NEW, user).orElseGet(() -> {
-            Ad newAd = new Ad();
-            newAd.setUser(user);
-            newAd.setCategory(categoryRepository.findAll().stream().findFirst()
-                    .orElseThrow());
-            return adRepository.save(newAd);
-        });
+        Ad ad = adRepository.findByStatusAndUser(AdStatus.NEW, user).stream()
+                .findFirst().orElseGet(() -> {
+                    Ad newAd = new Ad();
+                    newAd.setUser(user);
+                    newAd.setCategory(categoryRepository.findAll().stream().findFirst()
+                            .orElseThrow());
+                    return adRepository.save(newAd);
+                });
         return adMapper.toDto(ad);
     }
 }

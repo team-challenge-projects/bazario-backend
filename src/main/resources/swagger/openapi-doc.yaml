@@ -351,9 +351,9 @@ paths:
         200:
           description: Registration successfully. Get token.
           content:
-            text/plain:
+            application/json:
               schema:
-                $ref: '#/components/schemas/UserInformation'
+                $ref: '#/components/schemas/PrivateUserInformation'
         400:
           description: Invalid input
           content:
@@ -495,9 +495,9 @@ paths:
         200:
           description: Registration successfully. Get token.
           content:
-            text/plain:
+            application/json:
               schema:
-                $ref: '#/components/schemas/UserInformation'
+                $ref: '#/components/schemas/PrivateUserInformation'
         400:
           description: Invalid input
           content:
@@ -512,6 +512,43 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         403:
           description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - User
+      summary: Delete user by admin
+      description: Deletes user by admin by user id.
+      operationId: deleteUserByAdmin
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        204:
+          description: User deleted successfully
+        401:
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -1975,6 +2012,9 @@ components:
         - $ref: '#/components/schemas/RegistrationRequest'
       type: object
       properties:
+        lastName:
+          type: string
+          pattern: '^[A-ZА-ЯІЇЄ][a-zа-яіїє]{1,20}$'
         cityName:
           type: string
           minLength: 3

@@ -9,6 +9,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,11 +30,11 @@ public class Category {
     @JoinTable(name = "category_type_ad_parameters",
             joinColumns = @JoinColumn(name = "category_id"),
             inverseJoinColumns = @JoinColumn(name = "type_id"))
-    private Set<TypeAdParameter> adParameters;
+    private Set<TypeAdParameter> adParameters = new HashSet<>();
 
     @ManyToMany
     @JoinTable(name = "category_type_user_parameters",
             joinColumns = @JoinColumn(name = "category_id"),
             inverseJoinColumns = @JoinColumn(name = "type_id"))
-    private Set<TypeUserParameter> userParameters;
+    private Set<TypeUserParameter> userParameters = new HashSet<>();
 }

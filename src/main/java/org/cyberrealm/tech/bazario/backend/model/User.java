@@ -1,5 +1,6 @@
 package org.cyberrealm.tech.bazario.backend.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -47,7 +48,7 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private boolean isLocked = false;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<UserParameter> parameters;
 
     @Override
