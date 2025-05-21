@@ -57,17 +57,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void save(User user) {
-        userRepository.save(user);
-    }
-
-    @Override
-    public User getUserById(Long id) {
-        return userRepository.findById(id).orElseThrow(() ->
-                new EntityNotFoundException("User not found"));
-    }
-
-    @Override
     public UserInformation getInformationById(Long id) {
         var user = userRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("User with id %d not found"

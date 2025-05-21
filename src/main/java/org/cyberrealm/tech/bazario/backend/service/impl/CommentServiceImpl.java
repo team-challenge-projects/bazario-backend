@@ -10,10 +10,10 @@ import org.cyberrealm.tech.bazario.backend.mapper.CommentMapper;
 import org.cyberrealm.tech.bazario.backend.model.Review;
 import org.cyberrealm.tech.bazario.backend.model.User;
 import org.cyberrealm.tech.bazario.backend.repository.CommentRepository;
+import org.cyberrealm.tech.bazario.backend.repository.UserRepository;
 import org.cyberrealm.tech.bazario.backend.service.AuthenticationUserService;
 import org.cyberrealm.tech.bazario.backend.service.CommentService;
 import org.cyberrealm.tech.bazario.backend.service.PageableService;
-import org.cyberrealm.tech.bazario.backend.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -24,16 +24,18 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
     private final PageableService pageableService;
-    private final UserService userService;
+    private final UserRepository userRepository;
 
     @Override
     public Long add(Long id, CommentDto dto) {
         var review = commentMapper.toReview(dto);
         User currentUser = authUserService.getCurrentUser();
-        User user = userService.getUserById(id);
+        User user = userRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException("User with id %d not found"
+                        .formatted(id)));
         if (commentRepository.existsByEvaluatorIdAndEvaluatedId(
                 currentUser.getId(), user.getId())) {
-            throw new ForbiddenException("Comment by user with id %d is exists"
+            throw new EntityNotFoundException("Comment by user with id %d is exists"
                     .formatted(id));
         }
         review.setEvaluator(currentUser);
