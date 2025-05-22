@@ -44,4 +44,14 @@ public class AuthenticationUserServiceImpl implements AuthenticationUserService 
                 role.getAuthority().equals(Role.ADMIN.getAuthority())
                         || role.getAuthority().equals(Role.ROOT.getAuthority()));
     }
+
+    @Override
+    public boolean isRoot() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            return false;
+        }
+        return authentication.getAuthorities().stream().anyMatch(role ->
+                 role.getAuthority().equals(Role.ROOT.getAuthority()));
+    }
 }
