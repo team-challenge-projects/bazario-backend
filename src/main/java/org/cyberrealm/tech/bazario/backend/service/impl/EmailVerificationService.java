@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class EmailVerificationService implements VerificationService {
-    private static final String EMAIL_VERIFICATION_KEY_SUFFIX = ":EMAIL_VERIFICATION";
     private final RedisTemplate<String, Object> redisTemplate;
     private final UserRepository userRepository;
     private final TokenService tokenService;
@@ -34,11 +33,11 @@ public class EmailVerificationService implements VerificationService {
     }
 
     public void markVerified(String email) {
-        User user = (User) redisTemplate.opsForValue().get(email);
+        String key = email + EMAIL_VERIFICATION_KEY_SUFFIX;
+        User user = (User) redisTemplate.opsForValue().get(key);
         if (user != null) {
             userRepository.save(user);
         }
-        String key = email + EMAIL_VERIFICATION_KEY_SUFFIX;
         redisTemplate.delete(key);
     }
 }

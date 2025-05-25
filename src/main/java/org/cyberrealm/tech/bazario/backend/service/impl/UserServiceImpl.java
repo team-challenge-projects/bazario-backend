@@ -19,6 +19,7 @@ import org.cyberrealm.tech.bazario.backend.repository.UserRepository;
 import org.cyberrealm.tech.bazario.backend.service.AdDeleteService;
 import org.cyberrealm.tech.bazario.backend.service.AuthenticationUserService;
 import org.cyberrealm.tech.bazario.backend.service.UserService;
+import org.cyberrealm.tech.bazario.backend.service.VerificationService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -54,8 +55,9 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(DEFAULT_ROLE);
         user.setCreatedAt(LocalDateTime.now());
-        redisTemplate.opsForValue().set(user.getEmail(), user,
-                Duration.ofMinutes(expirationMinutes));
+        redisTemplate.opsForValue().set(user.getEmail()
+                        + VerificationService.EMAIL_VERIFICATION_KEY_SUFFIX,
+                user, Duration.ofMinutes(expirationMinutes));
         userMapper.toUserResponse(user);
     }
 
@@ -136,7 +138,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public PrivateUserInformation getInformation() {
         User currentUser = userRepository.findByIdWithParameters(
-                authService.getCurrentUser().getId())
+                        authService.getCurrentUser().getId())
                 .orElseThrow(() -> new EntityNotFoundException(
                         "User not found"));
         return userMapper.toInformation(currentUser);

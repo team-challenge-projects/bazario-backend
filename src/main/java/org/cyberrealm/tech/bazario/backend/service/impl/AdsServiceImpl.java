@@ -60,7 +60,6 @@ public class AdsServiceImpl implements AdsService {
                         getPredicateByUser(root, builder, filters),
                         getByAdParam(root, builder, filters),
                         getPredicateByFields(root, builder, filters));
-
         return adRepository.findAll(spec, pageable).map(adMapper::toResponseDto);
     }
 
