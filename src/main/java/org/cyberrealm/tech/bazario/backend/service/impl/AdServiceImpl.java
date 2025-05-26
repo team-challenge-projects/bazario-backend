@@ -80,6 +80,9 @@ public class AdServiceImpl implements AdService {
 
     @Override
     public void patchById(Long id, PatchAd patchAd) {
+        if (patchAd.getStatus().equals(AdStatus.NEW)) {
+            throw new ForbiddenException("Ad is not change status to NEW");
+        }
         typeAdParameterService.checkParameters(patchAd.getAdParameters());
         var ad = adRepository.findByIdWithParameters(id).orElseThrow(() ->
                 new EntityNotFoundException("Ad with id " + id + "not found"));
