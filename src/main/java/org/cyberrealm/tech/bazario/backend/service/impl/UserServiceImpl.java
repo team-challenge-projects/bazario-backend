@@ -10,6 +10,7 @@ import org.cyberrealm.tech.bazario.backend.dto.PrivateUserInformation;
 import org.cyberrealm.tech.bazario.backend.dto.RegistrationRequest;
 import org.cyberrealm.tech.bazario.backend.dto.UserInformation;
 import org.cyberrealm.tech.bazario.backend.exception.custom.EntityNotFoundException;
+import org.cyberrealm.tech.bazario.backend.exception.custom.ForbiddenException;
 import org.cyberrealm.tech.bazario.backend.exception.custom.RegistrationException;
 import org.cyberrealm.tech.bazario.backend.mapper.UserMapper;
 import org.cyberrealm.tech.bazario.backend.model.User;
@@ -18,6 +19,7 @@ import org.cyberrealm.tech.bazario.backend.repository.UserRepository;
 import org.cyberrealm.tech.bazario.backend.service.AdDeleteService;
 import org.cyberrealm.tech.bazario.backend.service.AuthenticationUserService;
 import org.cyberrealm.tech.bazario.backend.service.UserService;
+import org.cyberrealm.tech.bazario.backend.service.VerificationService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,6 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private static final Role DEFAULT_ROLE = Role.USER;
+    private static final int COUNT_MIN_ROOT_USER = 2;
+
     private final RedisTemplate<String, Object> redisTemplate;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -51,8 +55,9 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(DEFAULT_ROLE);
         user.setCreatedAt(LocalDateTime.now());
-        redisTemplate.opsForValue().set(user.getEmail(), user,
-                Duration.ofMinutes(expirationMinutes));
+        redisTemplate.opsForValue().set(user.getEmail()
+                        + VerificationService.EMAIL_VERIFICATION_KEY_SUFFIX,
+                user, Duration.ofMinutes(expirationMinutes));
         userMapper.toUserResponse(user);
     }
 
@@ -101,14 +106,39 @@ public class UserServiceImpl implements UserService {
                         authService.getCurrentUser().getId())
                 .orElseThrow(() -> new EntityNotFoundException(
                         "User not found"));
+        checkUserRestrictions(patchUser, currentUser);
         userMapper.updateUser(patchUser, currentUser);
         return userMapper.toInformation(userRepository.save(currentUser));
+    }
+
+    private void checkUserRestrictions(PatchUser dto, User user) {
+        if (dto == null || user == null) {
+            return;
+        }
+        if (user.getRole().equals(Role.ROOT)) {
+            if (dto.getRole() != null && !dto.getRole().equals(user.getRole().name())
+                    && userRepository.countByRole(Role.ROOT) < COUNT_MIN_ROOT_USER) {
+                throw new ForbiddenException(
+                        "There must be at least one user with the ROOT role.");
+            }
+        } else {
+            if (dto.getRole() != null && !dto.getRole().equals(user.getRole().name())
+                    && !authService.isRoot()) {
+                throw new ForbiddenException(
+                        "Only a user with the ROOT role can change the role.");
+            }
+            if (Boolean.TRUE.equals(dto.getIsLocked()) && !authService.isAdmin()) {
+                throw new ForbiddenException(
+                        "Only a user with the ROOT or ADMIN role can locked user");
+            }
+        }
+
     }
 
     @Override
     public PrivateUserInformation getInformation() {
         User currentUser = userRepository.findByIdWithParameters(
-                authService.getCurrentUser().getId())
+                        authService.getCurrentUser().getId())
                 .orElseThrow(() -> new EntityNotFoundException(
                         "User not found"));
         return userMapper.toInformation(currentUser);

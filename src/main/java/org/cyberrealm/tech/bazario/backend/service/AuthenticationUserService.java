@@ -8,4 +8,6 @@ public interface AuthenticationUserService {
     boolean isAuthenticationUser();
 
     boolean isAdmin();
+
+    boolean isRoot();
 }
