@@ -135,12 +135,11 @@ public class UserServiceImpl implements UserService {
                         "Only a user with the ROOT or ADMIN role can locked user");
             }
 
-            if (dto.getEmail() != null && !dto.getEmail().equals(user.getEmail())
-                    && dto.getVerificationCode() != null
-                    && !dto.getVerificationCode().isBlank()) {
+            if (dto.getEmail() != null && !dto.getEmail().equals(user.getEmail())) {
                 redisTemplate.opsForValue().set(dto.getEmail()
                                 + VerificationService.CHANGE_EMAIL_DTO_SUFFIX,
-                        user.getEmail() + ":" + dto.getEmail());
+                        user.getEmail() + ":" + dto.getEmail(),
+                        Duration.ofMinutes(expirationMinutes));
             }
         }
 
