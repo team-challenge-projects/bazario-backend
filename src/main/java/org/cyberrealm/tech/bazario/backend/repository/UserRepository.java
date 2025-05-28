@@ -11,6 +11,8 @@ import org.springframework.data.repository.query.Param;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
 
+    boolean existsByEmail(String email);
+
     boolean existsByRole(Role role);
 
     List<User> findByEmailIn(List<String> emails);

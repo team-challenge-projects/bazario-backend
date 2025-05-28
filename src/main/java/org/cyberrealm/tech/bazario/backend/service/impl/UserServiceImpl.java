@@ -1,7 +1,8 @@
 package org.cyberrealm.tech.bazario.backend.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.dto.AdStatus;
@@ -22,22 +23,20 @@ import org.cyberrealm.tech.bazario.backend.service.UserService;
 import org.cyberrealm.tech.bazario.backend.service.VerificationService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private static final Role DEFAULT_ROLE = Role.USER;
     private static final int COUNT_MIN_ROOT_USER = 2;
 
     private final RedisTemplate<String, Object> redisTemplate;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final PasswordEncoder passwordEncoder;
     private final AuthenticationUserService authService;
     private final AdDeleteService adDeleteService;
+    private final ObjectMapper mapper;
 
     @Value("${token.expiration.minutes:15}")
     private int expirationMinutes;
@@ -46,19 +45,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public void register(RegistrationRequest requestDto)
             throws RegistrationException {
-        User user = userMapper.toModel(requestDto);
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new RegistrationException("User with email: " + user.getEmail()
+        if (userRepository.existsByEmail(requestDto.getEmail())) {
+            throw new RegistrationException("User with email: " + requestDto.getEmail()
                     + " already exists");
         }
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRole(DEFAULT_ROLE);
-        user.setCreatedAt(LocalDateTime.now());
-        redisTemplate.opsForValue().set(user.getEmail()
-                        + VerificationService.EMAIL_VERIFICATION_KEY_SUFFIX,
-                user, Duration.ofMinutes(expirationMinutes));
-        userMapper.toUserResponse(user);
+        try {
+            var jsonUser = mapper.writeValueAsString(requestDto);
+            redisTemplate.opsForValue().set(requestDto.getEmail()
+                            + VerificationService.EMAIL_VERIFICATION_KEY_SUFFIX,
+                    jsonUser, Duration.ofMinutes(expirationMinutes));
+        } catch (JsonProcessingException e) {
+            throw new RegistrationException("Not convert request to json by user with email %s"
+                    .formatted(requestDto.getEmail()));
+        }
     }
 
     @Override
@@ -108,6 +108,9 @@ public class UserServiceImpl implements UserService {
                         "User not found"));
         checkUserRestrictions(patchUser, currentUser);
         userMapper.updateUser(patchUser, currentUser);
+        if (patchUser.getEmail() != null && authService.isAdmin()) {
+            currentUser.setEmail(patchUser.getEmail());
+        }
         return userMapper.toInformation(userRepository.save(currentUser));
     }
 
@@ -130,6 +133,14 @@ public class UserServiceImpl implements UserService {
             if (Boolean.TRUE.equals(dto.getIsLocked()) && !authService.isAdmin()) {
                 throw new ForbiddenException(
                         "Only a user with the ROOT or ADMIN role can locked user");
+            }
+
+            if (dto.getEmail() != null && !dto.getEmail().equals(user.getEmail())
+                    && dto.getVerificationCode() != null
+                    && !dto.getVerificationCode().isBlank()) {
+                redisTemplate.opsForValue().set(dto.getEmail()
+                                + VerificationService.CHANGE_EMAIL_DTO_SUFFIX,
+                        user.getEmail() + ":" + dto.getEmail());
             }
         }
 

@@ -30,19 +30,19 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false)
-    private String firstName;
-    private String lastName;
-    private String avatar;
+    private String firstName = "";
+    private String lastName = "";
+    private String avatar = "";
     @Column(nullable = false, unique = true)
     @Email
     private String email;
     @Column(nullable = false, unique = true)
-    private String phoneNumber;
+    private String phoneNumber = "";
     @Column(nullable = false)
     private String password;
     private LocalDateTime createdAt = LocalDateTime.now();
-    private String cityName;
-    private String cityCoordinate;
+    private String cityName = "";
+    private String cityCoordinate = "";
     @Enumerated(EnumType.STRING)
     private Role role;
     @Column(nullable = false)

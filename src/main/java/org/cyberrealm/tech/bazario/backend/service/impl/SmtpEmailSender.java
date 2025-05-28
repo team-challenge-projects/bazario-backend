@@ -8,6 +8,7 @@ import org.cyberrealm.tech.bazario.backend.service.EmailSender;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,6 +20,7 @@ public class SmtpEmailSender implements EmailSender {
     private String fromEmail;
 
     @Override
+    @Async
     public void sendEmail(String toEmail, String subject, String content) {
         MimeMessage message = mailSender.createMimeMessage();
         try {
