@@ -441,7 +441,7 @@ paths:
         200:
           description: Registration successfully. Get token.
           content:
-            text/plain:
+            application/json:
               schema:
                 $ref: '#/components/schemas/UserInformation'
         400:
@@ -1985,9 +1985,14 @@ components:
       description: Registration user
       type: object
       properties:
+        id:
+          type: integer
+          format: int64
         firstName:
           type: string
         lastName:
+          type: string
+        avatar:
           type: string
         email:
           type: string
@@ -2002,6 +2007,8 @@ components:
         - $ref: '#/components/schemas/UserInformation'
       type: object
       properties:
+        cityCoordinate:
+          type: string
         parameters:
           type: array
           items:

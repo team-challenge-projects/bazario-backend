@@ -64,6 +64,7 @@ public interface UserMapper {
     @Mapping(target = "locked", source = "isLocked")
     @Mapping(target = "parameters", ignore = true)
     @Mapping(target = "authorities", ignore = true)
+    @Mapping(target = "email", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateUser(PatchUser patchUser, @MappingTarget User user);
 
