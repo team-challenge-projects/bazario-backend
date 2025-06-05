@@ -1743,19 +1743,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /admin/ad/{id}:
     delete:
       tags:
         - Ad
       security:
         -  bearerAuth: []
-      summary: Delete ad by user
-      description: Delete ad parameter by user by ad`s id
+      summary: Delete ad by admin
+      description: Delete ad parameter by admin by ad`s id
       operationId: deleteAd
       parameters:
         - $ref: '#/components/parameters/idParam'
       responses:
         204:
-          description: Create ad successfully
+          description: Delete ad successfully
         400:
           description: Invalid input
           content:
@@ -1868,6 +1869,7 @@ paths:
             application/json:
               schema:
                 type: string
+                format: uri
         400:
           description: Bad Request
           content:

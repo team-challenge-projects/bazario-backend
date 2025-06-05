@@ -16,10 +16,10 @@ public class ImageApiDelegateImpl implements ImageApiDelegate {
     private final ImageService imageService;
 
     @Override
-    public ResponseEntity<String> changeImage(TypeImage type, Long id, URI oldValue,
+    public ResponseEntity<URI> changeImage(TypeImage type, Long id, URI oldValue,
                                               MultipartFile file) {
         var url = imageService.change(type, id, oldValue, file);
-        return ResponseEntity.ok(url);
+        return ResponseEntity.ok(URI.create(url));
     }
 
     @Override

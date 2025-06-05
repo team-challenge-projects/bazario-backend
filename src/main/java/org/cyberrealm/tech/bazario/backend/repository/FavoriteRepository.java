@@ -1,6 +1,7 @@
 package org.cyberrealm.tech.bazario.backend.repository;
 
 import java.util.Optional;
+import org.cyberrealm.tech.bazario.backend.model.Ad;
 import org.cyberrealm.tech.bazario.backend.model.Favorite;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,4 +14,7 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
     @EntityGraph(attributePaths = {"ad", "ad.images"})
     Page<Favorite> findByUser_Id(Long userId, Pageable pageable);
 
+    void deleteAllByAd_IdIn(Iterable<Long> adsId);
+
+    void deleteByAd(Ad ad);
 }
