@@ -31,7 +31,7 @@ public class CommentApiDelegateImpl implements CommentApiDelegate {
     }
 
     @Override
-    public ResponseEntity<Integer> getTotalRating(Long id) {
+    public ResponseEntity<Double> getTotalRating(Long id) {
         return ResponseEntity.ok(commentService.getTotalRating(id));
     }
 

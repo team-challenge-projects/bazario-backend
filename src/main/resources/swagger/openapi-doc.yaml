@@ -753,7 +753,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /private/favorite:
+  /private/favorites:
     get:
       security:
         -  bearerAuth: []
@@ -762,15 +762,15 @@ paths:
       summary: Get favorite ad
       description: Get favorite ad
       operationId: getFavorite
+      parameters:
+        - $ref: '#/components/parameters/filtersParameter'
       responses:
         200:
           description: Add ad successfully
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/AdDto'
+                $ref: '#/components/schemas/PageAd'
         400:
           description: Invalid input
           content:
@@ -895,10 +895,10 @@ paths:
         200:
           description: Get comment successfully
           content:
-            text/plain:
+            application/json:
               schema:
-                type: integer
-                format: int32
+                type: number
+                format: double
         400:
           description: Invalid input
           content:
@@ -1335,12 +1335,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /admin/ad/parameters:
+  /public/ad/parameters:
     get:
       tags:
         - AdParameter
       security:
-        - bearerAuth: [ ]
+        - bearerAuth: []
       summary: Get page of ad parameter
       description: Get page of ad parameter
       operationId: getAdParameters
