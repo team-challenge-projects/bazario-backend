@@ -68,7 +68,8 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<CategoryDto> getAll() {
         return categoryRepository.findAll().stream().map(category ->
-                new CategoryDto().id(category.getId()).name(category.getName()))
+                new CategoryDto().id(category.getId()).name(category.getName())
+                        .image(category.getImage()))
                 .toList();
     }
 

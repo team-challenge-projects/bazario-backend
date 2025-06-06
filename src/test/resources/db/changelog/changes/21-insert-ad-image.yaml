@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-ad-image
+      author: Andrey Sitarskiy
+      changes:
+        - insert:
+            tableName: ad_images
+            columns:
+              - column: { name: ad_id, value: "1" }
+              - column: { name: url, value: "http://test/test.png" }

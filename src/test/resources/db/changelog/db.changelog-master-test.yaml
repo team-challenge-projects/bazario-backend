@@ -29,3 +29,17 @@ databaseChangeLog:
       file: db/changelog/changes/15-add-category-image.yaml
   - include:
       file: db/changelog/changes/16-change-size-url-ad-images.yaml
+  - include:
+      file: db/changelog/changes/16-insert-type-ad-parameters.yaml
+  - include:
+      file: db/changelog/changes/17-insert-type-user-parameters.yaml
+  - include:
+      file: db/changelog/changes/18-insert-categories.yaml
+  - include:
+      file: db/changelog/changes/19-insert-user.yaml
+  - include:
+      file: db/changelog/changes/20-insert-ad.yaml
+  - include:
+      file: db/changelog/changes/21-insert-ad-image.yaml
+  - include:
+      file: db/changelog/changes/22-insert-ad-parameter.yaml

@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-type-ad-parameters
+      author: Andrey Sitarskiy
+      changes:
+        - insert:
+            tableName: type_ad_parameters
+            columns:
+              - column: { name: name, value: "Доставка тест" }
+              - column: { name: restriction_pattern, value: "^ТестПошта$" }
+              - column: { name: description_pattern, value: "Це тестова пошта" }

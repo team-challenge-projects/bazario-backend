@@ -12,7 +12,7 @@ public interface CommentService {
 
     void delete(Long id);
 
-    Integer getTotalRating(Long id);
+    Double getTotalRating(Long id);
 
     Page<CommentDto> getByUserId(Long id, Map<String, String> filters);
 

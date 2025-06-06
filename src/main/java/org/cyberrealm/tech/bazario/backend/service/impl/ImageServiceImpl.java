@@ -21,6 +21,7 @@ import org.cyberrealm.tech.bazario.backend.service.AuthenticationUserService;
 import org.cyberrealm.tech.bazario.backend.service.CategoryService;
 import org.cyberrealm.tech.bazario.backend.service.FileUpload;
 import org.cyberrealm.tech.bazario.backend.service.ImageService;
+import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -176,7 +177,12 @@ public class ImageServiceImpl implements ImageService {
         var url = fileUpload.uploadFile(file, createKey(file));
         images.add(url);
         ad.setImages(images);
-        adService.save(ad);
+        try {
+            adService.save(ad);
+        } catch (DataException e) {
+            deleteFile(URI.create(url));
+            throw new ArgumentNotValidException("Name file is too longe");
+        }
         return url;
     }
 

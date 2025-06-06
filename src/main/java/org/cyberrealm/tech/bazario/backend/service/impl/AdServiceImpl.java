@@ -2,6 +2,7 @@ package org.cyberrealm.tech.bazario.backend.service.impl;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.dto.AdDto;
@@ -15,6 +16,7 @@ import org.cyberrealm.tech.bazario.backend.model.Ad;
 import org.cyberrealm.tech.bazario.backend.model.User;
 import org.cyberrealm.tech.bazario.backend.repository.AdRepository;
 import org.cyberrealm.tech.bazario.backend.repository.CategoryRepository;
+import org.cyberrealm.tech.bazario.backend.repository.FavoriteRepository;
 import org.cyberrealm.tech.bazario.backend.service.AccessAdService;
 import org.cyberrealm.tech.bazario.backend.service.AdService;
 import org.cyberrealm.tech.bazario.backend.service.AuthenticationUserService;
@@ -35,6 +37,7 @@ public class AdServiceImpl implements AdService {
     private final ImageService imageService;
     private final CategoryRepository categoryRepository;
     private final TypeAdParameterService typeAdParameterService;
+    private final FavoriteRepository favoriteRepository;
 
     @Value("${image.min-num}")
     private int minNumImages;
@@ -75,6 +78,7 @@ public class AdServiceImpl implements AdService {
             throw new ForbiddenException("The user not access to ad");
         }
         ad.getImages().forEach(urlImage -> imageService.deleteFile(URI.create(urlImage)));
+        favoriteRepository.deleteByAd(ad);
         adRepository.deleteById(id);
     }
 
@@ -92,6 +96,8 @@ public class AdServiceImpl implements AdService {
         if (ad.getStatus().equals(AdStatus.DELETE)) {
             ad.getImages().forEach(urlImage ->
                     imageService.deleteFile(URI.create(urlImage)));
+            favoriteRepository.deleteByAd(ad);
+            ad.setImages(Set.of());
         }
 
         adMapper.updateAdFromDto(patchAd, ad);

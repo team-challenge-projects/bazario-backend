@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-categories
+      author: Andrey Sitarskiy
+      changes:
+        - insert:
+            tableName: categories
+            columns:
+              - column: { name: name, value: "Тест" }

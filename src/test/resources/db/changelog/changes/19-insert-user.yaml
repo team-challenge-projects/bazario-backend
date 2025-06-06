@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-user
+      author: Andrey Sitarskiy
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column: { name: first_name, value: "Тест" }
+              - column: { name: last_name, value: "Тест" }
+              - column: { name: email, value: "test@test.com" }
+              - column: { name: avatar, value: "" }
+              - column: { name: phone_number, value: "+380671234567" }
+              - column: { name: password, value: "$2a$10$sYui9pSD.mXdCfshD8hV6O/DS0CgH3FfhkzJQ4ONhRVzd.OUwBOoG" }
+              - column: { name: created_at, value: "2025-05-06 22:41:21" }
+              - column: { name: city_name, value: "Kiev" }
+              - column: { name: city_coordinate, value: "50,27|30,3125" }
+              - column: { name: role, value: "USER" }
+              - column: { name: is_locked, value: "false" }

@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-type-user-parameters
+      author: Andrey Sitarskiy
+      changes:
+        - insert:
+            tableName: type_user_parameters
+            columns:
+              - column: { name: name, value: "Тестовий тип" }
+              - column: { name: restriction_pattern, value: "^ТестТип$" }
+              - column: { name: description_pattern, value: "Це тестовий тип" }
