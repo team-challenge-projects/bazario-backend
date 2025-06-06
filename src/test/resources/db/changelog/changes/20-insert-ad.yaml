@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-ad
+      author: Andrey Sitarskiy
+      changes:
+        - insert:
+            tableName: ads
+            columns:
+              - column: { name: title, value: "Тест" }
+              - column: { name: description, value: "Тест" }
+              - column: { name: price, value: "1000.00" }
+              - column: { name: publication_date, value: "2025-05-06" }
+              - column: { name: status, value: "ACTIVE" }
+              - column: { name: user_id, value: "1" }
+              - column: { name: category_id, value: "1" }
