@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: change-size-url-ad-images
+      author: Andrey Sitarskiy
+      changes:
+        - modifyDataType:
+            tableName: ad_images
+            columnName: url
+            newDataType: varchar(255)

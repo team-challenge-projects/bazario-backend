@@ -29,8 +29,8 @@ public class ImageApiDelegateImpl implements ImageApiDelegate {
     }
 
     @Override
-    public ResponseEntity<String> saveImage(TypeImage type, Long id, MultipartFile file) {
+    public ResponseEntity<URI> saveImage(TypeImage type, Long id, MultipartFile file) {
         var url = imageService.save(type, id, file);
-        return ResponseEntity.status(HttpStatus.CREATED).body(url);
+        return ResponseEntity.status(HttpStatus.CREATED).body(URI.create(url));
     }
 }

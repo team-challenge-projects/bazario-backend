@@ -27,3 +27,5 @@ databaseChangeLog:
       file: db/changelog/changes/14-create-category-type-user-parameters-table.yaml
   - include:
       file: db/changelog/changes/15-add-category-image.yaml
+  - include:
+      file: db/changelog/changes/16-change-size-url-ad-images.yaml
