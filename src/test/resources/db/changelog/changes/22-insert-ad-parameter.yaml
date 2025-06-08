@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-ad-parameter
+      author: Andrey Sitarskiy
+      changes:
+        - insert:
+            tableName: ad_parameters
+            columns:
+              - column: { name: parameter_value, value: "ТестПошта" }
+              - column: { name: parameter_id, value: "1" }
+              - column: { name: ad_id, value: "1" }
