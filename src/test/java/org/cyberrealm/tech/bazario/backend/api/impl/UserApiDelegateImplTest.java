@@ -30,7 +30,6 @@ import org.cyberrealm.tech.bazario.backend.dto.VerificationEmail;
 import org.cyberrealm.tech.bazario.backend.model.enums.MessageType;
 import org.cyberrealm.tech.bazario.backend.repository.UserRepository;
 import org.cyberrealm.tech.bazario.backend.service.AuthenticationUserService;
-import org.cyberrealm.tech.bazario.backend.service.EmailSender;
 import org.cyberrealm.tech.bazario.backend.service.EmailTemplateBuilder;
 import org.cyberrealm.tech.bazario.backend.service.FileUpload;
 import org.cyberrealm.tech.bazario.backend.service.TokenService;
@@ -39,7 +38,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -47,10 +45,6 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 class UserApiDelegateImplTest extends AbstractIntegrationTest {
-    @MockitoBean
-    private EmailSender emailSender;
-    @MockitoBean
-    private RedisTemplate<String, Object> redisTemplate;
     @MockitoBean
     private ValueOperations<String, Object> valueOperations;
     @MockitoBean

@@ -50,7 +50,7 @@ class CategoryApiDelegateImplTest extends AbstractIntegrationTest {
         var dto = new CategoryDto();
         dto.setId(ID_ONE);
         dto.setName("Тест");
-        dto.setImage("");
+        dto.setImage("http://test/test.png");
         mockMvc.perform(get("/public/categories").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(List.of(dto))));
@@ -61,7 +61,7 @@ class CategoryApiDelegateImplTest extends AbstractIntegrationTest {
     void getCategory() {
         var dto = new CategoryResponseDto()
                 .name("Тест").adParameters(List.of())
-                .userParameters(List.of()).image("");
+                .userParameters(List.of()).image("http://test/test.png");
         mockMvc.perform(get("/public/category/" + ID_ONE))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(dto)));

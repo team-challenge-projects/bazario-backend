@@ -15,6 +15,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 class ResetPasswordApiDelegateImplTest extends AbstractIntegrationTest {
     public static final String HEX = "some hex";
     public static final String EMAIL = "test@test.com";
+
     @MockitoBean
     private TokenService tokenService;
 
