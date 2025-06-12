@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-comment
+      author: Andrey Sitarskiy
+      changes:
+        - insert:
+            tableName: reviews
+            columns:
+              - column: { name: review_text, value: "Тест" }
+              - column: { name: created_at, value: "2025-05-06 22:41:21" }
+              - column: { name: rating, value: "1" }
+              - column: { name: evaluator_id, value: "1" }
+              - column: { name: evaluated_id, value: "2" }

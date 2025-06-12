@@ -2,6 +2,7 @@ package org.cyberrealm.tech.bazario.backend.service;
 
 import org.cyberrealm.tech.bazario.backend.dto.PatchUser;
 import org.cyberrealm.tech.bazario.backend.dto.PrivateUserInformation;
+import org.cyberrealm.tech.bazario.backend.dto.PublicUserInformation;
 import org.cyberrealm.tech.bazario.backend.dto.RegistrationRequest;
 import org.cyberrealm.tech.bazario.backend.dto.UserInformation;
 import org.cyberrealm.tech.bazario.backend.exception.custom.RegistrationException;
@@ -20,4 +21,6 @@ public interface UserService {
     void delete();
 
     void deleteById(Long id);
+
+    PublicUserInformation getPublicInformationById(Long id);
 }

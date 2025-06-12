@@ -7,3 +7,4 @@ databaseChangeLog:
             tableName: categories
             columns:
               - column: { name: name, value: "Тест" }
+              - column: { name: image, value: "http://test/test.png" }

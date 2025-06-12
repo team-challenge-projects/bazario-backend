@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.dto.AdStatus;
 import org.cyberrealm.tech.bazario.backend.dto.PatchUser;
 import org.cyberrealm.tech.bazario.backend.dto.PrivateUserInformation;
+import org.cyberrealm.tech.bazario.backend.dto.PublicUserInformation;
 import org.cyberrealm.tech.bazario.backend.dto.RegistrationRequest;
 import org.cyberrealm.tech.bazario.backend.dto.UserInformation;
 import org.cyberrealm.tech.bazario.backend.exception.custom.EntityNotFoundException;
@@ -73,6 +74,7 @@ public class UserServiceImpl implements UserService {
     public PrivateUserInformation updateById(Long id, PatchUser patchUser) {
         User user = userRepository.findByIdWithParameters(id).orElseThrow(() ->
                 new EntityNotFoundException("User not found"));
+        checkUserRestrictions(patchUser, user);
         userMapper.updateUser(patchUser, user);
 
         return userMapper.toInformation(userRepository.save(user));
@@ -108,9 +110,6 @@ public class UserServiceImpl implements UserService {
                         "User not found"));
         checkUserRestrictions(patchUser, currentUser);
         userMapper.updateUser(patchUser, currentUser);
-        if (patchUser.getEmail() != null && authService.isAdmin()) {
-            currentUser.setEmail(patchUser.getEmail());
-        }
         return userMapper.toInformation(userRepository.save(currentUser));
     }
 
@@ -152,5 +151,13 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new EntityNotFoundException(
                         "User not found"));
         return userMapper.toInformation(currentUser);
+    }
+
+    @Override
+    public PublicUserInformation getPublicInformationById(Long id) {
+        var user = userRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException("User with id %d not found"
+                        .formatted(id)));
+        return userMapper.toInformationForAnonymous(user);
     }
 }

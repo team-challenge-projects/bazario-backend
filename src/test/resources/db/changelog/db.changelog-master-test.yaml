@@ -43,3 +43,7 @@ databaseChangeLog:
       file: db/changelog/changes/21-insert-ad-image.yaml
   - include:
       file: db/changelog/changes/22-insert-ad-parameter.yaml
+  - include:
+      file: db/changelog/changes/23-insert-comment.yaml
+  - include:
+      file: db/changelog/changes/24-insert-favorite.yaml

@@ -9,6 +9,7 @@ import org.cyberrealm.tech.bazario.backend.config.RootUserCredentials;
 import org.cyberrealm.tech.bazario.backend.dto.BasicUserParameter;
 import org.cyberrealm.tech.bazario.backend.dto.PatchUser;
 import org.cyberrealm.tech.bazario.backend.dto.PrivateUserInformation;
+import org.cyberrealm.tech.bazario.backend.dto.PublicUserInformation;
 import org.cyberrealm.tech.bazario.backend.dto.RegistrationRequest;
 import org.cyberrealm.tech.bazario.backend.dto.UserInformation;
 import org.cyberrealm.tech.bazario.backend.dto.UserResponseDto;
@@ -55,6 +56,8 @@ public interface UserMapper {
     User toUser(UserCredentials credentials);
 
     PrivateUserInformation toInformation(User currentUser);
+
+    PublicUserInformation toInformationForAnonymous(User user);
 
     UserInformation toPublicInformation(User user);
 
