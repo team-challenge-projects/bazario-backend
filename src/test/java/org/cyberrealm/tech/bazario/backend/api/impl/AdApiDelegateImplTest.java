@@ -40,6 +40,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 class AdApiDelegateImplTest extends AbstractIntegrationTest {
+    private static final long ID_FOUR = 4L;
+
     @MockitoBean
     private AuthenticationUserService authUserService;
     @MockitoBean
@@ -64,12 +66,12 @@ class AdApiDelegateImplTest extends AbstractIntegrationTest {
     @WithMockUser
     @Test
     void createOrGetAd() {
-        var dto = new AdDto().id(ID_TWO).title("").description("")
+        var dto = new AdDto().id(ID_FOUR).title("").description("")
                 .price(BigDecimal.ZERO);
         mockMvc.perform(post("/private/ad"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(dto)));
-        var newEntity = adRepository.findByIdWithParameters(ID_TWO).orElseThrow();
+        var newEntity = adRepository.findByIdWithParameters(ID_FOUR).orElseThrow();
         assertAll(
                 () -> assertEquals(dto.getPrice(), newEntity.getPrice()),
                 () -> assertEquals(AdStatus.NEW, newEntity.getStatus()),

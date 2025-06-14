@@ -22,6 +22,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.cyberrealm.tech.bazario.backend.AbstractIntegrationTest;
+import org.cyberrealm.tech.bazario.backend.dto.BasicParameter;
 import org.cyberrealm.tech.bazario.backend.dto.EmailRequest;
 import org.cyberrealm.tech.bazario.backend.dto.PrivateUserInformation;
 import org.cyberrealm.tech.bazario.backend.dto.RegistrationRequest;
@@ -121,7 +122,11 @@ class UserApiDelegateImplTest extends AbstractIntegrationTest {
                 .phoneNumber("+380671234567").firstName("Тест")
                 .lastName("Тест").avatar("http://test/test.png")
                 .cityName("Kiev").cityCoordinate("50,27|30,3125")
-                .parameters(List.of());
+                .parameters(List.of(new BasicParameter().id(ID_ONE)
+                        .name("Тестовий тип").parameterId(ID_ONE)
+                        .parameterValue("ТестТип")
+                        .restrictionPattern("^(ТестТип|ЮридичнийТип)$")
+                        .descriptionPattern("Це тестовий тип")));
         mockMvc.perform(get("/private/user"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(dto)));

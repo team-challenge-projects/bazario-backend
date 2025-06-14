@@ -32,6 +32,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 class CommentApiDelegateImplTest extends AbstractIntegrationTest {
     private static final int RATING = 5;
+    private static final long ID_FOUR = 4L;
 
     @MockitoBean
     private AuthenticationUserService authService;
@@ -51,8 +52,8 @@ class CommentApiDelegateImplTest extends AbstractIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(ID_TWO)));
-        var comment = commentRepository.findById(ID_TWO).orElseThrow();
+                .andExpect(content().json(objectMapper.writeValueAsString(ID_FOUR)));
+        var comment = commentRepository.findById(ID_FOUR).orElseThrow();
         assertAll(
                 () -> assertEquals(dto.getRating(), comment.getRating()),
                 () -> assertEquals(dto.getDescription(), comment.getReviewText()),

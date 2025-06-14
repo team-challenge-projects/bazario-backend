@@ -31,6 +31,7 @@ class CategoryApiDelegateImplTest extends AbstractIntegrationTest {
     private static final String USER_NAME = "Тестовий тип";
     private static final String name = "New Test";
     private static final CategoryRequestDto dto = new CategoryRequestDto();
+    private static final long ID_THREE = 3L;
 
     @Autowired
     private CategoryRepository categoryRepository;
@@ -119,9 +120,9 @@ class CategoryApiDelegateImplTest extends AbstractIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
-                .andExpect(content().json(String.valueOf(ID_TWO)));
+                .andExpect(content().json(String.valueOf(ID_THREE)));
 
-        var entity = categoryRepository.findByIdWithParameters(ID_TWO).orElseThrow();
+        var entity = categoryRepository.findByIdWithParameters(ID_THREE).orElseThrow();
 
         assertAll(
                 () -> assertEquals(name, entity.getName()),
