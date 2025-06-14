@@ -264,17 +264,8 @@ paths:
               $ref: '#/components/schemas/VerificationEmail'
         required: true
       responses:
-        200:
-          description: Registration successfully. Get token.
-          headers:
-            Set-Cookie:
-              schema:
-                type: string
-                example: JWT_REFRESH_TOKEN=abcs123
-          content:
-            text/plain:
-              schema:
-                type: string
+        204:
+          description: Registration successfully.
         400:
           description: Invalid input
           content:
@@ -452,6 +443,46 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         401:
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /public/user/{id}:
+    get:
+      tags:
+        - User
+      summary: Get public information about user
+      description: Get public information about user
+      operationId: getPublicUserInformation
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        200:
+          description: Registration successfully. Get token.
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/PublicUserInformation'
+        400:
+          description: Invalid input
           content:
             application/json:
               schema:
@@ -1984,8 +2015,8 @@ components:
         phoneNumber:
           type: string
           pattern: '^(\+38|38|8)?0\d{9}$'
-    UserInformation:
-      description: Registration user
+    PublicUserInformation:
+      description: Public user information
       type: object
       properties:
         id:
@@ -1997,12 +2028,18 @@ components:
           type: string
         avatar:
           type: string
+        cityName:
+          type: string
+    UserInformation:
+      description: Registration user
+      allOf:
+        - $ref: '#/components/schemas/PublicUserInformation'
+      type: object
+      properties:
         email:
           type: string
           format: email
         phoneNumber:
-          type: string
-        cityName:
           type: string
     PrivateUserInformation:
       description: Registration user

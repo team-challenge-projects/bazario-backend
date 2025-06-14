@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-user-parameter
+      author: Andrey Sitarskiy
+      changes:
+        - insert:
+            tableName: user_parameters
+            columns:
+              - column: { name: parameter_value, value: "ТестТип" }
+              - column: { name: parameter_id, value: "1" }
+              - column: { name: user_id, value: "1" }
+        - insert:
+            tableName: user_parameters
+            columns:
+              - column: { name: parameter_value, value: "ЮридичнийТип" }
+              - column: { name: parameter_id, value: "1" }
+              - column: { name: user_id, value: "2" }

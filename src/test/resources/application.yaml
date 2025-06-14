@@ -2,7 +2,6 @@ spring:
   config:
     activate:
       on-profile: test
-    import: classpath:script-credentials.yaml
   servlet:
     context-path: /api
     multipart:
@@ -16,6 +15,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
+      show-sql: true
     database-platform: org.hibernate.dialect.H2Dialect
   liquibase:
     enabled: true

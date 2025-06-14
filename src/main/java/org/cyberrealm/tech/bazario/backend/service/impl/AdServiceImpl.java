@@ -74,9 +74,6 @@ public class AdServiceImpl implements AdService {
     public void deleteById(Long id) {
         var ad = adRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("Ad with id " + id + "not found"));
-        if (accessAdService.isNotAccessAd(ad)) {
-            throw new ForbiddenException("The user not access to ad");
-        }
         ad.getImages().forEach(urlImage -> imageService.deleteFile(URI.create(urlImage)));
         favoriteRepository.deleteByAd(ad);
         adRepository.deleteById(id);

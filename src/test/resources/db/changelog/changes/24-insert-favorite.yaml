@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-favorite
+      author: Andrey Sitarskiy
+      changes:
+        - insert:
+            tableName: favorites
+            columns:
+              - column: { name: user_id, value: "1" }
+              - column: { name: ad_id, value: "1" }

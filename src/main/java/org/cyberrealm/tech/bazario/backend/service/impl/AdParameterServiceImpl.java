@@ -2,10 +2,8 @@ package org.cyberrealm.tech.bazario.backend.service.impl;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.model.AdParameter;
-import org.cyberrealm.tech.bazario.backend.projection.AdIdProjection;
 import org.cyberrealm.tech.bazario.backend.repository.AdParameterRepository;
 import org.cyberrealm.tech.bazario.backend.service.AdParameterService;
 import org.springframework.data.jpa.domain.Specification;
@@ -20,20 +18,19 @@ public class AdParameterServiceImpl implements AdParameterService {
     public List<Long> filterByParam(Map<Long, String> filters) {
         Specification<AdParameter> spec = (root, query, builder) -> {
             try {
-                Objects.requireNonNull(query).distinct(true);
-                query.select(root.get("ad").get("id"));
                 return filters.entrySet().stream().map(entry -> {
                     var idParam = builder.equal(root.get("parameter").get("id"), entry.getKey());
                     var value = entry.getValue().contains("|")
-                            ? root.get("value").in((Object[]) entry.getValue().split("\\|"))
-                            : builder.equal(root.get("value"), entry.getValue());
+                            ? root.get("parameterValue").in((Object[]) entry.getValue()
+                            .split("\\|"))
+                            : builder.equal(root.get("parameterValue"), entry.getValue());
                     return builder.and(idParam, value);
                 }).reduce(builder::and).orElse(builder.conjunction());
             } catch (Exception e) {
                 return builder.conjunction();
             }
         };
-        return parameterRepository.findBy(spec, AdIdProjection.class).stream()
-                .map(AdIdProjection::getAdId).toList();
+        return parameterRepository.findAll(spec).stream()
+                .map(pram -> pram.getAd().getId()).toList();
     }
 }
