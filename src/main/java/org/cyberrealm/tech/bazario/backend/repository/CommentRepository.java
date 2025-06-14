@@ -2,6 +2,8 @@ package org.cyberrealm.tech.bazario.backend.repository;
 
 import java.util.List;
 import org.cyberrealm.tech.bazario.backend.model.Review;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,4 +22,6 @@ public interface CommentRepository extends JpaRepository<Review, Long> {
 
     @Query(FIND_USER_IDS_WITH_AVE_RATING_BETWEEN)
     List<Long> findUserIdsWithAverageRatingBetween(@Param("from") int from, @Param("to") int to);
+
+    Page<Review> findByEvaluated_Id(Long id, Pageable pageable);
 }

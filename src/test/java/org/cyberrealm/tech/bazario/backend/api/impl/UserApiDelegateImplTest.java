@@ -1,6 +1,7 @@
 package org.cyberrealm.tech.bazario.backend.api.impl;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -210,5 +211,12 @@ class UserApiDelegateImplTest extends AbstractIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isNoContent());
+        var newUser = userRepository.findByEmail(email).orElseThrow();
+        assertAll(
+                () -> assertEquals(registration.getFirstName(),
+                        newUser.getFirstName()),
+                () -> assertEquals(registration.getPhoneNumber(),
+                        newUser.getPhoneNumber())
+        );
     }
 }

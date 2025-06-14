@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public abstract class AbstractIntegrationTest {
     protected static final long ID_ONE = 1L;
     protected static final long ID_TWO = 2L;
+    protected static final long ID_THREE = 3L;
 
     @Autowired
     protected MockMvc mockMvc;

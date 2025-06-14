@@ -118,7 +118,7 @@ class CommentApiDelegateImplTest extends AbstractIntegrationTest {
                 PageRequest.of(0, 16,
                         Sort.by("id").ascending()),
                 1L);
-        mockMvc.perform(get("/public/comment/user/" + ID_ONE)
+        mockMvc.perform(get("/public/comment/user/" + ID_TWO)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(Map.of())))
                 .andExpect(status().isOk())

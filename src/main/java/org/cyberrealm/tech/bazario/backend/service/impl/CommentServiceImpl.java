@@ -62,7 +62,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Page<CommentDto> getByUserId(Long id, Map<String, String> filters) {
-        return commentRepository.findAll(pageableService.get(filters))
+        return commentRepository.findByEvaluated_Id(id, pageableService.get(filters))
                 .map(commentMapper::toDto);
     }
 

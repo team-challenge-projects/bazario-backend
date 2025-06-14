@@ -143,7 +143,15 @@ class AdApiDelegateImplTest extends AbstractIntegrationTest {
                 .description("Тест").price(BigDecimal.valueOf(1000.00))
                 .imageUrl(URI.create("http://test/test.png"))
                 .category(ID_ONE);
-        var dto = new PageImpl<AdResponseDto>(List.of(contentDto),
+        var contentDtoTwo = new AdResponseDto().id(ID_TWO).title("Тест search text")
+                .description("Тест search text").price(BigDecimal.valueOf(3500.00))
+                .imageUrl(URI.create(""))
+                .category(ID_TWO);
+        var contentDtoThree = new AdResponseDto().id(3L).title("Тест")
+                .description("Тест").price(BigDecimal.valueOf(5000.00))
+                .imageUrl(URI.create(""))
+                .category(ID_ONE);
+        var dto = new PageImpl<AdResponseDto>(List.of(contentDto, contentDtoTwo, contentDtoThree),
                 PageRequest.of(0,16, Sort.by("id").ascending()), 1L);
         mockMvc.perform(get("/public/ads")
                 .contentType(MediaType.APPLICATION_JSON)

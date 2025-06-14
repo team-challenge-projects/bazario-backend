@@ -8,3 +8,8 @@ databaseChangeLog:
             columns:
               - column: { name: name, value: "Тест" }
               - column: { name: image, value: "http://test/test.png" }
+        - insert:
+            tableName: categories
+            columns:
+              - column: { name: name, value: "Тест_two" }
+              - column: { name: image, value: "http://test/test2.png" }
