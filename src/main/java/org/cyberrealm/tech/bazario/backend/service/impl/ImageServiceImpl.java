@@ -60,7 +60,7 @@ public class ImageServiceImpl implements ImageService {
         var ad = adService.getProtectedAd(id);
         var images = ad.getImages();
 
-        if (images.size() > maxNumImages) {
+        if (images.size() >= maxNumImages) {
             throw new ForbiddenException("Size of images is too large");
         }
 
@@ -159,7 +159,12 @@ public class ImageServiceImpl implements ImageService {
     private String saveAndGetCategoryImage(MultipartFile file, Category category) {
         var url = fileUpload.uploadFile(file, createKey(file));
         category.setImage(url);
-        categoryService.save(category);
+        try {
+            categoryService.save(category);
+        } catch (DataException e) {
+            deleteFile(URI.create(url));
+            throw new ArgumentNotValidException("Name file is too longe");
+        }
         return url;
     }
 
@@ -189,7 +194,12 @@ public class ImageServiceImpl implements ImageService {
     private String getAndSaveToUser(MultipartFile file, User user) {
         var url = fileUpload.uploadFile(file, createKey(file));
         user.setAvatar(url);
-        userRepository.save(user);
+        try {
+            userRepository.save(user);
+        } catch (DataException e) {
+            deleteFile(URI.create(url));
+            throw new ArgumentNotValidException("Name file is too longe");
+        }
         return url;
     }
 

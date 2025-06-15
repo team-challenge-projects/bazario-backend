@@ -8,3 +8,8 @@ databaseChangeLog:
             columns:
               - column: { name: ad_id, value: "1" }
               - column: { name: url, value: "http://test/test.png" }
+        - insert:
+            tableName: ad_images
+            columns:
+              - column: { name: ad_id, value: "1" }
+              - column: { name: url, value: "http://test/old-test.png" }

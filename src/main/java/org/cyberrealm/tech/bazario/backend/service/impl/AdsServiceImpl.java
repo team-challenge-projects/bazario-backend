@@ -42,7 +42,6 @@ public class AdsServiceImpl implements AdsService {
     private static final String REGEX_BETWEEN_DELIMITER = "\\|\\|";
     private static final String REGEX_BETWEEN = "^\\d+\\|\\|\\d+$";
     private static final String BETWEEN_DELIMITER = "||";
-    private static final String START_STRING = "^";
 
     private final UserParameterService userParameterService;
     private final AdParameterService adParameterService;
@@ -152,7 +151,8 @@ public class AdsServiceImpl implements AdsService {
         }
 
         if (isFilterUser) {
-            predicate.add(builder.equal(root.get("user"), authUserService.getCurrentUser()));
+            predicate.add(builder.equal(root.get("user").get("id"),
+                    authUserService.getCurrentUser().getId()));
         }
     }
 
@@ -198,7 +198,7 @@ public class AdsServiceImpl implements AdsService {
 
     private Predicate<Map.Entry<String, String>> exceptNonNumeric(String prefix) {
         return entry -> {
-            var regex = "^%s%s".formatted(prefix, REGEX_BETWEEN.replace(START_STRING, EMPTY));
+            var regex = "^%s\\d+$".formatted(prefix);
             return entry.getKey().matches(regex);
         };
     }

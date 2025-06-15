@@ -5,6 +5,7 @@ import org.cyberrealm.tech.bazario.backend.api.UserApiDelegate;
 import org.cyberrealm.tech.bazario.backend.dto.EmailRequest;
 import org.cyberrealm.tech.bazario.backend.dto.PatchUser;
 import org.cyberrealm.tech.bazario.backend.dto.PrivateUserInformation;
+import org.cyberrealm.tech.bazario.backend.dto.PublicUserInformation;
 import org.cyberrealm.tech.bazario.backend.dto.RegistrationRequest;
 import org.cyberrealm.tech.bazario.backend.dto.TypeEmailMessage;
 import org.cyberrealm.tech.bazario.backend.dto.UserInformation;
@@ -12,7 +13,6 @@ import org.cyberrealm.tech.bazario.backend.dto.VerificationEmail;
 import org.cyberrealm.tech.bazario.backend.service.UserService;
 import org.cyberrealm.tech.bazario.backend.service.impl.EmailNotificationService;
 import org.cyberrealm.tech.bazario.backend.service.impl.EmailVerificationService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -24,9 +24,14 @@ public class UserApiDelegateImpl implements UserApiDelegate {
     private final UserService userService;
 
     @Override
+    public ResponseEntity<PublicUserInformation> getPublicUserInformation(Long id) {
+        return ResponseEntity.ok(userService.getPublicInformationById(id));
+    }
+
+    @Override
     public ResponseEntity<Void> createUser(RegistrationRequest registrationRequest) {
         userService.register(registrationRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.noContent().build();
     }
 
     @Override
@@ -68,13 +73,13 @@ public class UserApiDelegateImpl implements UserApiDelegate {
     }
 
     @Override
-    public ResponseEntity<String> verifyEmail(VerificationEmail verificationEmail) {
+    public ResponseEntity<Void> verifyEmail(VerificationEmail verificationEmail) {
         boolean isValid = emailVerificationService.verifyToken(verificationEmail);
         if (!isValid) {
             return ResponseEntity.badRequest().build();
         }
 
         emailVerificationService.markVerified(verificationEmail.getEmail());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }
