@@ -2,6 +2,14 @@ spring:
   config:
     activate:
       on-profile: test
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope: email, profile
   servlet:
     context-path: /api
     multipart:
@@ -74,6 +82,9 @@ image:
   max-num: 6
 aes:
   secret: FDCE463BB7CBE40F
+cookie:
+  refresh:
+    age: 604800 # 7 * 24 * 60 * 60
 frontend:
   reset:
     password:

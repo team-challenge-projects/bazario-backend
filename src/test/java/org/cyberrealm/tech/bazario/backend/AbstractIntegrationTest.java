@@ -3,6 +3,7 @@ package org.cyberrealm.tech.bazario.backend;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import org.cyberrealm.tech.bazario.backend.scripts.ScriptInitializer;
+import org.cyberrealm.tech.bazario.backend.security.OAuth2LoginSuccessHandler;
 import org.cyberrealm.tech.bazario.backend.security.RootUserInitializer;
 import org.cyberrealm.tech.bazario.backend.service.EmailSender;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,4 +41,6 @@ public abstract class AbstractIntegrationTest {
     protected RedisTemplate<String, Object> redisTemplate;
     @MockitoBean
     protected EmailSender emailSender;
+    @MockitoBean
+    protected OAuth2LoginSuccessHandler authHandler;
 }
