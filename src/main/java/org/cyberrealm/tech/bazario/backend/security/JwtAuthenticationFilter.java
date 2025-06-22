@@ -39,6 +39,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
+        if ("/api/login/oauth2/code/google".equals(request.getRequestURI())) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         String token = getToken(request);
         try {
             if (token != null && jwtUtil.isValidToken(token)) {
