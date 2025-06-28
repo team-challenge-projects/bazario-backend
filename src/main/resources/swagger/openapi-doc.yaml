@@ -2130,9 +2130,9 @@ components:
         id:
           type: integer
           format: int64
-        name:
+        typeName:
           type: string
-        parameterId:
+        typeId:
           type: integer
           format: int64
         parameterValue:
@@ -2158,7 +2158,12 @@ components:
     BasicParameter:
       allOf:
         - $ref: '#/components/schemas/BasicUserParameter'
-        - $ref: '#/components/schemas/BasicAdminParameter'
+      type: object
+      properties:
+        restrictionPattern:
+          type: string
+        descriptionPattern:
+          type: string
     CategoryDto:
       type: object
       properties:

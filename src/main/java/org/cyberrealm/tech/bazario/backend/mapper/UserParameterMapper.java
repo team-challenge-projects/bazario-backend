@@ -13,17 +13,17 @@ import org.mapstruct.factory.Mappers;
 public interface UserParameterMapper {
     UserParameterMapper INSTANCE = Mappers.getMapper(UserParameterMapper.class);
 
-    @Mapping(target = "parameterId", source = "parameter.id")
-    @Mapping(target = "name", source = "parameter.name")
+    @Mapping(target = "typeId", source = "parameter.id")
+    @Mapping(target = "typeName", source = "parameter.name")
     @Mapping(target = "restrictionPattern", source = "parameter.restrictionPattern")
     @Mapping(target = "descriptionPattern", source = "parameter.descriptionPattern")
     BasicParameter toBasicParameter(UserParameter userParameter);
 
     @Mapping(target = "user", ignore = true)
-    @Mapping(target = "parameter.id", source = "parameterId")
+    @Mapping(target = "parameter.id", source = "typeId")
     UserParameter toUserParameter(BasicUserParameter basicParameter);
 
     @Mapping(target = "user", ignore = true)
-    @Mapping(target = "parameter.id", source = "parameterId")
+    @Mapping(target = "parameter.id", source = "typeId")
     void updateUserParameter(BasicUserParameter dto, @MappingTarget UserParameter parameter);
 }

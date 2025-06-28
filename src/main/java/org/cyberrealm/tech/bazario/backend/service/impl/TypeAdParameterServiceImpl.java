@@ -53,11 +53,11 @@ public class TypeAdParameterServiceImpl implements TypeAdParameterService {
             return;
         }
         var types = parameterRepository.findAllById(adParameters.stream()
-                .map(BasicUserParameter::getParameterId).toList());
+                .map(BasicUserParameter::getTypeId).toList());
         var builder = new StringBuilder();
         adParameters.forEach(param -> {
             var restrictionPattern = types.stream().filter(type ->
-                    type.getId().equals(param.getParameterId())).findFirst();
+                    type.getId().equals(param.getTypeId())).findFirst();
             if (restrictionPattern.isPresent()) {
                 var matchesPattern = restrictionPattern.filter(typeAdParameter ->
                         Pattern.matches(typeAdParameter.getRestrictionPattern(),
@@ -68,7 +68,7 @@ public class TypeAdParameterServiceImpl implements TypeAdParameterService {
                             .append(END_OF_LINE_SEPARATOR);
                 }
             } else {
-                builder.append("Type parameter with id ").append(param.getParameterId())
+                builder.append("Type parameter with id ").append(param.getTypeId())
                         .append(" is not found");
             }
         });
