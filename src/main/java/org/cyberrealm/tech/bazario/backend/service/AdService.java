@@ -1,9 +1,12 @@
 package org.cyberrealm.tech.bazario.backend.service;
 
 import java.util.List;
+import java.util.Map;
 import org.cyberrealm.tech.bazario.backend.dto.AdDto;
+import org.cyberrealm.tech.bazario.backend.dto.AdLeaderBoardDto;
 import org.cyberrealm.tech.bazario.backend.dto.PatchAd;
 import org.cyberrealm.tech.bazario.backend.dto.ad.CreateAdRequestDto;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface AdService {
@@ -22,4 +25,7 @@ public interface AdService {
     AdDto createOrGet();
 
     void patchById(Long id, PatchAd patchAd);
+
+    Page<AdLeaderBoardDto> getLeaderBoard(Map<String, String> filters);
+
 }

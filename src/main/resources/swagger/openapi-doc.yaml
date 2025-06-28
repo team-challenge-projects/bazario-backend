@@ -1548,6 +1548,40 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /public/ads/leaderBoard:
+    get:
+      tags:
+        - Ad
+      summary: Get ads leader board
+      description: Get ads by filter.
+      operationId: getAdsLeaderBoard
+      parameters:
+        - $ref: '#/components/parameters/filtersParameter'
+      responses:
+        200:
+          description: Get ads leader board
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageLeaderBoardAd'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /public/ads:
     get:
       tags:
@@ -2041,12 +2075,20 @@ components:
           format: email
         phoneNumber:
           type: string
+        distance:
+          type: number
+          format: double
     PrivateUserInformation:
       description: Registration user
       allOf:
-        - $ref: '#/components/schemas/UserInformation'
+        - $ref: '#/components/schemas/PublicUserInformation'
       type: object
       properties:
+        email:
+          type: string
+          format: email
+        phoneNumber:
+          type: string
         cityCoordinate:
           type: string
         parameters:
@@ -2249,6 +2291,14 @@ components:
         category:
           type: integer
           format: int64
+    AdLeaderBoardDto:
+      allOf:
+        - $ref: '#/components/schemas/AdResponseDto'
+      type: object
+      properties:
+        score:
+          type: integer
+          format: int64
     PageParameters:
       type: object
       description: return Page<BasicAdminParameterResponse>
@@ -2267,6 +2317,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AdResponseDto'
+    PageLeaderBoardAd:
+      type: object
+      description: return Page<AdLeaderBoardDto>
+      x-extends: BasisPage
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdLeaderBoardDto'
     PageComment:
       type: object
       description: return Page<CommentDto>

@@ -29,6 +29,7 @@ import org.cyberrealm.tech.bazario.backend.dto.RegistrationRequest;
 import org.cyberrealm.tech.bazario.backend.dto.TypeEmailMessage;
 import org.cyberrealm.tech.bazario.backend.dto.UserInformation;
 import org.cyberrealm.tech.bazario.backend.dto.VerificationEmail;
+import org.cyberrealm.tech.bazario.backend.model.User;
 import org.cyberrealm.tech.bazario.backend.model.enums.MessageType;
 import org.cyberrealm.tech.bazario.backend.repository.UserRepository;
 import org.cyberrealm.tech.bazario.backend.service.AuthenticationUserService;
@@ -40,6 +41,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.redis.core.GeoOperations;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -59,6 +62,8 @@ class UserApiDelegateImplTest extends AbstractIntegrationTest {
     private TokenService tokenService;
     @MockitoBean
     private EmailTemplateBuilder templateBuilder;
+    @MockitoBean
+    private GeoOperations<String, Object> opsForGeo;
 
     @Test
     void createUser() throws Exception {
@@ -103,10 +108,16 @@ class UserApiDelegateImplTest extends AbstractIntegrationTest {
     @Test
     @WithMockUser
     void getOtherUserInformation() throws Exception {
+        var user = new User();
+        user.setId(ID_ONE);
         var dto = new UserInformation().id(ID_ONE).email("test@test.com")
                 .phoneNumber("+380671234567").firstName("Тест")
                 .lastName("Тест").avatar("http://test/test.png")
-                .cityName("Kiev");
+                .cityName("Kiev").distance(1.0);
+        when(redisTemplate.opsForGeo()).thenReturn(opsForGeo);
+        when(authService.getCurrentUser()).thenReturn(user);
+        when(opsForGeo.distance(anyString(), anyString(), anyString()))
+                .thenReturn(new Distance(1.0));
         mockMvc.perform(get("/private/user/" + ID_ONE))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(dto)));

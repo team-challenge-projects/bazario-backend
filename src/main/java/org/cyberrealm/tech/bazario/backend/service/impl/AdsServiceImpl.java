@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -24,6 +25,7 @@ import org.cyberrealm.tech.bazario.backend.service.AuthenticationUserService;
 import org.cyberrealm.tech.bazario.backend.service.CommentService;
 import org.cyberrealm.tech.bazario.backend.service.PageableService;
 import org.cyberrealm.tech.bazario.backend.service.UserParameterService;
+import org.cyberrealm.tech.bazario.backend.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -50,6 +52,7 @@ public class AdsServiceImpl implements AdsService {
     private final AuthenticationUserService authUserService;
     private final PageableService pageableService;
     private final CommentService commentService;
+    private final UserService userService;
 
     @Override
     public Page<AdResponseDto> findAll(Map<String, String> filters) {
@@ -96,18 +99,10 @@ public class AdsServiceImpl implements AdsService {
                         }
                     }
                 }
-                case "title" -> predicate.add(builder.like(root.get("title"),"%" + value + "%"));
+                case "title" -> predicate.add(builder.like(root.get("title"), "%" + value + "%"));
                 case "category" -> {
                     try {
                         predicate.add(builder.equal(root.get("category").get("id"),
-                                Long.parseLong(value)));
-                    } catch (NumberFormatException e) {
-                        builder.conjunction();
-                    }
-                }
-                case "user" -> {
-                    try {
-                        predicate.add(builder.equal(root.get("user").get("id"),
                                 Long.parseLong(value)));
                     } catch (NumberFormatException e) {
                         builder.conjunction();
@@ -174,25 +169,54 @@ public class AdsServiceImpl implements AdsService {
     private jakarta.persistence.criteria.Predicate getPredicateByUser(
             Root<Ad> root, CriteriaBuilder builder, Map<String, String> filters) {
         Set<Long> userIds = new HashSet<>();
+        if (filters.containsKey("user")) {
+            try {
+                return builder.equal(root.get("user").get("id"),
+                        Long.parseLong(filters.get("user")));
+            } catch (NumberFormatException e) {
+                return builder.conjunction();
+            }
+        }
         var userParamFieldFilter = filters.entrySet().stream()
                 .filter(exceptNonNumeric(PREFIX_USER_PARAM))
                 .collect(Collectors.toMap(entry ->
                                 Long.parseLong(entry.getKey()
                                         .replaceFirst(PREFIX_USER_PARAM, EMPTY)),
                         Map.Entry::getValue));
-        filters.entrySet().stream().filter(entry ->
-                        entry.getKey().equals("rating") && entry.getValue().matches(REGEX_BETWEEN))
+
+        if (!userParamFieldFilter.isEmpty()) {
+            userIds.addAll(userParameterService.filterByParam(userParamFieldFilter));
+        }
+
+        filters.entrySet().stream().filter(entry -> entry.getKey()
+                        .equals("rating") && entry.getValue().matches(REGEX_BETWEEN))
                 .map(Map.Entry::getValue).findFirst()
                 .ifPresent(rating -> {
                     var range = rating.split(REGEX_BETWEEN_DELIMITER);
-                    userIds.addAll(commentService.getUserIdsByRangeRating(
-                            Integer.parseInt(range[INDEX_FROM]),
-                            Integer.parseInt(range[INDEX_TO])));
-                });
-        if (!userParamFieldFilter.isEmpty()) {
-            userIds.addAll(userParameterService.filterByParam(userParamFieldFilter));
 
-        }
+                    List<Long> byRangeRating = commentService.getUserIdsByRangeRating(
+                            Integer.parseInt(range[INDEX_FROM]),
+                            Integer.parseInt(range[INDEX_TO]));
+                    if (userIds.isEmpty()) {
+                        userIds.addAll(byRangeRating);
+                    } else {
+                        userIds.stream().filter(id -> !byRangeRating.contains(id))
+                                .forEach(userIds::remove);
+                    }
+                });
+        filters.entrySet().stream().filter(entry -> entry.getKey()
+                .equals("distance") && entry.getValue().matches("\\d+"))
+                .map(e -> Double.parseDouble(e.getValue())).findFirst()
+                .ifPresent(distance -> {
+                    var ids = userService.getUserIdByDistance(distance);
+                    if (ids.isEmpty()) {
+                        userIds.addAll(ids);
+                    } else {
+                        userIds.stream().filter(id -> !ids.contains(id))
+                                .forEach(userIds::remove);
+                    }
+                });
+
         return userIds.isEmpty() ? builder.conjunction() : root.get("user").get("id").in(userIds);
     }
 

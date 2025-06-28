@@ -85,6 +85,10 @@ aes:
 cookie:
   refresh:
     age: 604800 # 7 * 24 * 60 * 60
+leader-board:
+  max-size: 10
+  trial-period: 1
+  count-delete-ad: 3
 frontend:
   reset:
     password:

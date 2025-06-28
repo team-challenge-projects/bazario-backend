@@ -2,10 +2,14 @@ package org.cyberrealm.tech.bazario.backend.service.impl;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.dto.AdDto;
+import org.cyberrealm.tech.bazario.backend.dto.AdLeaderBoardDto;
 import org.cyberrealm.tech.bazario.backend.dto.AdStatus;
 import org.cyberrealm.tech.bazario.backend.dto.PatchAd;
 import org.cyberrealm.tech.bazario.backend.dto.ad.CreateAdRequestDto;
@@ -24,6 +28,8 @@ import org.cyberrealm.tech.bazario.backend.service.ImageService;
 import org.cyberrealm.tech.bazario.backend.service.TypeAdParameterService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -109,6 +115,30 @@ public class AdServiceImpl implements AdService {
             throw new ForbiddenException("Minimum size of images is " + minNumImages);
         }
         adRepository.save(ad);
+    }
+
+    @Override
+    public Page<AdLeaderBoardDto> getLeaderBoard(Map<String, String> filters) {
+        var size = Integer.parseInt(Optional.of(filters.get("size")).orElse("16"));
+        var page = Integer.parseInt(Optional.of(filters.get("page")).orElse("0"));
+
+        var content = accessAdService.getLeaderBoardContent(filters).stream()
+                .map(tuple -> new AdLeaderBoardDto()
+                        .id((Long) tuple.getValue()).score(Objects
+                                .requireNonNull(tuple.getScore()).longValue())).toList();
+        var ads = adRepository.findAllById(content.stream().map(AdLeaderBoardDto::getId)
+                .toList());
+        content.forEach(dto -> {
+            ads.stream().filter(e -> e.getId().equals(dto.getId()))
+                    .findFirst().ifPresent(e -> {
+                        dto.category(e.getCategory().getId())
+                                .price(e.getPrice()).description(e.getDescription())
+                                .title(e.getTitle()).imageUrl(URI.create(e.getImages()
+                                        .iterator().next()));
+                    });
+        });
+        return new PageImpl<>(content, PageRequest.of(page, size),
+                accessAdService.getLeaderBoardCount(filters));
     }
 
     @Override

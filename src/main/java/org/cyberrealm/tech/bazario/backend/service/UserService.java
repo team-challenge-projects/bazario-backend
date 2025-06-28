@@ -1,5 +1,6 @@
 package org.cyberrealm.tech.bazario.backend.service;
 
+import java.util.List;
 import org.cyberrealm.tech.bazario.backend.dto.PatchUser;
 import org.cyberrealm.tech.bazario.backend.dto.PrivateUserInformation;
 import org.cyberrealm.tech.bazario.backend.dto.PublicUserInformation;
@@ -23,4 +24,6 @@ public interface UserService {
     void deleteById(Long id);
 
     PublicUserInformation getPublicInformationById(Long id);
+
+    List<Long> getUserIdByDistance(double distance);
 }
