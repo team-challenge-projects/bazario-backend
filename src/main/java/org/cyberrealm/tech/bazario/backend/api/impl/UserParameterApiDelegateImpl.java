@@ -3,6 +3,7 @@ package org.cyberrealm.tech.bazario.backend.api.impl;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.api.UserParameterApiDelegate;
 import org.cyberrealm.tech.bazario.backend.dto.BasicAdminParameter;
+import org.cyberrealm.tech.bazario.backend.dto.BasicAdminParameterResponse;
 import org.cyberrealm.tech.bazario.backend.service.TypeUserParameterService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -24,8 +25,8 @@ public class UserParameterApiDelegateImpl implements UserParameterApiDelegate {
     }
 
     @Override
-    public ResponseEntity<Void> putUserParameter(Long id, BasicAdminParameter basicAdminParameter) {
-        service.update(id, basicAdminParameter);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<BasicAdminParameterResponse> putUserParameter(
+            Long id, BasicAdminParameter basicAdminParameter) {
+        return ResponseEntity.ok(service.update(id, basicAdminParameter));
     }
 }

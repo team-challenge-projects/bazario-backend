@@ -99,7 +99,7 @@ paths:
     post:
       tags:
         - Authentication
-      description: User login endpoint
+      description: User login endpoint using the refresh token
       operationId: refreshToken
       parameters:
         - in: cookie
@@ -152,7 +152,7 @@ paths:
             type: string
       responses:
         204:
-          description: Authenticated successfully. Get token.
+          description: Logout successfully.
           headers:
             Set-Cookie:
               schema:
@@ -182,8 +182,10 @@ paths:
         - User
       security:
         - bearerAuth: [ ]
-      summary: Create user
-      description: Creates user with the provided information.
+      summary: Save form registration
+      description: |
+        Save the registration form in the cache. 
+        It will be added to the database when you confirm your email.
       operationId: createUser
       requestBody:
         content:
@@ -254,8 +256,8 @@ paths:
         - User
       security:
         - bearerAuth: [ ]
-      summary: Verify Email
-      description: Verify Email after registration user
+      summary: Confirm email
+      description: Confirm email after uploading user registration data
       operationId: verifyEmail
       requestBody:
         content:
@@ -295,7 +297,7 @@ paths:
       operationId: getUserInformation
       responses:
         200:
-          description: Registration successfully. Get token.
+          description: Get user information.
           content:
             application/json:
               schema:
@@ -330,7 +332,9 @@ paths:
       tags:
         - User
       summary: Update user
-      description: Update user`s field. If update email you will also need verify it. Role and isLocked fields change only admin.
+      description: |
+        Update user`s field. If update email you will also need verify it.
+        Role  change only root user and isLocked field change admin or root.
       operationId: updateUser
       requestBody:
         content:
@@ -340,7 +344,7 @@ paths:
         required: true
       responses:
         200:
-          description: Registration successfully. Get token.
+          description: Update user fields successfully.
           content:
             application/json:
               schema:
@@ -386,10 +390,11 @@ paths:
         - bearerAuth: []
       tags:
         - User
-      summary: Delete an existing User
-      description: Deletes an existing User by its unique identifier.
+      summary: Change user email and block user
+      description: |
+        Change user email by add prefix and block user.
+        Change the status of the user's ads to DELETE.
       operationId: deleteUser
-
       responses:
         204:
           description: User deleted successfully
@@ -430,7 +435,7 @@ paths:
         - $ref: '#/components/parameters/idParam'
       responses:
         200:
-          description: Registration successfully. Get token.
+          description: Get other user information successfully.
           content:
             application/json:
               schema:
@@ -476,7 +481,7 @@ paths:
         - $ref: '#/components/parameters/idParam'
       responses:
         200:
-          description: Registration successfully. Get token.
+          description: Get public information about user successfully.
           content:
             text/plain:
               schema:
@@ -512,7 +517,9 @@ paths:
       tags:
         - User
       summary: Update user by admin
-      description: Update user`s field by admin. Role and isLocked fields change only admin.
+      description: |
+        Update user`s field by admin. Role change only root.
+        IsLocked fields change admin or root.
       operationId: updateUserByAdmin
       parameters:
         - $ref: '#/components/parameters/idParam'
@@ -524,7 +531,7 @@ paths:
         required: true
       responses:
         200:
-          description: Registration successfully. Get token.
+          description: Update user`s fields successfully.
           content:
             application/json:
               schema:
@@ -608,8 +615,8 @@ paths:
         - bearerAuth: []
       tags:
         - User parameter
-      summary: Create user parameter by user
-      description: Create user parameter by user
+      summary: Creating a user parameter type by the administrator
+      description: Creating a user parameter type by the administrator
       operationId: createUserParameter
       requestBody:
         content:
@@ -619,7 +626,7 @@ paths:
         required: true
       responses:
         201:
-          description: Get id of user parameter
+          description: Create a user parameter type. Get id of user parameter
           content:
             application/json:
               schema:
@@ -673,8 +680,12 @@ paths:
               $ref: '#/components/schemas/BasicAdminParameter'
         required: true
       responses:
-        204:
-          description: Send verification code to email
+        200:
+          description: Change user parameter type successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BasicAdminParameterResponse'
         400:
           description: Invalid input
           content:
@@ -710,14 +721,14 @@ paths:
         - User parameter
       security:
         - bearerAuth: []
-      summary: Delete user parameter by user
-      description: Delete user parameter by user
+      summary: Delete user parameter by admin
+      description: Delete user parameter by admin
       operationId: deleteUserParameter
       parameters:
         - $ref: '#/components/parameters/idParam'
       responses:
         204:
-          description: Send verification code to email
+          description: Delete user parameter successful.
         400:
           description: Invalid input
           content:
@@ -765,7 +776,7 @@ paths:
         required: true
       responses:
         204:
-          description: Send verification code to email
+          description: Reset password successful.
         400:
           description: Invalid input
           content:
@@ -797,7 +808,7 @@ paths:
         - $ref: '#/components/parameters/filtersParameter'
       responses:
         200:
-          description: Add ad successfully
+          description: Get favorite ad successful.
           content:
             application/json:
               schema:
@@ -839,7 +850,7 @@ paths:
         - $ref: '#/components/parameters/idParam'
       responses:
         204:
-          description: Add ad successfully
+          description: Add favorite ad successfully
         400:
           description: Invalid input
           content:
@@ -882,7 +893,7 @@ paths:
         - $ref: '#/components/parameters/idParam'
       responses:
         204:
-          description: Delete ad successfully
+          description: Delete favorite ad successfully
         400:
           description: Invalid input
           content:
@@ -1473,8 +1484,12 @@ paths:
               $ref: '#/components/schemas/BasicAdminParameter'
         required: true
       responses:
-        204:
-          description: Send verification code to email
+        200:
+          description: Put ad parameter successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BasicAdminParameterResponse'
         400:
           description: Invalid input
           content:
@@ -1510,14 +1525,14 @@ paths:
         - AdParameter
       security:
         -  bearerAuth: []
-      summary: Delete ad parameter by user
-      description: Delete ad parameter by user
+      summary: Delete ad parameter by admin
+      description: Delete ad parameter by admin
       operationId: deleteAdParameter
       parameters:
         - $ref: '#/components/parameters/idParam'
       responses:
         204:
-          description: Send verification code to email
+          description: Delete ad parameter successful.
         400:
           description: Invalid input
           content:
@@ -1602,7 +1617,7 @@ paths:
         - $ref: '#/components/parameters/filtersParameter'
       responses:
         200:
-          description: Create ad successfully
+          description: Get ads successfully.
           content:
             application/json:
               schema:
@@ -1632,13 +1647,13 @@ paths:
       security:
         - bearerAuth: [ ]
       summary: Get ad
-      description: Get ad parameter by user
+      description: Get ad by id
       operationId: getAd
       parameters:
         - $ref: '#/components/parameters/idParam'
       responses:
         200:
-          description: Create ad successfully
+          description: Get ad successfully
           content:
             application/json:
               schema:
@@ -1777,7 +1792,7 @@ paths:
         required: true
       responses:
         204:
-          description: Create ad successfully
+          description: Change ad successfully
         400:
           description: Invalid input
           content:
@@ -1858,7 +1873,10 @@ paths:
         - bearerAuth: []
       tags:
         - Image
-      description: Load and save image. If type is ad than parameter id is ad\`s id. If type is avatar parameter id is user\`s id, just admin operation, another ignore.
+      description: |
+        Load and save image. If type is ad than parameter id is ad\`s id.
+        If type is avatar parameter id is user\`s id, just admin operation,
+        another ignore.
       operationId: saveImage
       parameters:
         - $ref: '#/components/parameters/typeImage'
@@ -1875,7 +1893,7 @@ paths:
         required: true
       responses:
         201:
-          description: Created
+          description: Created image successful.
           content:
             application/json:
               schema:
@@ -1910,7 +1928,10 @@ paths:
         - bearerAuth: []
       tags:
         - Image
-      description: Load and change image.If type is ad than parameter id is ad\`s id. If type is avatar parameter id is user\`s id, just admin operation, another ignore.
+      description: |
+        Load and change image.If type is ad than parameter id is ad\`s id.
+        If type is avatar parameter id is user\`s id, just admin operation,
+        another ignore.
       operationId: changeImage
       parameters:
         - $ref: '#/components/parameters/typeImage'
@@ -1930,7 +1951,7 @@ paths:
         required: true
       responses:
         200:
-          description: Created
+          description: Change image successful.
           content:
             application/json:
               schema:
@@ -1965,7 +1986,11 @@ paths:
         - bearerAuth: []
       tags:
         - Image
-      description: Delete image. Parameter id is ad or user id. If type is ad than parameter id is ad\`s id. If type is avatar parameter id is user\`s id, just admin operation, another ignore.
+      description: |
+        Delete image. Parameter id is ad or user id. 
+        If type is ad than parameter id is ad\`s id.
+        If type is avatar parameter id is user\`s id, just admin operation, 
+        another ignore.
       operationId: deleteImage
       parameters:
         - $ref: '#/components/parameters/typeImage'
@@ -1973,7 +1998,7 @@ paths:
         - $ref: '#/components/parameters/urlParameter'
       responses:
         204:
-          description: Delete successful
+          description: Delete image successful.
         400:
           description: Bad Request
           content:
@@ -2038,7 +2063,7 @@ components:
         hex:
           type: string
     RegistrationRequest:
-      description: Registration user
+      description: Registration form of user
       allOf:
         - $ref: '#/components/schemas/AuthenticationRequest'
       type: object
@@ -2065,7 +2090,7 @@ components:
         cityName:
           type: string
     UserInformation:
-      description: Registration user
+      description: Private user information
       allOf:
         - $ref: '#/components/schemas/PublicUserInformation'
       type: object
@@ -2079,7 +2104,7 @@ components:
           type: number
           format: double
     PrivateUserInformation:
-      description: Registration user
+      description: Full user information
       allOf:
         - $ref: '#/components/schemas/PublicUserInformation'
       type: object

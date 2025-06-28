@@ -12,7 +12,7 @@ public interface TypeAdParameterService {
 
     Long create(BasicAdminParameter parameter);
 
-    void update(Long id, BasicAdminParameter parameter);
+    BasicAdminParameterResponse update(Long id, BasicAdminParameter parameter);
 
     void delete(Long id);
 

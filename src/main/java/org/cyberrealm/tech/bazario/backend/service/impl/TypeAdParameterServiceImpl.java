@@ -38,8 +38,9 @@ public class TypeAdParameterServiceImpl implements TypeAdParameterService {
     }
 
     @Override
-    public void update(Long id, BasicAdminParameter parameter) {
-        parameterRepository.save(mapper.toTypeAdParameter(id, parameter));
+    public BasicAdminParameterResponse update(Long id, BasicAdminParameter parameter) {
+        return mapper.toBasicAdminParameter(parameterRepository
+                .save(mapper.toTypeAdParameter(id, parameter)));
     }
 
     @Override
