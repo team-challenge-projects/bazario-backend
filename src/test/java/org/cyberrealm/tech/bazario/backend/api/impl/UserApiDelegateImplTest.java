@@ -134,7 +134,7 @@ class UserApiDelegateImplTest extends AbstractIntegrationTest {
                 .lastName("Тест").avatar("http://test/test.png")
                 .cityName("Kiev").cityCoordinate("50,27|30,3125")
                 .parameters(List.of(new BasicParameter().id(ID_ONE)
-                        .name("Тестовий тип").parameterId(ID_ONE)
+                        .typeName("Тестовий тип").typeId(ID_ONE)
                         .parameterValue("ТестТип")
                         .restrictionPattern("^(ТестТип|ЮридичнийТип)$")
                         .descriptionPattern("Це тестовий тип")));

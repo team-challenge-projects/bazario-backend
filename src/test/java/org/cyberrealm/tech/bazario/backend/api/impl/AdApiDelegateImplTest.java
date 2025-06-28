@@ -97,8 +97,8 @@ class AdApiDelegateImplTest extends AbstractIntegrationTest {
         var dto = new PatchAd().title(newValue).description(newValue)
                 .status(AdStatus.ACTIVE).price(BigDecimal.valueOf(2000.00))
                 .categoryId(ID_ONE).addAdParametersItem(new BasicUserParameter()
-                        .id(ID_ONE).parameterId(ID_ONE).parameterValue("ТестПошта")
-                        .name("Доставка тест"));
+                        .id(ID_ONE).typeId(ID_ONE).parameterValue("ТестПошта")
+                        .typeName("Доставка тест"));
 
         var oldEntity = adRepository.findByIdWithParameters(ID_ONE).orElseThrow();
         entityManager.clear();
@@ -155,7 +155,7 @@ class AdApiDelegateImplTest extends AbstractIntegrationTest {
                         URI.create("http://test/old-test.png")))
                 .addAdParametersItem(new BasicUserParameter()
                         .id(ID_ONE).parameterValue("ТестПошта")
-                        .parameterId(ID_ONE).name("Доставка тест"));
+                        .typeId(ID_ONE).typeName("Доставка тест"));
         mockMvc.perform(get("/public/ad/" + ID_ONE))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(dto)));
