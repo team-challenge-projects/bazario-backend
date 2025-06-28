@@ -16,6 +16,7 @@ import java.util.NoSuchElementException;
 import lombok.SneakyThrows;
 import org.cyberrealm.tech.bazario.backend.AbstractIntegrationTest;
 import org.cyberrealm.tech.bazario.backend.dto.BasicAdminParameter;
+import org.cyberrealm.tech.bazario.backend.dto.BasicAdminParameterResponse;
 import org.cyberrealm.tech.bazario.backend.repository.TypeAdParameterRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -91,10 +92,16 @@ class AdParameterApiDelegateImplTest extends AbstractIntegrationTest {
     void putAdParameter() {
         var oldEntity = repository.findById(ID_ONE).orElseThrow();
         entityManager.clear();
+        var response = new BasicAdminParameterResponse().id(ID_ONE)
+                .name(dto.getName())
+                .restrictionPattern(dto.getRestrictionPattern())
+                .descriptionPattern(dto.getDescriptionPattern());
         mockMvc.perform(put("/admin/ad/parameter/" + ID_ONE)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper
+                        .writeValueAsString(response)));
         var newEntity = repository.findById(ID_ONE).orElseThrow();
         assertAll(
                 () -> assertEquals(oldEntity.getId(), newEntity.getId()),
