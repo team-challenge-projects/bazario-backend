@@ -1568,7 +1568,13 @@ paths:
       tags:
         - Ad
       summary: Get ads leader board
-      description: Get ads by filter.
+      description: |
+        The number of ads depends on the size of the cache.<br>
+        When exceeded, ads with a lower score will be removed from the cache <br>
+        when adding new ones, except for new ads with a trial period.
+        Get page with dto contains ad and score by filter.<br>
+        Filter contains pagination and/or max, min score.<br>
+        Example: "size":"16", "page":"0","sort":"desc", "min":"5", "max":"125"
       operationId: getAdsLeaderBoard
       parameters:
         - $ref: '#/components/parameters/filtersParameter'
@@ -1612,6 +1618,8 @@ paths:
         Example ad parameter: "ad_id_256":"Bosh|Samsung|LG"(ad_id_ is type ad id prefix, | is separator for multi parameter)<br>
         Example user parameter: "user_id_35":"Student"(user_id is type user id prefix)<br>
         Example price: "price":"10.53||156.20"(10.53<= price <=156.20, || is separator)<br>
+        Example rating: "rating":"2.5||7.8","rating":"3||10"<br>
+        Example distance: "distance":"100"
       operationId: getAds
       parameters:
         - $ref: '#/components/parameters/filtersParameter'

@@ -1,18 +1,15 @@
 package org.cyberrealm.tech.bazario.backend.service.impl;
 
 import java.net.URI;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.dto.AdDto;
 import org.cyberrealm.tech.bazario.backend.dto.AdLeaderBoardDto;
 import org.cyberrealm.tech.bazario.backend.dto.AdStatus;
 import org.cyberrealm.tech.bazario.backend.dto.PatchAd;
-import org.cyberrealm.tech.bazario.backend.dto.ad.CreateAdRequestDto;
 import org.cyberrealm.tech.bazario.backend.exception.custom.EntityNotFoundException;
 import org.cyberrealm.tech.bazario.backend.exception.custom.ForbiddenException;
 import org.cyberrealm.tech.bazario.backend.mapper.AdMapper;
@@ -30,7 +27,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -49,31 +45,8 @@ public class AdServiceImpl implements AdService {
     private int minNumImages;
 
     @Override
-    public List<AdDto> findPopular(Pageable pageable) {
-        Page<Ad> adsPage = adRepository.findAll(pageable);
-        return adsPage.stream()
-                .map(adMapper::toDto)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public AdDto save(CreateAdRequestDto requestDto) {
-        return null;
-    }
-
-    @Override
-    public List<AdDto> findAll(Pageable pageable) {
-        return List.of();
-    }
-
-    @Override
     public AdDto findById(Long id) {
         return adMapper.toDto(accessAdService.getPublicAd(id));
-    }
-
-    @Override
-    public AdDto updateById(Long id, CreateAdRequestDto requestDto) {
-        return null;
     }
 
     @Override

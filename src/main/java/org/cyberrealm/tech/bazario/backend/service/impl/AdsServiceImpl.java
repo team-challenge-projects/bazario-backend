@@ -42,7 +42,7 @@ public class AdsServiceImpl implements AdsService {
     private static final int INDEX_KEY = 0;
     private static final int INDEX_VALUE = 1;
     private static final String REGEX_BETWEEN_DELIMITER = "\\|\\|";
-    private static final String REGEX_BETWEEN = "^\\d+\\|\\|\\d+$";
+    private static final String REGEX_BETWEEN = "^\\d+\\.?\\d*\\|\\|\\d+\\.?\\d*$";
     private static final String BETWEEN_DELIMITER = "||";
 
     private final UserParameterService userParameterService;
