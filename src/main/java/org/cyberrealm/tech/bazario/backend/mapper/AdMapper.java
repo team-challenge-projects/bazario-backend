@@ -45,16 +45,16 @@ public interface AdMapper {
     void updateAdFromDto(PatchAd patchAd, @MappingTarget Ad ad);
 
     @Mapping(target = "ad", ignore = true)
-    @Mapping(target = "parameter.id", source = "parameterId")
+    @Mapping(target = "parameter.id", source = "typeId")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateAdParameterFromDto(BasicUserParameter dto, @MappingTarget AdParameter adParameter);
 
     @Mapping(target = "ad", ignore = true)
-    @Mapping(target = "parameter.id", source = "parameterId")
+    @Mapping(target = "parameter.id", source = "typeId")
     AdParameter toAdParameterFromDto(BasicUserParameter dto);
 
-    @Mapping(target = "parameterId", source = "parameter.id")
-    @Mapping(target = "name", source = "parameter.name")
+    @Mapping(target = "typeId", source = "parameter.id")
+    @Mapping(target = "typeName", source = "parameter.name")
     BasicUserParameter toDtoFromAdParameter(AdParameter adParameter);
 
     default URI mapStringToUri(String value) {

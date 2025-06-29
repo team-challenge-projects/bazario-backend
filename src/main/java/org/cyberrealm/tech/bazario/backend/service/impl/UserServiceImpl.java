@@ -3,6 +3,8 @@ package org.cyberrealm.tech.bazario.backend.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.dto.AdStatus;
@@ -23,6 +25,9 @@ import org.cyberrealm.tech.bazario.backend.service.AuthenticationUserService;
 import org.cyberrealm.tech.bazario.backend.service.UserService;
 import org.cyberrealm.tech.bazario.backend.service.VerificationService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.geo.Circle;
+import org.springframework.data.geo.Metrics;
+import org.springframework.data.geo.Point;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +36,10 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private static final int COUNT_MIN_ROOT_USER = 2;
+    private static final String REGEX_DELIMITER_COORDINATE = "\\|";
+    private static final int INDEX_FIRST_COORDINATE = 0;
+    private static final int INDEX_TWO_COORDINATE = 1;
+    private static final String CITIES = "cities";
 
     private final RedisTemplate<String, Object> redisTemplate;
     private final UserRepository userRepository;
@@ -67,7 +76,13 @@ public class UserServiceImpl implements UserService {
         var user = userRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("User with id %d not found"
                         .formatted(id)));
-        return userMapper.toPublicInformation(user);
+        User currentUser = userRepository.findByIdWithParameters(
+                        authService.getCurrentUser().getId())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Current user not found"));
+        return userMapper.toPublicInformation(user, Objects.requireNonNull(redisTemplate.opsForGeo()
+                .distance(CITIES, currentUser.getCityName(),
+                        user.getCityName())).getValue());
     }
 
     @Override
@@ -75,6 +90,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByIdWithParameters(id).orElseThrow(() ->
                 new EntityNotFoundException("User not found"));
         checkUserRestrictions(patchUser, user);
+        setCityCoordinateInRedis(patchUser, user);
         userMapper.updateUser(patchUser, user);
 
         return userMapper.toInformation(userRepository.save(user));
@@ -109,8 +125,19 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new EntityNotFoundException(
                         "User not found"));
         checkUserRestrictions(patchUser, currentUser);
+        setCityCoordinateInRedis(patchUser, currentUser);
         userMapper.updateUser(patchUser, currentUser);
         return userMapper.toInformation(userRepository.save(currentUser));
+    }
+
+    private void setCityCoordinateInRedis(PatchUser patchUser, User user) {
+        if (patchUser.getCityCoordinate() != null && !patchUser.getCityCoordinate().equals(
+                user.getCityCoordinate()) && patchUser.getCityName() != null) {
+            var coordinate = patchUser.getCityCoordinate().split(REGEX_DELIMITER_COORDINATE);
+            redisTemplate.opsForGeo().add(CITIES, new Point(Double.parseDouble(
+                    coordinate[INDEX_FIRST_COORDINATE]), Double.parseDouble(
+                            coordinate[INDEX_TWO_COORDINATE])), patchUser.getCityName());
+        }
     }
 
     private void checkUserRestrictions(PatchUser dto, User user) {
@@ -159,5 +186,22 @@ public class UserServiceImpl implements UserService {
                 new EntityNotFoundException("User with id %d not found"
                         .formatted(id)));
         return userMapper.toInformationForAnonymous(user);
+    }
+
+    @Override
+    public List<Long> getUserIdByDistance(double distance) {
+        User currentUser = userRepository.findByIdWithParameters(
+                        authService.getCurrentUser().getId())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "User not found"));
+        var coordinate = currentUser.getCityCoordinate().split(REGEX_DELIMITER_COORDINATE);
+        var cities = redisTemplate.opsForGeo().radius(CITIES, new Circle(new Point(
+                Double.parseDouble(coordinate[INDEX_FIRST_COORDINATE]),
+                Double.parseDouble(coordinate[INDEX_TWO_COORDINATE])),
+                Metrics.KILOMETERS.getMultiplier() * distance));
+        var names = Objects.requireNonNull(cities).getContent().stream().map(e ->
+                e.getContent().getName().toString()).toList();
+
+        return userRepository.findByCityNameIn(names).stream().map(User::getId).toList();
     }
 }

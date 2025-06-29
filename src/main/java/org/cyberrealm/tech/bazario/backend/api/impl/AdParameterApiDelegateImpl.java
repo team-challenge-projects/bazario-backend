@@ -4,6 +4,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.api.AdParameterApiDelegate;
 import org.cyberrealm.tech.bazario.backend.dto.BasicAdminParameter;
+import org.cyberrealm.tech.bazario.backend.dto.BasicAdminParameterResponse;
 import org.cyberrealm.tech.bazario.backend.service.TypeAdParameterService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +32,8 @@ public class AdParameterApiDelegateImpl implements AdParameterApiDelegate {
     }
 
     @Override
-    public ResponseEntity<Void> putAdParameter(Long id, BasicAdminParameter basicAdminParameter) {
-        parameterService.update(id, basicAdminParameter);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<BasicAdminParameterResponse> putAdParameter(
+            Long id, BasicAdminParameter basicAdminParameter) {
+        return ResponseEntity.ok(parameterService.update(id, basicAdminParameter));
     }
 }

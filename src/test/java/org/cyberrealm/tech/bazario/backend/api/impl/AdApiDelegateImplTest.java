@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.math.BigDecimal;
 import java.net.URI;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -31,10 +32,13 @@ import org.cyberrealm.tech.bazario.backend.service.AuthenticationUserService;
 import org.cyberrealm.tech.bazario.backend.service.ImageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -46,6 +50,10 @@ class AdApiDelegateImplTest extends AbstractIntegrationTest {
     private AuthenticationUserService authUserService;
     @MockitoBean
     private ImageService imageService;
+    @MockitoBean
+    private ZSetOperations<String, Object> opsForZSet;
+    @MockitoBean
+    private ValueOperations<String, Object> opsForValue;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -89,8 +97,8 @@ class AdApiDelegateImplTest extends AbstractIntegrationTest {
         var dto = new PatchAd().title(newValue).description(newValue)
                 .status(AdStatus.ACTIVE).price(BigDecimal.valueOf(2000.00))
                 .categoryId(ID_ONE).addAdParametersItem(new BasicUserParameter()
-                        .id(ID_ONE).parameterId(ID_ONE).parameterValue("ТестПошта")
-                        .name("Доставка тест"));
+                        .id(ID_ONE).typeId(ID_ONE).parameterValue("ТестПошта")
+                        .typeName("Доставка тест"));
 
         var oldEntity = adRepository.findByIdWithParameters(ID_ONE).orElseThrow();
         entityManager.clear();
@@ -126,13 +134,28 @@ class AdApiDelegateImplTest extends AbstractIntegrationTest {
     @SneakyThrows
     @Test
     void getAd() {
+        var ad = adRepository.findById(ID_ONE).orElseThrow();
+
+        when(redisTemplate.opsForZSet()).thenReturn(opsForZSet);
+        when(redisTemplate.opsForValue()).thenReturn(opsForValue);
+        when(opsForZSet.addIfAbsent(ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyLong(), ArgumentMatchers.anyDouble()))
+                .thenReturn(true);
+        when(opsForZSet.incrementScore(ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyLong(), ArgumentMatchers.anyDouble()))
+                .thenReturn(1.0);
+        when(opsForValue.setIfAbsent(ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyLong(), ArgumentMatchers.any(Duration.class)))
+                .thenReturn(true);
+        when(opsForZSet.size(ArgumentMatchers.anyString())).thenReturn(1L);
+
         var dto = new AdDto().id(ID_ONE).title("Тест")
                 .description("Тест").price(BigDecimal.valueOf(1000.00))
                 .images(List.of(URI.create("http://test/test.png"),
                         URI.create("http://test/old-test.png")))
                 .addAdParametersItem(new BasicUserParameter()
                         .id(ID_ONE).parameterValue("ТестПошта")
-                        .parameterId(ID_ONE).name("Доставка тест"));
+                        .typeId(ID_ONE).typeName("Доставка тест"));
         mockMvc.perform(get("/public/ad/" + ID_ONE))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(dto)));

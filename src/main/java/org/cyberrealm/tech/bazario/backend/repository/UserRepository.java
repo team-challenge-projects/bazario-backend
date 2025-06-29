@@ -21,4 +21,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByIdWithParameters(@Param("userId") Long userId);
 
     long countByRole(Role role);
+
+    List<User> findByCityNameIn(List<String> names);
 }

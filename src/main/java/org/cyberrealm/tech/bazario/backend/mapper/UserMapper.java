@@ -59,7 +59,8 @@ public interface UserMapper {
 
     PublicUserInformation toInformationForAnonymous(User user);
 
-    UserInformation toPublicInformation(User user);
+    @Mapping(target = "distance", source = "distance")
+    UserInformation toPublicInformation(User user, double distance);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)

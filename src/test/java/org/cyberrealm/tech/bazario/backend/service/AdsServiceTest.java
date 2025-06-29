@@ -92,7 +92,7 @@ class AdsServiceTest extends AbstractIntegrationTest {
     enum DtoAd {
         ONE(new AdResponseDto().title("Тест").description("Тест")
                 .id(ID_ONE).price(BigDecimal.valueOf(1000.00))
-                .category(ID_ONE).imageUrl(URI.create(""))),
+                .category(ID_ONE).imageUrl(URI.create("http://test/test.png"))),
         TWO(new AdResponseDto().title("Тест search text")
                 .description("Тест search text")
                 .id(ID_TWO).price(BigDecimal.valueOf(3500.00))

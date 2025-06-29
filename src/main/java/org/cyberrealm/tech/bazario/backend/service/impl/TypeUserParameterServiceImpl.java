@@ -2,6 +2,7 @@ package org.cyberrealm.tech.bazario.backend.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.dto.BasicAdminParameter;
+import org.cyberrealm.tech.bazario.backend.dto.BasicAdminParameterResponse;
 import org.cyberrealm.tech.bazario.backend.mapper.TypeUserParameterMapper;
 import org.cyberrealm.tech.bazario.backend.repository.TypeUserParameterRepository;
 import org.cyberrealm.tech.bazario.backend.service.TypeUserParameterService;
@@ -24,7 +25,8 @@ public class TypeUserParameterServiceImpl implements TypeUserParameterService {
     }
 
     @Override
-    public void update(Long id, BasicAdminParameter parameter) {
-        repository.save(mapper.toTypeUserParameter(id, parameter));
+    public BasicAdminParameterResponse update(Long id, BasicAdminParameter parameter) {
+        return mapper.toBasicAdminParameter(repository.save(mapper
+                .toTypeUserParameter(id, parameter)));
     }
 }
