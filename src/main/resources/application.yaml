@@ -124,6 +124,10 @@ cloudinary:
 image:
   min-num: 1
   max-num: 6
+leader-board:
+  max-size: 10
+  trial-period: 1
+  count-delete-ad: 3
 frontend:
   reset:
     password:
