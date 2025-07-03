@@ -131,7 +131,7 @@ leader-board:
 frontend:
   reset:
     password:
-      url: https://frontend.yourapp.com/reset-password
+      url: https://bazario-marketplace-35cx.vercel.app
   email:
     verification:
-      url: https://frontend.yourapp.com/verify-email
+      url: https://bazario-marketplace-35cx.vercel.app/
