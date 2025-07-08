@@ -26,8 +26,10 @@ public class AuthenticationService {
         );
         String accessToken = jwtUtil.generateAccessToken(authentication.getName());
         String refreshToken = jwtUtil.generateRefreshToken(authentication.getName());
-        RefreshToken entity = RefreshToken.builder().token(refreshToken)
-                .user((User) authentication.getPrincipal()).build();
+        User user = (User) authentication.getPrincipal();
+        RefreshToken entity = repository.findByUserId(user.getId()).orElseGet(() ->
+                RefreshToken.builder().user(user).build());
+        entity.setToken(refreshToken);
         repository.save(entity);
         return new UserLoginResponseDto(accessToken, refreshToken);
     }
@@ -39,5 +41,9 @@ public class AuthenticationService {
             return jwtUtil.generateAccessToken(username);
         }
         throw new JwtException("Invalid refresh token");
+    }
+
+    public void clearRefreshTokenCookie(String refreshToken) {
+        repository.deleteByToken(refreshToken);
     }
 }

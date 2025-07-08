@@ -76,7 +76,8 @@ class UserApiDelegateImplTest extends AbstractIntegrationTest {
         mockMvc.perform(post("/anonymous/registration")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isCreated())
+                .andExpect(content().json(objectMapper.writeValueAsString(dto)));
     }
 
     @Test

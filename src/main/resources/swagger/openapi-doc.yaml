@@ -194,8 +194,12 @@ paths:
               $ref: '#/components/schemas/RegistrationRequest'
         required: true
       responses:
-        204:
+        201:
           description: Registration data load successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegistrationRequest'
         400:
           description: Invalid input
           content:

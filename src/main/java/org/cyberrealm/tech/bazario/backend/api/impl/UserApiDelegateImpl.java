@@ -13,6 +13,7 @@ import org.cyberrealm.tech.bazario.backend.dto.VerificationEmail;
 import org.cyberrealm.tech.bazario.backend.service.UserService;
 import org.cyberrealm.tech.bazario.backend.service.impl.EmailNotificationService;
 import org.cyberrealm.tech.bazario.backend.service.impl.EmailVerificationService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -29,9 +30,9 @@ public class UserApiDelegateImpl implements UserApiDelegate {
     }
 
     @Override
-    public ResponseEntity<Void> createUser(RegistrationRequest registrationRequest) {
+    public ResponseEntity<RegistrationRequest> createUser(RegistrationRequest registrationRequest) {
         userService.register(registrationRequest);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(registrationRequest);
     }
 
     @Override

@@ -19,6 +19,14 @@ The open-api documentation is independent and described in
 Endpoints, dto, and enum are generated according to this 
 documentation.
 
+To reduce ddos attacks, rate limiting is applied to endpoints.
+
+User registration takes place in two stages. First, we fill 
+out the registration form and temporarily store it in the 
+cache. Then we send the user a verification link by email. 
+After verification, we write the data from the cache to the
+database if the link has not yet expired.
+
 Files are uploaded to the remote service one at a time to avoid 
 losses under heavy loads. However, you need to bind them to the
 file owner, so you first create the owner (ad, category, user) 
