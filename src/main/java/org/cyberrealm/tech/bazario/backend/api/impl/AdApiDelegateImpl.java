@@ -5,8 +5,9 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.api.AdApiDelegate;
 import org.cyberrealm.tech.bazario.backend.dto.AdDto;
+import org.cyberrealm.tech.bazario.backend.dto.PageCompareAd;
 import org.cyberrealm.tech.bazario.backend.dto.PatchAd;
-import org.cyberrealm.tech.bazario.backend.service.AccessAdService;
+import org.cyberrealm.tech.bazario.backend.service.AdCompareService;
 import org.cyberrealm.tech.bazario.backend.service.AdService;
 import org.cyberrealm.tech.bazario.backend.service.AdsService;
 import org.springframework.data.domain.Page;
@@ -18,11 +19,11 @@ import org.springframework.stereotype.Service;
 public class AdApiDelegateImpl implements AdApiDelegate {
     private final AdService adService;
     private final AdsService adsService;
-    private final AccessAdService accessAdService;
+    private final AdCompareService compareService;
 
     @Override
-    public ResponseEntity<List<AdDto>> comparesAd(List<Long> ids) {
-        return AdApiDelegate.super.comparesAd(ids);
+    public ResponseEntity<PageCompareAd> comparesAd(List<Long> ids) {
+        return ResponseEntity.ok(compareService.compares(ids));
     }
 
     @Override

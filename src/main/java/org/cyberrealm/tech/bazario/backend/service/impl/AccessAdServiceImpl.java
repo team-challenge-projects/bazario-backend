@@ -116,13 +116,13 @@ public class AccessAdServiceImpl implements AccessAdService {
             String> filter) {
         var set = redisTemplate.opsForZSet();
 
-        var size = Long.parseLong(Optional.of(filter.get("size")).orElse("16"));
-        var page = Long.parseLong(Optional.of(filter.get("page")).orElse("0"));
+        var size = Long.parseLong(Optional.ofNullable(filter.get("size")).orElse("16"));
+        var page = Long.parseLong(Optional.ofNullable(filter.get("page")).orElse("0"));
 
-        var min = Double.parseDouble(Optional.of(filter.get("min")).orElse("0"));
-        var max = Double.parseDouble(Optional.of(filter.get("max")).orElse("-1"));
+        var min = Double.parseDouble(Optional.ofNullable(filter.get("min")).orElse("0"));
+        var max = Double.parseDouble(Optional.ofNullable(filter.get("max")).orElse("-1"));
 
-        var sort = Optional.of(filter.get("sort")).orElse("desc");
+        var sort = Optional.ofNullable(filter.get("sort")).orElse("desc");
         if (sort.equals("desc")) {
             return set.reverseRangeByScoreWithScores(LEADER_BOARD, min, max,
                             size * page, size);
@@ -136,8 +136,8 @@ public class AccessAdServiceImpl implements AccessAdService {
     public long getLeaderBoardCount(Map<String, String> filter) {
         var set = redisTemplate.opsForZSet();
 
-        var min = Double.parseDouble(Optional.of(filter.get("min")).orElse("0"));
-        var max = Double.parseDouble(Optional.of(filter.get("max")).orElse("-1"));
+        var min = Double.parseDouble(Optional.ofNullable(filter.get("min")).orElse("0"));
+        var max = Double.parseDouble(Optional.ofNullable(filter.get("max")).orElse("-1"));
 
         return Objects.requireNonNull(set.count(LEADER_BOARD, min, max));
     }

@@ -194,8 +194,12 @@ paths:
               $ref: '#/components/schemas/RegistrationRequest'
         required: true
       responses:
-        204:
+        201:
           description: Registration data load successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegistrationRequest'
         400:
           description: Invalid input
           content:
@@ -1714,9 +1718,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/AdDto'
+                $ref: '#/components/schemas/PageCompareAd'
         400:
           description: Invalid input
           content:
@@ -2373,6 +2375,43 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CommentDto'
+    ItemComparesDto:
+      type: object
+      properties:
+        name:
+          type: string
+        score:
+          type: number
+          format: double
+    AdComparesDto:
+      allOf:
+        - $ref: '#/components/schemas/AdResponseDto'
+      type: object
+      properties:
+        compares:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemComparesDto'
+    PageCompareAd:
+      type: object
+      properties:
+        min-max:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              min:
+                type: number
+                format: double
+              max:
+                type: number
+                format: double
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdComparesDto'
   parameters:
     idParam:
       name: id

@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.cyberrealm.tech.bazario.backend.config.MapperConfig;
+import org.cyberrealm.tech.bazario.backend.dto.AdComparesDto;
 import org.cyberrealm.tech.bazario.backend.dto.AdDto;
 import org.cyberrealm.tech.bazario.backend.dto.AdResponseDto;
 import org.cyberrealm.tech.bazario.backend.dto.BasicUserParameter;
@@ -68,6 +69,13 @@ public interface AdMapper {
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "parameters", ignore = true)
     Ad toAd(AdCredentials credentials);
+
+    @Mapping(target = "imageUrl", expression =
+            "java(URI.create(ad.getImages().stream().findFirst().orElse(\"\")))")
+
+    @Mapping(target = "category", source = "category.id")
+    @Mapping(target = "compares", ignore = true)
+    AdComparesDto toComparesDto(Ad ad);
 
     @AfterMapping
     default void updateOrAddAdParameter(PatchAd patchAd, @MappingTarget Ad ad) {

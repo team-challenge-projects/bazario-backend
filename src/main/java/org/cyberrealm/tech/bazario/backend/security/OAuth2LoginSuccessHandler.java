@@ -6,8 +6,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import lombok.RequiredArgsConstructor;
+import org.cyberrealm.tech.bazario.backend.model.RefreshToken;
 import org.cyberrealm.tech.bazario.backend.model.User;
 import org.cyberrealm.tech.bazario.backend.model.enums.Role;
+import org.cyberrealm.tech.bazario.backend.repository.RefreshTokenRepository;
 import org.cyberrealm.tech.bazario.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -23,6 +25,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository repository;
+    private final RefreshTokenRepository tokenRepository;
 
     @Value("${cookie.refresh.age}")
     private int maxAge;
@@ -36,8 +39,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             throws IOException {
         var user = (OAuth2User) authentication.getPrincipal();
         String email = user.getAttribute("email");
-
-        if (!repository.existsByEmail(email)) {
+        User currentUser = repository.findByEmail(email).orElseGet(() -> {
             var newUser = new User();
             newUser.setEmail(email);
             newUser.setFirstName(user.getAttribute("given_name"));
@@ -45,10 +47,12 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             newUser.setAvatar(user.getAttribute("picture"));
             newUser.setRole(Role.USER);
             newUser.setPassword(passwordEncoder.encode(password));
-            repository.save(newUser);
-        }
+            return repository.save(newUser);
+        });
 
         String refreshToken = jwtUtil.generateRefreshToken(email);
+        tokenRepository.save(RefreshToken.builder().token(refreshToken)
+                .user(currentUser).build());
         Cookie cookie = new Cookie("refreshToken", refreshToken);
         cookie.setHttpOnly(true);
         cookie.setSecure(false);

@@ -23,4 +23,7 @@ public interface AdRepository extends JpaRepository<Ad, Long>, JpaSpecificationE
 
     @EntityGraph(attributePaths = {"images"})
     List<Ad> findByUser(User user);
+
+    @EntityGraph(attributePaths = {"user"})
+    List<Ad> findByIdIn(List<Long> ids);
 }
