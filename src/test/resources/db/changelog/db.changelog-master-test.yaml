@@ -32,6 +32,8 @@ databaseChangeLog:
   - include:
       file: db/changelog/changes/16-insert-type-ad-parameters.yaml
   - include:
+      file: db/changelog/changes/17-drop-unique-phone-number.yaml
+  - include:
       file: db/changelog/changes/17-insert-type-user-parameters.yaml
   - include:
       file: db/changelog/changes/18-insert-categories.yaml

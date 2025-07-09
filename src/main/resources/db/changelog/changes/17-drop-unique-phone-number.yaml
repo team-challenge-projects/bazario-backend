@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: drop-unique-phone-number
+      author: Andrey Sitarskiy
+      changes:
+        - dropUniqueConstraint:
+            tableName: users
+            constraintName: users_phone_number_key
+            columnNames: phone_number
