@@ -2383,6 +2383,9 @@ components:
         score:
           type: number
           format: double
+        percent:
+          type: number
+          format: double
     AdComparesDto:
       allOf:
         - $ref: '#/components/schemas/AdResponseDto'
