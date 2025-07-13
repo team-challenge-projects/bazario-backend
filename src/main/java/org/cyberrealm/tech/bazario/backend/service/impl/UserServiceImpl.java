@@ -40,7 +40,6 @@ public class UserServiceImpl implements UserService {
     private static final String REGEX_DELIMITER_COORDINATE = "\\|";
     private static final int INDEX_FIRST_COORDINATE = 0;
     private static final int INDEX_TWO_COORDINATE = 1;
-    private static final String CITIES = "cities";
 
     private final RedisTemplate<String, Object> redisTemplate;
     private final UserRepository userRepository;

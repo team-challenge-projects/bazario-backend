@@ -9,6 +9,7 @@ import org.cyberrealm.tech.bazario.backend.dto.UserInformation;
 import org.cyberrealm.tech.bazario.backend.exception.custom.RegistrationException;
 
 public interface UserService {
+    String CITIES = "cities";
     /**
      * Filling out the registration form and saving it to the cache
      *

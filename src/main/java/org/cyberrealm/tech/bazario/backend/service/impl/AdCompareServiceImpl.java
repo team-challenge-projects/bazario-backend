@@ -18,6 +18,7 @@ import org.cyberrealm.tech.bazario.backend.repository.CommentRepository;
 import org.cyberrealm.tech.bazario.backend.repository.UserRepository;
 import org.cyberrealm.tech.bazario.backend.service.AdCompareService;
 import org.cyberrealm.tech.bazario.backend.service.AuthenticationUserService;
+import org.cyberrealm.tech.bazario.backend.service.UserService;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -87,7 +88,7 @@ public class AdCompareServiceImpl implements AdCompareService {
         var users = userRepository.findAllById(userIds);
         return users.stream().collect(Collectors.toMap(User::getId,
                 user -> Objects.requireNonNull(redisTemplate.opsForGeo()
-                                .distance("city", currentCityName, user.getCityName()))
+                                .distance(UserService.CITIES, currentCityName, user.getCityName()))
                         .getValue()));
     }
 
