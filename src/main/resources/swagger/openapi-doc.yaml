@@ -487,7 +487,7 @@ paths:
         200:
           description: Get public information about user successfully.
           content:
-            text/plain:
+            application/json:
               schema:
                 $ref: '#/components/schemas/PublicUserInformation'
         400:
@@ -2381,6 +2381,9 @@ components:
         name:
           type: string
         score:
+          type: number
+          format: double
+        percent:
           type: number
           format: double
     AdComparesDto:

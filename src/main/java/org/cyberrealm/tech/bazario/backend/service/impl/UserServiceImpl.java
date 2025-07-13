@@ -19,6 +19,7 @@ import org.cyberrealm.tech.bazario.backend.exception.custom.RegistrationExceptio
 import org.cyberrealm.tech.bazario.backend.mapper.UserMapper;
 import org.cyberrealm.tech.bazario.backend.model.User;
 import org.cyberrealm.tech.bazario.backend.model.enums.Role;
+import org.cyberrealm.tech.bazario.backend.repository.RefreshTokenRepository;
 import org.cyberrealm.tech.bazario.backend.repository.UserRepository;
 import org.cyberrealm.tech.bazario.backend.service.AdDeleteService;
 import org.cyberrealm.tech.bazario.backend.service.AuthenticationUserService;
@@ -39,13 +40,13 @@ public class UserServiceImpl implements UserService {
     private static final String REGEX_DELIMITER_COORDINATE = "\\|";
     private static final int INDEX_FIRST_COORDINATE = 0;
     private static final int INDEX_TWO_COORDINATE = 1;
-    private static final String CITIES = "cities";
 
     private final RedisTemplate<String, Object> redisTemplate;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final AuthenticationUserService authService;
     private final AdDeleteService adDeleteService;
+    private final RefreshTokenRepository tokenRepository;
     private final ObjectMapper mapper;
 
     @Value("${token.expiration.minutes:15}")
@@ -102,6 +103,7 @@ public class UserServiceImpl implements UserService {
                 new EntityNotFoundException("User by id %d not found"
                         .formatted(id)));
         adDeleteService.deleteByUser(user);
+        tokenRepository.deleteByUser(user);
         userRepository.delete(user);
     }
 
@@ -115,6 +117,7 @@ public class UserServiceImpl implements UserService {
         currentUser.setParameters(Set.of());
         currentUser.setLocked(true);
         adDeleteService.changeStatusByUser(currentUser, AdStatus.DELETE);
+        tokenRepository.deleteByUser(currentUser);
         userRepository.save(currentUser);
     }
 
