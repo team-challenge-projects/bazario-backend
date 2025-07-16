@@ -1,7 +1,7 @@
 package org.cyberrealm.tech.bazario.backend.api.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.cyberrealm.tech.bazario.backend.api.UserParameterApiDelegate;
+import org.cyberrealm.tech.bazario.backend.api.TypeUserParameterApiDelegate;
 import org.cyberrealm.tech.bazario.backend.dto.BasicAdminParameter;
 import org.cyberrealm.tech.bazario.backend.dto.BasicAdminParameterResponse;
 import org.cyberrealm.tech.bazario.backend.service.TypeUserParameterService;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UserParameterApiDelegateImpl implements UserParameterApiDelegate {
+public class UserParameterApiDelegateImpl implements TypeUserParameterApiDelegate {
     private final TypeUserParameterService service;
 
     @Override

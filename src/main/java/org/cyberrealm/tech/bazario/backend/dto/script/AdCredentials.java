@@ -1,7 +1,6 @@
 package org.cyberrealm.tech.bazario.backend.dto.script;
 
 import java.math.BigDecimal;
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.cyberrealm.tech.bazario.backend.dto.AdStatus;
@@ -15,5 +14,4 @@ public class AdCredentials {
     private AdStatus status;
     private int user;
     private int category;
-    private List<AdParameterCredentials> adParameters;
 }

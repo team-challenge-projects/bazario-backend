@@ -2,7 +2,7 @@ package org.cyberrealm.tech.bazario.backend.api.impl;
 
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.cyberrealm.tech.bazario.backend.api.AdParameterApiDelegate;
+import org.cyberrealm.tech.bazario.backend.api.TypeAdParameterApiDelegate;
 import org.cyberrealm.tech.bazario.backend.dto.BasicAdminParameter;
 import org.cyberrealm.tech.bazario.backend.dto.BasicAdminParameterResponse;
 import org.cyberrealm.tech.bazario.backend.service.TypeAdParameterService;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class AdParameterApiDelegateImpl implements AdParameterApiDelegate {
+public class AdParameterApiDelegateImpl implements TypeAdParameterApiDelegate {
     private final TypeAdParameterService parameterService;
 
     @Override

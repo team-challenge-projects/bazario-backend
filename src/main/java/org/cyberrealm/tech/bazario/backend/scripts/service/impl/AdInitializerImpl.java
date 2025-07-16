@@ -1,12 +1,12 @@
 package org.cyberrealm.tech.bazario.backend.scripts.service.impl;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.dto.script.AdCredentials;
 import org.cyberrealm.tech.bazario.backend.mapper.AdMapper;
 import org.cyberrealm.tech.bazario.backend.model.Ad;
-import org.cyberrealm.tech.bazario.backend.model.AdParameter;
 import org.cyberrealm.tech.bazario.backend.model.Category;
 import org.cyberrealm.tech.bazario.backend.model.TypeAdParameter;
 import org.cyberrealm.tech.bazario.backend.model.User;
@@ -29,22 +29,13 @@ public class AdInitializerImpl implements AdInitializer {
             var ad = mapper.toAd(credentials);
             ad.setUser(users.get(credentials.getUser()));
             ad.setCategory(categories.get(credentials.getCategory()));
-            ad.setParameters(credentials.getAdParameters().stream()
-                    .map(parameter -> {
-                        var adParameter = new AdParameter();
-                        adParameter.setParameter(adTypes.get(parameter.getTypeParameter()));
-                        adParameter.setParameterValue(parameter.getParameterValue());
-                        adParameter.setAd(ad);
-                        return adParameter;
-                    }).collect(Collectors.toSet()));
             repository.save(ad);
         }
     }
 
     @Override
-    public void createAds(List<AdCredentials> credentials, List<User> users,
-                          List<Category> categories,
-                          List<TypeAdParameter> adType) {
+    public List<Ad> createAds(List<AdCredentials> credentials, List<User> users,
+                          List<Category> categories) {
         Specification<Ad> spec = (root, query, cb) ->
                 credentials.stream().map(dto -> {
                     var titlePredicate = cb.equal(root.get("title"), dto.getTitle());
@@ -57,25 +48,20 @@ public class AdInitializerImpl implements AdInitializer {
             var notExistsCredentials = getNotExistsCredentials(credentials, ads);
 
             if (!notExistsCredentials.isEmpty()) {
-                repository.saveAll(createNewAds(notExistsCredentials, users, categories, adType));
+                var newAds = repository.saveAll(
+                        createNewAds(notExistsCredentials, users, categories));
+                return Stream.of(ads, newAds).flatMap(Collection::stream).toList();
             }
         }
-
+        return ads;
     }
 
     private List<Ad> createNewAds(List<AdCredentials> credentials, List<User> users,
-                                  List<Category> categories, List<TypeAdParameter> adType) {
+                                  List<Category> categories) {
         return credentials.stream().map(dto -> {
             var ad = mapper.toAd(dto);
             ad.setUser(users.get(dto.getUser()));
             ad.setCategory(categories.get(dto.getCategory()));
-            ad.setParameters(dto.getAdParameters().stream().map(param -> {
-                var adParam = new AdParameter();
-                adParam.setParameter(adType.get(param.getTypeParameter()));
-                adParam.setParameterValue(param.getParameterValue());
-                adParam.setAd(ad);
-                return adParam;
-            }).collect(Collectors.toSet()));
             return ad;
         }).toList();
     }
