@@ -9,6 +9,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface UserRepository extends JpaRepository<User, Long> {
+
+    String USER_WITH_PARAMETER = """
+            SELECT u FROM User u LEFT JOIN FETCH u.parameters
+             LEFT JOIN FETCH u.parameters.parameter
+             WHERE u.id = :userId""";
+
     Optional<User> findByEmail(String email);
 
     boolean existsByEmail(String email);
@@ -17,7 +23,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findByEmailIn(List<String> emails);
 
-    @Query("SELECT u FROM User u LEFT JOIN FETCH u.parameters WHERE u.id = :userId")
+    @Query(USER_WITH_PARAMETER)
     Optional<User> findByIdWithParameters(@Param("userId") Long userId);
 
     long countByRole(Role role);

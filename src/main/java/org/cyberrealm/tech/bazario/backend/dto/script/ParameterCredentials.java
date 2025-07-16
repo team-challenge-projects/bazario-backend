@@ -5,7 +5,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class AdParameterCredentials {
+public class ParameterCredentials {
+    private int ownerId;
     private String parameterValue;
     private int typeParameter;
 }

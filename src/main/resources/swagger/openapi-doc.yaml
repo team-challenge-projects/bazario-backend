@@ -24,9 +24,9 @@ tags:
     description: |
       Endpoints for users to manage yourself.
       Includes registration, updating, deleting user`s account.
-  - name: User parameter
+  - name: Type user parameter
     description: |
-      Endpoints for users manage user parameter.
+      Endpoints for users manage type user parameter.
   - name: Reset Password
     description: |
       Endpoints for users reset password.
@@ -35,17 +35,18 @@ tags:
       Endpoints for users to manage favorite ad on the website.
   - name: Comment
     description: |
-      Endpoints for managing museum data in the admin API.
-      This API handles operations such as adding and updating museum data.
+      Endpoints for managing comments in the user API.
+      This API handles operations such as adding, updating, 
+      deleting comments, and calculating the rating.
   - name: Category
     description: |
       Endpoint for admin and user to manage category.
   - name: Ad
     description: |
       Endpoints for users to manage ad on the website.
-  - name: AdParameter
+  - name: Type ad parameter
     description: |
-      Endpoints for admin to manage ad parameters on the website.
+      Endpoints for admin to manage type ad parameters on the website.
   - name: Image
     description: |
       Endpoints for users to manage image on the website.
@@ -143,7 +144,9 @@ paths:
         - Authentication
       security:
         - bearerAuth: []
-      description: User logout endpoint
+      description: |
+        User logout endpoint. Replacing the refresh token 
+        in cookies with a zero-expiration token.
       operationId: logoutToken
       parameters:
         - in: cookie
@@ -223,7 +226,7 @@ paths:
       tags:
         - User
       summary: Send message to email of user
-      description: Send verification code or reset link to email of user
+      description: Send verification link or reset link to email of user
       operationId: sendMessage
       parameters:
         - $ref: '#/components/parameters/typeEmailMessage'
@@ -235,7 +238,7 @@ paths:
         required: true
       responses:
         204:
-          description: Send verification code to email
+          description: Send link to email
         400:
           description: Invalid input
           content:
@@ -261,7 +264,9 @@ paths:
       security:
         - bearerAuth: [ ]
       summary: Confirm email
-      description: Confirm email after uploading user registration data
+      description: |
+        Confirm email after uploading user registration data.
+        Saving data from cache to database.
       operationId: verifyEmail
       requestBody:
         content:
@@ -396,7 +401,7 @@ paths:
         - User
       summary: Change user email and block user
       description: |
-        Change user email by add prefix and block user.
+        Change user email by add prefix "delete_" and block user.
         Change the status of the user's ads to DELETE.
       operationId: deleteUser
       responses:
@@ -618,7 +623,7 @@ paths:
       security:
         - bearerAuth: []
       tags:
-        - User parameter
+        - Type user parameter
       summary: Creating a user parameter type by the administrator
       description: Creating a user parameter type by the administrator
       operationId: createUserParameter
@@ -671,7 +676,7 @@ paths:
       security:
         - bearerAuth: []
       tags:
-        - User parameter
+        - Type user parameter
       summary: Put user parameter by admin
       description: Put user parameter by admin
       operationId: putUserParameter
@@ -722,7 +727,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
     delete:
       tags:
-        - User parameter
+        - Type user parameter
       security:
         - bearerAuth: []
       summary: Delete user parameter by admin
@@ -1206,7 +1211,9 @@ paths:
       tags:
         - Category
       summary: Get category
-      description: Get category. Use filter.
+      description: |
+        Get a category with related types of parameters 
+        that will be used in filters.
       operationId: getCategory
       parameters:
         - $ref: '#/components/parameters/idParam'
@@ -1242,7 +1249,9 @@ paths:
       tags:
         - Category
       summary: Add category by admin
-      description: Add category by admin
+      description: |
+        Add category with related types of parameters and 
+        without image by admin
       operationId: addCategory
       requestBody:
         content:
@@ -1295,7 +1304,9 @@ paths:
       tags:
         - Category
       summary: Put category by admin
-      description: Put category by admin
+      description: |
+        Put category with related types of parameters and
+        without image by admin
       operationId: putCategory
       parameters:
         - $ref: '#/components/parameters/idParam'
@@ -1384,11 +1395,11 @@ paths:
   /public/ad/parameters:
     get:
       tags:
-        - AdParameter
+        - Type ad parameter
       security:
         - bearerAuth: []
       summary: Get page of ad parameter
-      description: Get page of ad parameter
+      description: Get page of ad parameter with pagination
       operationId: getAdParameters
       parameters:
         - $ref: '#/components/parameters/filtersParameter'
@@ -1420,7 +1431,7 @@ paths:
   /admin/ad/parameter:
     post:
       tags:
-        - AdParameter
+        - Type ad parameter
       security:
         -  bearerAuth: []
       summary: Create ad parameter by admin
@@ -1473,7 +1484,7 @@ paths:
   /admin/ad/parameter/{id}:
     put:
       tags:
-        - AdParameter
+        - Type ad parameter
       security:
         -  bearerAuth: []
       summary: Put ad parameter by admin
@@ -1526,7 +1537,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
     delete:
       tags:
-        - AdParameter
+        - Type ad parameter
       security:
         -  bearerAuth: []
       summary: Delete ad parameter by admin
@@ -1750,7 +1761,7 @@ paths:
       security:
         -  bearerAuth: []
       summary: Create or get ad by user
-      description: Create or get ad with status NEW and image files by user
+      description: Create or get ad with status NEW without image files by user
       operationId: createOrGetAd
       responses:
         200:
@@ -1790,7 +1801,14 @@ paths:
       security:
         -  bearerAuth: []
       summary: Patch ad by user
-      description: Patch ad parameter by user by ad`s id
+      description: |
+        Patching a user's ad by ad ID. The user is not 
+        patching an announcement with the NEW status or 
+        is not its owner. Changing the status to DELETE 
+        deletes files from the remote storage. Changing 
+        the status of an ad with the status of ACTIVE or 
+        DISABLED is possible only if one or more photos 
+        are available.
       operationId: patchAd
       parameters:
         - $ref: '#/components/parameters/idParam'
@@ -1840,7 +1858,7 @@ paths:
       security:
         -  bearerAuth: []
       summary: Delete ad by admin
-      description: Delete ad parameter by admin by ad`s id
+      description: Delete ad of user by admin by ad`s id
       operationId: deleteAd
       parameters:
         - $ref: '#/components/parameters/idParam'
@@ -1885,8 +1903,8 @@ paths:
         - Image
       description: |
         Load and save image. If type is ad than parameter id is ad\`s id.
-        If type is avatar parameter id is user\`s id, just admin operation,
-        another ignore.
+        If type is avatar parameter id is user\`s id. If type is catalog 
+        parameter id is catalog\`s id, add only administrator.
       operationId: saveImage
       parameters:
         - $ref: '#/components/parameters/typeImage'
@@ -1940,8 +1958,8 @@ paths:
         - Image
       description: |
         Load and change image.If type is ad than parameter id is ad\`s id.
-        If type is avatar parameter id is user\`s id, just admin operation,
-        another ignore.
+        If type is avatar parameter id is user\`s id. If type is catalog 
+        parameter id is catalog\`s id, add only administrator.
       operationId: changeImage
       parameters:
         - $ref: '#/components/parameters/typeImage'
@@ -1999,8 +2017,8 @@ paths:
       description: |
         Delete image. Parameter id is ad or user id. 
         If type is ad than parameter id is ad\`s id.
-        If type is avatar parameter id is user\`s id, just admin operation, 
-        another ignore.
+        If type is avatar parameter id is user\`s id. If type is catalog 
+        parameter id is catalog\`s id, delete only administrator.
       operationId: deleteImage
       parameters:
         - $ref: '#/components/parameters/typeImage'
@@ -2040,6 +2058,9 @@ components:
           type: string
           format: password
           pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#@&])[\w#@&]{8,}$'
+          x-pattern-message: "The password field must contain at least: 
+          one lowercase English letter, one uppercase English letter, 
+          one digit, one punctuation mark (#@&). The number of characters is not less than 8"
     ErrorResponse:
       description: Error message with timestamp
       type: object
@@ -2081,9 +2102,14 @@ components:
         firstName:
           type: string
           pattern: '^[A-ZА-ЯІЇЄ][a-zа-яіїє]{1,20}$'
+          x-pattern-message: "The name must contain the first 
+          capital Ukrainian letter and the following lowercase
+           Ukrainian letters. The number of characters is between 1 and 20."
         phoneNumber:
           type: string
           pattern: '^(\+38|38|8)?0\d{9}$'
+          x-pattern-message: "The phone number may or may not contain any characters 
+          (+38 or 38 or 8). Next comes the number 0 and 9 more characters after it."
     PublicUserInformation:
       description: Public user information
       type: object
@@ -2139,6 +2165,9 @@ components:
         lastName:
           type: string
           pattern: '^[A-ZА-ЯІЇЄ][a-zа-яіїє]{1,20}$'
+          x-pattern-message: "The name must contain the first 
+          capital Ukrainian letter and the following lowercase
+           Ukrainian letters. The number of characters is between 1 and 20."
         cityName:
           type: string
           minLength: 3
@@ -2146,10 +2175,11 @@ components:
         cityCoordinate:
           type: string
           pattern: '^\d+,?\d*\|\d,?\d*$'
-        verificationCode:
-          type: string
-          pattern: '^\w{6}$'
-          description: Verification code from email of user
+          x-pattern-message: "City coordinates contain width and longitude values 
+          separated by a separator (|). Values contain one or more digits before 
+          the decimal point and may or may not contain digits after the decimal 
+          point. Values contain one or more digits before the decimal point and may 
+          or may not contain digits after the decimal point."
         userParameters:
           type: array
           items:
@@ -2250,7 +2280,10 @@ components:
           maximum: 9
         description:
           type: string
-          pattern: '^(?!.*\d{9,})[А-ЯІЇЄа-яіїє\w\s]{3,200}$'
+          pattern: '^(?!.*\d{9,})(?!.*http)[А-ЯІЇЄа-яіїє\w\s\,\.\!\?]{3,200}$'
+          x-pattern-message: "The text consists of letters, numbers, and 
+          punctuation marks (.!?,) from 3 to 200 characters long. It cannot 
+          contain phone numbers (digits greater than 9) or hyperlinks."
     AdDto:
       description: Ad information
       type: object
@@ -2279,10 +2312,16 @@ components:
       properties:
         title:
           type: string
-          pattern: '^(?!.*\d{9,})[А-ЯІЇЄа-яіїє\w\s]{3,20}$'
+          pattern: '^(?!.*\d{9,})(?!.*http)[А-ЯІЇЄа-яіїє\w\s\,\.\!\?]{3,20}$'
+          x-pattern-message: "The text consists of letters, numbers, and 
+          punctuation marks (.!?,) from 3 to 20 characters long. It cannot 
+          contain phone numbers (digits greater than 9) or hyperlinks."
         description:
           type: string
-          pattern: '^(?!.*\d{9,})[А-ЯІЇЄа-яіїє\w\s]{3,200}$'
+          pattern: '^(?!.*\d{9,})(?!.*http)[А-ЯІЇЄа-яіїє\w\s\,\.\!\?]{3,200}$'
+          x-pattern-message: "The text consists of letters, numbers, and 
+          punctuation marks (.!?,) from 3 to 200 characters long. It cannot 
+          contain phone numbers (digits greater than 9) or hyperlinks."
         price:
           type: number
         categoryId:

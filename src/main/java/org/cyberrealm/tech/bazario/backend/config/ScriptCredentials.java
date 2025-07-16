@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.cyberrealm.tech.bazario.backend.dto.script.AdCredentials;
 import org.cyberrealm.tech.bazario.backend.dto.script.BasicTypeParameter;
 import org.cyberrealm.tech.bazario.backend.dto.script.CategoryCredentials;
+import org.cyberrealm.tech.bazario.backend.dto.script.ParameterCredentials;
 import org.cyberrealm.tech.bazario.backend.dto.script.UserCredentials;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +17,10 @@ import org.springframework.context.annotation.Configuration;
 @Setter
 public class ScriptCredentials {
     private List<UserCredentials> users;
+    private List<BasicTypeParameter> userTypeParameters;
+    private List<ParameterCredentials> userParameters;
     private List<BasicTypeParameter> adTypeParameters;
     private List<CategoryCredentials> categories;
     private List<AdCredentials> ads;
+    private List<ParameterCredentials> adParameters;
 }
