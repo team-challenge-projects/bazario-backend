@@ -209,7 +209,7 @@ public class AdsServiceImpl implements AdsService {
                 .map(e -> Double.parseDouble(e.getValue())).findFirst()
                 .ifPresent(distance -> {
                     var ids = userService.getUserIdByDistance(distance);
-                    if (ids.isEmpty()) {
+                    if (userIds.isEmpty()) {
                         userIds.addAll(ids);
                     } else {
                         userIds.stream().filter(id -> !ids.contains(id))

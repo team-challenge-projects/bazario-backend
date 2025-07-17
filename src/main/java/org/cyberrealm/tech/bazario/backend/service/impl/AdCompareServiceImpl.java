@@ -3,7 +3,7 @@ package org.cyberrealm.tech.bazario.backend.service.impl;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.dto.AdComparesDto;
@@ -19,6 +19,7 @@ import org.cyberrealm.tech.bazario.backend.repository.UserRepository;
 import org.cyberrealm.tech.bazario.backend.service.AdCompareService;
 import org.cyberrealm.tech.bazario.backend.service.AuthenticationUserService;
 import org.cyberrealm.tech.bazario.backend.service.UserService;
+import org.springframework.data.geo.Distance;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -87,9 +88,9 @@ public class AdCompareServiceImpl implements AdCompareService {
                 .orElseThrow().getCityName();
         var users = userRepository.findAllById(userIds);
         return users.stream().collect(Collectors.toMap(User::getId,
-                user -> Objects.requireNonNull(redisTemplate.opsForGeo()
+                user -> Optional.ofNullable(redisTemplate.opsForGeo()
                                 .distance(UserService.CITIES, currentCityName, user.getCityName()))
-                        .getValue()));
+                        .orElseGet(() -> new Distance(0.0)).getValue()));
     }
 
     private Map<String, Double> getMinMaxMap(
