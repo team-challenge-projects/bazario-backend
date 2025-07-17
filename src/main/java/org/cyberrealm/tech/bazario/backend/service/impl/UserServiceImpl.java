@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.dto.AdStatus;
@@ -27,6 +27,7 @@ import org.cyberrealm.tech.bazario.backend.service.UserService;
 import org.cyberrealm.tech.bazario.backend.service.VerificationService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.geo.Circle;
+import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -40,6 +41,7 @@ public class UserServiceImpl implements UserService {
     private static final String REGEX_DELIMITER_COORDINATE = "\\|";
     private static final int INDEX_FIRST_COORDINATE = 0;
     private static final int INDEX_TWO_COORDINATE = 1;
+    private static final double ZERO_DISTANCE = 0.0;
 
     private final RedisTemplate<String, Object> redisTemplate;
     private final UserRepository userRepository;
@@ -81,9 +83,10 @@ public class UserServiceImpl implements UserService {
                         authService.getCurrentUser().getId())
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Current user not found"));
-        return userMapper.toPublicInformation(user, Objects.requireNonNull(redisTemplate.opsForGeo()
+        return userMapper.toPublicInformation(user, Optional.ofNullable(redisTemplate.opsForGeo()
                 .distance(CITIES, currentUser.getCityName(),
-                        user.getCityName())).getValue());
+                        user.getCityName())).orElseGet(() -> new Distance(ZERO_DISTANCE))
+                .getValue());
     }
 
     @Override
@@ -139,7 +142,7 @@ public class UserServiceImpl implements UserService {
             var coordinate = patchUser.getCityCoordinate().split(REGEX_DELIMITER_COORDINATE);
             redisTemplate.opsForGeo().add(CITIES, new Point(Double.parseDouble(
                     coordinate[INDEX_FIRST_COORDINATE]), Double.parseDouble(
-                            coordinate[INDEX_TWO_COORDINATE])), patchUser.getCityName());
+                    coordinate[INDEX_TWO_COORDINATE])), patchUser.getCityName());
         }
     }
 
@@ -202,9 +205,11 @@ public class UserServiceImpl implements UserService {
                 Double.parseDouble(coordinate[INDEX_FIRST_COORDINATE]),
                 Double.parseDouble(coordinate[INDEX_TWO_COORDINATE])),
                 Metrics.KILOMETERS.getMultiplier() * distance));
-        var names = Objects.requireNonNull(cities).getContent().stream().map(e ->
-                e.getContent().getName().toString()).toList();
-
-        return userRepository.findByCityNameIn(names).stream().map(User::getId).toList();
+        if (cities != null) {
+            var names = cities.getContent().stream().map(e ->
+                    e.getContent().getName().toString()).toList();
+            return userRepository.findByCityNameIn(names).stream().map(User::getId).toList();
+        }
+        return List.of();
     }
 }
