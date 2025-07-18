@@ -2174,7 +2174,7 @@ components:
           maxLength: 100
         cityCoordinate:
           type: string
-          pattern: '^\d+,?\d*\|\d,?\d*$'
+          pattern: '^\d+\.?\d*\|\d\.?\d*$'
           x-pattern-message: "City coordinates contain width and longitude values 
           separated by a separator (|). Values contain one or more digits before 
           the decimal point and may or may not contain digits after the decimal 
