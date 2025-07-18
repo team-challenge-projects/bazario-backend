@@ -118,7 +118,7 @@ class UserApiDelegateImplTest extends AbstractIntegrationTest {
         when(redisTemplate.opsForGeo()).thenReturn(opsForGeo);
         when(authService.getCurrentUser()).thenReturn(user);
         when(opsForGeo.distance(anyString(), anyString(), anyString()))
-                .thenReturn(new Distance(1.0));
+                .thenReturn(new Distance(1000.0));
         mockMvc.perform(get("/private/user/" + ID_ONE))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(dto)));

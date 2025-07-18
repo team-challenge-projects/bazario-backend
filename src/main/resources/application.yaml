@@ -106,7 +106,7 @@ user:
       phoneNumber: '+380982687965'
       password: 'rooT1#root'
       cityName: 'Lviv'
-      cityCoordinate: '49,5017|24,0123'
+      cityCoordinate: '49.5017|24.0123'
   user:
     credentials:
       password: 'useR1#user'

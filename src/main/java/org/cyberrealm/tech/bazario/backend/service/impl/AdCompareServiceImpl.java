@@ -35,6 +35,7 @@ public class AdCompareServiceImpl implements AdCompareService {
     private static final String PRICE = "price";
     private static final String RATING = "rating";
     private static final String DISTANCE = "distance";
+    private static final int DIVIDER_TO_KILOMETERS = 1000;
 
     private final AdRepository adRepository;
     private final UserRepository userRepository;
@@ -90,7 +91,7 @@ public class AdCompareServiceImpl implements AdCompareService {
         return users.stream().collect(Collectors.toMap(User::getId,
                 user -> Optional.ofNullable(redisTemplate.opsForGeo()
                                 .distance(UserService.CITIES, currentCityName, user.getCityName()))
-                        .orElseGet(() -> new Distance(0.0)).getValue()));
+                        .orElseGet(() -> new Distance(0.0)).getValue() / DIVIDER_TO_KILOMETERS));
     }
 
     private Map<String, Double> getMinMaxMap(
