@@ -102,12 +102,14 @@ paths:
         - Authentication
       description: User login endpoint using the refresh token
       operationId: refreshToken
-      parameters:
-        - in: cookie
-          name: refreshToken
-          required: true
-          schema:
-            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
       responses:
         200:
           description: Authenticated successfully. Get token.
@@ -2174,7 +2176,7 @@ components:
           maxLength: 100
         cityCoordinate:
           type: string
-          pattern: '^\d+,?\d*\|\d,?\d*$'
+          pattern: '^\d+\.?\d*\|\d\.?\d*$'
           x-pattern-message: "City coordinates contain width and longitude values 
           separated by a separator (|). Values contain one or more digits before 
           the decimal point and may or may not contain digits after the decimal 

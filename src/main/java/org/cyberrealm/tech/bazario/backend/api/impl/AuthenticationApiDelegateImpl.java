@@ -3,6 +3,7 @@ package org.cyberrealm.tech.bazario.backend.api.impl;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.api.AuthenticationApiDelegate;
 import org.cyberrealm.tech.bazario.backend.dto.AuthenticationRequest;
+import org.cyberrealm.tech.bazario.backend.dto.RefreshTokenRequest;
 import org.cyberrealm.tech.bazario.backend.security.AuthenticationService;
 import org.cyberrealm.tech.bazario.backend.security.CookieService;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +24,9 @@ public class AuthenticationApiDelegateImpl implements AuthenticationApiDelegate 
     }
 
     @Override
-    public ResponseEntity<String> refreshToken(String refreshToken) {
-        return ResponseEntity.ok(authenticationService.refreshAccessToken(refreshToken));
+    public ResponseEntity<String> refreshToken(RefreshTokenRequest refreshToken) {
+        return ResponseEntity.ok(authenticationService.refreshAccessToken(
+                refreshToken.getRefreshToken()));
     }
 
     @Override

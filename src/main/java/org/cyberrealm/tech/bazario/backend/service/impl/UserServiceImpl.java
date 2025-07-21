@@ -42,6 +42,7 @@ public class UserServiceImpl implements UserService {
     private static final int INDEX_FIRST_COORDINATE = 0;
     private static final int INDEX_TWO_COORDINATE = 1;
     private static final double ZERO_DISTANCE = 0.0;
+    private static final int DIVIDER_TO_KILOMETERS = 1000;
 
     private final RedisTemplate<String, Object> redisTemplate;
     private final UserRepository userRepository;
@@ -86,7 +87,7 @@ public class UserServiceImpl implements UserService {
         return userMapper.toPublicInformation(user, Optional.ofNullable(redisTemplate.opsForGeo()
                 .distance(CITIES, currentUser.getCityName(),
                         user.getCityName())).orElseGet(() -> new Distance(ZERO_DISTANCE))
-                .getValue());
+                .getValue() / DIVIDER_TO_KILOMETERS);
     }
 
     @Override
