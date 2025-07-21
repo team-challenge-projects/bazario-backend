@@ -102,12 +102,14 @@ paths:
         - Authentication
       description: User login endpoint using the refresh token
       operationId: refreshToken
-      parameters:
-        - in: cookie
-          name: refreshToken
-          required: true
-          schema:
-            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
       responses:
         200:
           description: Authenticated successfully. Get token.
