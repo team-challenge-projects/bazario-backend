@@ -14,6 +14,7 @@ import java.time.Duration;
 import lombok.SneakyThrows;
 import org.cyberrealm.tech.bazario.backend.AbstractIntegrationTest;
 import org.cyberrealm.tech.bazario.backend.dto.AuthenticationRequest;
+import org.cyberrealm.tech.bazario.backend.dto.RefreshTokenRequest;
 import org.cyberrealm.tech.bazario.backend.model.RefreshToken;
 import org.cyberrealm.tech.bazario.backend.model.User;
 import org.cyberrealm.tech.bazario.backend.repository.RefreshTokenRepository;
@@ -73,9 +74,11 @@ class AuthenticationApiDelegateImplTest extends AbstractIntegrationTest {
         when(jwtUtil.getUsername(REFRESH_TOKEN)).thenReturn(EMAIL);
         when(jwtUtil.generateAccessToken(EMAIL)).thenReturn(ACCESS_TOKEN);
 
+        RefreshTokenRequest token = new RefreshTokenRequest();
+        token.setRefreshToken(REFRESH_TOKEN);
         mockMvc.perform(post("/public/refreshToken")
                 .contentType(MediaType.APPLICATION_JSON)
-                .cookie(new Cookie(REFRESH_TOKEN, REFRESH_TOKEN)))
+                .content(objectMapper.writeValueAsString(token)))
                 .andExpect(status().isOk())
                 .andExpect(content().string(ACCESS_TOKEN));
 
