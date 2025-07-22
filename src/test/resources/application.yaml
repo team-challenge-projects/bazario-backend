@@ -73,6 +73,7 @@ bucket:
   limited-security:
     tokens: 6
     duration: 180
+  storage-period: 30
 cloudinary:
   name: cloud-name
   key: cloud-key
