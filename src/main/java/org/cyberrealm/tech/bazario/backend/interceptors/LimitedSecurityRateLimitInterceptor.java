@@ -24,7 +24,7 @@ public class LimitedSecurityRateLimitInterceptor extends AbstractRateLimitInterc
     }
 
     @Override
-    Bucket getBucket(String ip) {
-        return builderService.resolveBucket(PREFIX_LIMITED + ip, tokens, duration);
+    Bucket getBucket(String ip, String uri) {
+        return builderService.resolveBucket(PREFIX_LIMITED + ip + "_" + uri, tokens, duration);
     }
 }

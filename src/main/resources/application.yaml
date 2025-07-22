@@ -115,8 +115,9 @@ bucket:
     tokens: 10
     duration: 60
   limited-security:
-    tokens: 6
+    tokens: 1
     duration: 180
+  storage-period: 30
 cloudinary:
   name: ${CLOUDINARY_NAME}
   key: ${CLOUDINARY_KEY}
