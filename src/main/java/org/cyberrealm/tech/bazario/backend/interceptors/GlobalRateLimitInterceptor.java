@@ -23,7 +23,7 @@ public class GlobalRateLimitInterceptor extends AbstractRateLimitInterceptor {
     }
 
     @Override
-    protected Bucket getBucket(String ip) {
+    protected Bucket getBucket(String ip, String uri) {
         return builderService.resolveBucket(PREFIX_GLOBAL + ip, tokens, duration);
     }
 }

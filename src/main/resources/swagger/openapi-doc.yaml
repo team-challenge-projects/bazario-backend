@@ -1904,9 +1904,10 @@ paths:
       tags:
         - Image
       description: |
-        Load and save image. If type is ad than parameter id is ad\`s id.
-        If type is avatar parameter id is user\`s id. If type is catalog 
-        parameter id is catalog\`s id, add only administrator.
+        Load and save image. If type is ad than parameter id is ad\`s id, 
+        added by a registered user.
+        If type is avatar parameter id is user\`s id, added by a registered user.
+        If type is catalog parameter id is catalog\`s id, add only administrator.
       operationId: saveImage
       parameters:
         - $ref: '#/components/parameters/typeImage'
@@ -1959,9 +1960,10 @@ paths:
       tags:
         - Image
       description: |
-        Load and change image.If type is ad than parameter id is ad\`s id.
-        If type is avatar parameter id is user\`s id. If type is catalog 
-        parameter id is catalog\`s id, add only administrator.
+        Load and change image.If type is ad than parameter id is ad\`s id,
+        added by a registered user.
+        If type is avatar parameter id is user\`s id, added by a registered user.
+        If type is catalog parameter id is catalog\`s id, add only administrator.
       operationId: changeImage
       parameters:
         - $ref: '#/components/parameters/typeImage'
@@ -2059,10 +2061,11 @@ components:
         password:
           type: string
           format: password
-          pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#@&])[\w#@&]{8,}$'
+          pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[\w#@&]{8,}$'
           x-pattern-message: "The password field must contain at least: 
           one lowercase English letter, one uppercase English letter, 
-          one digit, one punctuation mark (#@&). The number of characters is not less than 8"
+          one digit. It can also optionally contain a punctuation mark (#@&).
+          The number of characters is at least 8"
     ErrorResponse:
       description: Error message with timestamp
       type: object

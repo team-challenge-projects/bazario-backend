@@ -20,10 +20,11 @@ public abstract class AbstractRateLimitInterceptor implements HandlerInterceptor
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
                              Object handler) throws Exception {
         var ip = request.getRemoteAddr();
-        if (ip == null || ip.isBlank()) {
+        var uri = request.getRequestURI();
+        if (ip == null || uri == null || ip.isBlank() || uri.isBlank()) {
             return false;
         }
-        var bucket = getBucket(ip);
+        var bucket = getBucket(ip, uri);
         var probe = bucket.tryConsumeAndReturnRemaining(NUM_TOKENS_OF_PROBE);
         if (probe.isConsumed()) {
             response.addHeader("X-Rate-Limit-Remaining",
@@ -40,5 +41,5 @@ public abstract class AbstractRateLimitInterceptor implements HandlerInterceptor
         }
     }
 
-    abstract Bucket getBucket(String ip);
+    abstract Bucket getBucket(String ip, String uri);
 }
