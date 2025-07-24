@@ -60,7 +60,8 @@ public class EmailVerificationService implements VerificationService {
                 var dto = mapper.readValue(dtoJson, RegistrationRequest.class);
 
                 User user = userMapper.toModel(dto);
-
+                userRepository.findByEmail("delete_" + email).ifPresent(entity ->
+                        user.setId(entity.getId()));
                 user.setPassword(passwordEncoder.encode(user.getPassword()));
                 user.setRole(DEFAULT_ROLE);
                 user.setCreatedAt(LocalDateTime.now());

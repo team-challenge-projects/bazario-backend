@@ -11,6 +11,12 @@ public class CookieService {
     @Value("${cookie.refresh.age}")
     private int maxAge;
 
+    /**
+     * Set cookie to heder of response
+     *
+     * @param refreshToken Generated a refresh token
+     * @return heder
+     */
     public HttpHeaders getCookieHeader(String refreshToken) {
         ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
@@ -24,6 +30,12 @@ public class CookieService {
         return headers;
     }
 
+    /**
+     * Set cookies with duration is zero to heder of response
+     *
+     * @param refreshToken Current refresh token
+     * @return heder
+     */
     public HttpHeaders clearRefreshTokenCookie(String refreshToken) {
         ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)

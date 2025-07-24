@@ -19,6 +19,13 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenRepository repository;
 
+    /**
+     *  Authentication of an anonymous user. Writing or rewriting
+     *  a refresh token to the database.
+     *
+     * @param request Authentication form
+     * @return Dto with access and refresh token
+     */
     public UserLoginResponseDto authenticate(AuthenticationRequest request) {
         final Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(),
@@ -34,6 +41,12 @@ public class AuthenticationService {
         return new UserLoginResponseDto(accessToken, refreshToken);
     }
 
+    /**
+     * Generate an access token if the exists refresh token is valid.
+     *
+     * @param refreshToken Refresh token from request
+     * @return New access token
+     */
     public String refreshAccessToken(String refreshToken) {
         var entity = repository.findByToken(refreshToken);
         if (jwtUtil.isValidToken(refreshToken) && entity.isPresent()) {
@@ -43,6 +56,11 @@ public class AuthenticationService {
         throw new JwtException("Invalid refresh token");
     }
 
+    /**
+     * Delete exists refresh token
+     *
+     * @param refreshToken Refresh token from request
+     */
     public void clearRefreshTokenCookie(String refreshToken) {
         repository.deleteByToken(refreshToken);
     }

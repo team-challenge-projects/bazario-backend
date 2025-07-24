@@ -19,6 +19,15 @@ public class BucketBuilderService {
     @Value("${bucket.storage-period}")
     private int storagePeriod;
 
+    /**
+     * Saving the bucket to the cache and deleting it from the cache
+     * if it has expired.
+     *
+     * @param ip Key contains ip address users
+     * @param tokens Number of tokens for probe
+     * @param duration Probes update time
+     * @return Bucket by key from cache
+     */
     public Bucket resolveBucket(String ip, int tokens, int duration) {
         long currentTime = Instant.now().toEpochMilli();
         cache.entrySet().removeIf(entry ->
@@ -28,6 +37,13 @@ public class BucketBuilderService {
 
     }
 
+    /**
+     * Create new bucket
+     *
+     * @param tokens Number of tokens for probe
+     * @param duration Probes update time
+     * @return New bucket
+     */
     private Bucket newBucket(int tokens, int duration) {
         var limit = Bandwidth.builder()
                 .capacity(tokens)

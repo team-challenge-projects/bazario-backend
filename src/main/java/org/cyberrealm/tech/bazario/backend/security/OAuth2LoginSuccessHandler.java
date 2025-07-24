@@ -41,6 +41,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         String email = user.getAttribute("email");
         User currentUser = repository.findByEmail(email).orElseGet(() -> {
             var newUser = new User();
+            repository.findByEmail("delete_" + email).ifPresent(entity ->
+                    newUser.setId(entity.getId()));
             newUser.setEmail(email);
             newUser.setFirstName(user.getAttribute("given_name"));
             newUser.setLastName(user.getAttribute("family_name"));
