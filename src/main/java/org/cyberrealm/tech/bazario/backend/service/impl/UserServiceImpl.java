@@ -117,7 +117,7 @@ public class UserServiceImpl implements UserService {
                         authService.getCurrentUser().getId())
                 .orElseThrow(() -> new EntityNotFoundException(
                         "User not found"));
-        currentUser.setEmail("delete_" + currentUser.getEmail());
+        currentUser.setEmail(PREFIX_DELETE + currentUser.getEmail());
         currentUser.setParameters(Set.of());
         currentUser.setLocked(true);
         adDeleteService.changeStatusByUser(currentUser, AdStatus.DELETE);
@@ -171,7 +171,7 @@ public class UserServiceImpl implements UserService {
             if (dto.getEmail() != null && !dto.getEmail().equals(user.getEmail())) {
                 redisTemplate.opsForValue().set(dto.getEmail()
                                 + VerificationService.CHANGE_EMAIL_DTO_SUFFIX,
-                        user.getEmail() + ":" + dto.getEmail(),
+                        user.getEmail() + DELIMITER_CHANGE_EMAIL + dto.getEmail(),
                         Duration.ofMinutes(expirationMinutes));
             }
         }

@@ -17,6 +17,7 @@ import org.cyberrealm.tech.bazario.backend.model.User;
 import org.cyberrealm.tech.bazario.backend.model.enums.Role;
 import org.cyberrealm.tech.bazario.backend.repository.UserRepository;
 import org.cyberrealm.tech.bazario.backend.service.TokenService;
+import org.cyberrealm.tech.bazario.backend.service.UserService;
 import org.cyberrealm.tech.bazario.backend.service.VerificationService;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -60,8 +61,8 @@ public class EmailVerificationService implements VerificationService {
                 var dto = mapper.readValue(dtoJson, RegistrationRequest.class);
 
                 User user = userMapper.toModel(dto);
-                userRepository.findByEmail("delete_" + email).ifPresent(entity ->
-                        user.setId(entity.getId()));
+                userRepository.findByEmail(UserService.PREFIX_DELETE + email)
+                        .ifPresent(entity -> user.setId(entity.getId()));
                 user.setPassword(passwordEncoder.encode(user.getPassword()));
                 user.setRole(DEFAULT_ROLE);
                 user.setCreatedAt(LocalDateTime.now());
@@ -72,7 +73,7 @@ public class EmailVerificationService implements VerificationService {
             }
 
         } else if (dtoEmail != null) {
-            var emails = dtoEmail.split(":");
+            var emails = dtoEmail.split(UserService.DELIMITER_CHANGE_EMAIL);
             User user = userRepository.findByEmail(emails[INDEX_OLD_EMAIL]).orElseThrow(() ->
                     new EntityNotFoundException("User with email %s not found"
                             .formatted(email)));
