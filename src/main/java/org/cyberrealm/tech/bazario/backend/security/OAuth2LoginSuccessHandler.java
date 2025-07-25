@@ -11,6 +11,7 @@ import org.cyberrealm.tech.bazario.backend.model.User;
 import org.cyberrealm.tech.bazario.backend.model.enums.Role;
 import org.cyberrealm.tech.bazario.backend.repository.RefreshTokenRepository;
 import org.cyberrealm.tech.bazario.backend.repository.UserRepository;
+import org.cyberrealm.tech.bazario.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -41,6 +42,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         String email = user.getAttribute("email");
         User currentUser = repository.findByEmail(email).orElseGet(() -> {
             var newUser = new User();
+            repository.findByEmail(UserService.PREFIX_DELETE + email)
+                    .ifPresent(entity -> newUser.setId(entity.getId()));
             newUser.setEmail(email);
             newUser.setFirstName(user.getAttribute("given_name"));
             newUser.setLastName(user.getAttribute("family_name"));

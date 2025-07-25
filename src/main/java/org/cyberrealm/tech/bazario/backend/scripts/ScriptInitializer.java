@@ -12,6 +12,11 @@ import org.cyberrealm.tech.bazario.backend.scripts.service.UserTypeInitializer;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+/**
+ * A script for adding default users and their parameters,
+ * ads for these users and their parameters, categories
+ * and related parameters.
+ */
 @Component
 @RequiredArgsConstructor
 public class ScriptInitializer implements CommandLineRunner {

@@ -10,6 +10,9 @@ import org.cyberrealm.tech.bazario.backend.exception.custom.RegistrationExceptio
 
 public interface UserService {
     String CITIES = "cities";
+    String PREFIX_DELETE = "delete_";
+    String DELIMITER_CHANGE_EMAIL = ":";
+
     /**
      * Filling out the registration form and saving it to the cache
      *
