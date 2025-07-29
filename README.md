@@ -50,6 +50,8 @@ distance), ad and user parameter fields.
 
 Store the state of the refresh token so that there is one valid 
 token per user.
+
+A script has been created to fill the database with defaults.
 ## Diagram database
 ![diagram](./src/main/resources/bazario_diagram.jpg)
 ## Install instruction

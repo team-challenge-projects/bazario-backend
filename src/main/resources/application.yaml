@@ -113,11 +113,11 @@ user:
 bucket:
   global:
     tokens: 10
-    duration: 60
+    duration: 60 #seconds
   limited-security:
     tokens: 1
-    duration: 180
-  storage-period: 30
+    duration: 30 #seconds
+  storage-period: 30 #minutes
 cloudinary:
   name: ${CLOUDINARY_NAME}
   key: ${CLOUDINARY_KEY}
@@ -127,7 +127,7 @@ image:
   max-num: 6
 leader-board:
   max-size: 10
-  trial-period: 1
+  trial-period: 1 #days
   count-delete-ad: 3
 frontend:
   reset:

@@ -18,7 +18,9 @@ public interface VerificationService {
 
     /**
      * Registration user or change email.
-     * Get dto from cache and write in database
+     * Get dto from cache and write in database.
+     * If a user deletes himself or herself during
+     * re-registration, we will restore it.
      *
      * @author Vitalii Pavlyk
      * @author Andrey Sitarskiy
