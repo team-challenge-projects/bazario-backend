@@ -61,7 +61,8 @@ public class ImageServiceImpl implements ImageService {
         var images = ad.getImages();
 
         if (images.size() >= maxNumImages) {
-            throw new ForbiddenException("Size of images is too large");
+            throw new ForbiddenException("The number of images cannot be more than %d"
+                    .formatted(maxNumImages));
         }
 
         return getAndSaveToAd(file, images, ad);
@@ -138,7 +139,6 @@ public class ImageServiceImpl implements ImageService {
                     .formatted(url.toString(), id));
         }
         deleteFile(url);
-        ad.setImages(images);
         adService.save(ad);
     }
 
@@ -181,7 +181,6 @@ public class ImageServiceImpl implements ImageService {
     private String getAndSaveToAd(MultipartFile file, Set<String> images, Ad ad) {
         var url = fileUpload.uploadFile(file, createKey(file));
         images.add(url);
-        ad.setImages(images);
         try {
             adService.save(ad);
         } catch (DataException e) {
