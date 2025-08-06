@@ -39,11 +39,11 @@ class AuthenticationApiDelegateImplTest extends AbstractIntegrationTest {
     @Test
     void login() {
         var dto = new AuthenticationRequest();
-        dto.setEmail(EMAIL);
+        dto.setLogin(EMAIL);
         dto.setPassword("rooT1#root");
 
-        when(jwtUtil.generateAccessToken(dto.getEmail())).thenReturn(ACCESS_TOKEN);
-        when(jwtUtil.generateRefreshToken(dto.getEmail())).thenReturn(REFRESH_TOKEN);
+        when(jwtUtil.generateAccessToken(dto.getLogin())).thenReturn(ACCESS_TOKEN);
+        when(jwtUtil.generateRefreshToken(dto.getLogin())).thenReturn(REFRESH_TOKEN);
 
         mockMvc.perform(post("/anonymous/login")
                 .contentType(MediaType.APPLICATION_JSON)

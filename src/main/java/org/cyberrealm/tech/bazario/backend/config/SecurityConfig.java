@@ -12,6 +12,7 @@ import org.cyberrealm.tech.bazario.backend.security.JwtAuthenticationFilter;
 import org.cyberrealm.tech.bazario.backend.security.OAuth2LoginSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -49,7 +50,7 @@ public class SecurityConfig {
                         auth -> auth
                                 .requestMatchers(
                                         "/anonymous/**"
-                                        ).anonymous()
+                                ).anonymous()
                                 .requestMatchers("/api/admin/**").hasAnyRole(
                                         Role.ROOT.getAuthority(),
                                         Role.ADMIN.getAuthority())
@@ -66,6 +67,16 @@ public class SecurityConfig {
                 )
                 .httpBasic(withDefaults())
                 .oauth2Login(oauth2 -> oauth2.successHandler(successHandler))
+                .exceptionHandling(e -> e.authenticationEntryPoint((
+                        (request, response,
+                         authException) -> {
+                            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                            response.setContentType("application/json");
+                            response.getWriter().write("""
+                                    { "error": "Unauthorized",
+                                     "message": "Authentication required" }
+                                    """);
+                        })))
                 .sessionManagement(
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )

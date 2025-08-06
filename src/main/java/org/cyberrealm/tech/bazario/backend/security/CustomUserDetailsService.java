@@ -1,10 +1,10 @@
 package org.cyberrealm.tech.bazario.backend.security;
 
 import lombok.RequiredArgsConstructor;
-import org.cyberrealm.tech.bazario.backend.exception.custom.EntityNotFoundException;
 import org.cyberrealm.tech.bazario.backend.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,8 +14,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        return userRepository.findByEmail(username)
-                .orElseThrow(() -> new EntityNotFoundException("Can't find user by email: "
+        return userRepository.findByEmailOrPhoneNumber(username, username).orElseThrow(() ->
+                new UsernameNotFoundException("Can't find user by email or phone: "
                         + username));
     }
 }

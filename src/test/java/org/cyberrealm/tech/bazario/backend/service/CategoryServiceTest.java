@@ -15,6 +15,7 @@ import org.cyberrealm.tech.bazario.backend.repository.CategoryRepository;
 import org.cyberrealm.tech.bazario.backend.repository.TypeAdParameterRepository;
 import org.cyberrealm.tech.bazario.backend.repository.TypeUserParameterRepository;
 import org.cyberrealm.tech.bazario.backend.service.impl.CategoryServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -37,6 +38,17 @@ class CategoryServiceTest {
     @InjectMocks
     private CategoryServiceImpl categoryService;
 
+    private Category category;
+
+    @BeforeEach
+    void setUp() {
+        category = new Category();
+        category.setId(ONE_ID);
+        category.setName("OLd value");
+        category.setAdParameters(Set.of());
+        category.setUserParameters(Set.of());
+    }
+
     @Test
     void add() {
         when(adParamRepository.findAllById(List.of())).thenReturn(List.of());
@@ -46,11 +58,7 @@ class CategoryServiceTest {
                 .adParameterIds(List.of())
                 .userParameterIds(List.of())
                 .name("Test");
-        var category = new Category();
-        category.setId(ONE_ID);
-        category.setName(dto.getName());
-        category.setAdParameters(Set.of());
-        category.setUserParameters(Set.of());
+
         when(categoryRepository.save(any(Category.class))).thenReturn(category);
 
         assertEquals(ONE_ID, categoryService.add(dto));
@@ -62,11 +70,6 @@ class CategoryServiceTest {
         when(adParamRepository.findAllById(List.of())).thenReturn(List.of());
         when(userParamRepository.findAllById(List.of())).thenReturn(List.of());
 
-        var category = new Category();
-        category.setId(ONE_ID);
-        category.setName("OLd value");
-        category.setAdParameters(Set.of());
-        category.setUserParameters(Set.of());
         when(categoryRepository.findById(ONE_ID)).thenReturn(Optional.of(category));
         var dto = new CategoryRequestDto()
                 .adParameterIds(List.of())
@@ -81,11 +84,6 @@ class CategoryServiceTest {
 
     @Test
     void delete() {
-        var category = new Category();
-        category.setId(ONE_ID);
-        category.setName("OLd value");
-        category.setAdParameters(Set.of());
-        category.setUserParameters(Set.of());
         when(categoryRepository.findById(ONE_ID)).thenReturn(Optional.of(category));
 
         categoryService.delete(ONE_ID);
@@ -95,11 +93,6 @@ class CategoryServiceTest {
 
     @Test
     void getCategoryWithParameters() {
-        var category = new Category();
-        category.setId(ONE_ID);
-        category.setName("OLd value");
-        category.setAdParameters(Set.of());
-        category.setUserParameters(Set.of());
         when(categoryRepository.findByIdWithParameters(ONE_ID))
                 .thenReturn(Optional.of(category));
 
@@ -110,13 +103,25 @@ class CategoryServiceTest {
 
     @Test
     void getAll() {
+        when(categoryRepository.findAll()).thenReturn(List.of(category));
+        var dto = categoryService.getAll();
+
+        assertEquals(category.getId(), dto.get(0).getId());
+        assertEquals(category.getName(), dto.get(0).getName());
     }
 
     @Test
     void get() {
+        when(categoryRepository.findById(ONE_ID)).thenReturn(Optional.of(category));
+        var entity = categoryService.get(ONE_ID);
+
+        assertEquals(category.getId(), entity.getId());
+        assertEquals(category.getName(), entity.getName());
     }
 
     @Test
     void save() {
+        categoryService.save(category);
+        verify(categoryRepository).save(category);
     }
 }
