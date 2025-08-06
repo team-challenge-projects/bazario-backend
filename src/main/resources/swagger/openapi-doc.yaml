@@ -2057,7 +2057,8 @@ components:
       properties:
         email:
           type: string
-          format: email
+          pattern: '^(\+38|38|8)?0\d{9}$|^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$'
+          x-pattern-message: "Format must be email or phone number"
         password:
           type: string
           format: password

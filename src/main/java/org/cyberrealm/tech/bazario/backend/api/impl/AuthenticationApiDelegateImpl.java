@@ -6,7 +6,10 @@ import org.cyberrealm.tech.bazario.backend.dto.AuthenticationRequest;
 import org.cyberrealm.tech.bazario.backend.dto.RefreshTokenRequest;
 import org.cyberrealm.tech.bazario.backend.security.AuthenticationService;
 import org.cyberrealm.tech.bazario.backend.security.CookieService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,10 +20,20 @@ public class AuthenticationApiDelegateImpl implements AuthenticationApiDelegate 
 
     @Override
     public ResponseEntity<String> login(AuthenticationRequest authenticationRequest) {
-        var loginResponse = authenticationService.authenticate(authenticationRequest);
-        return ResponseEntity.ok()
-                .headers(cookieService.getCookieHeader(loginResponse.refreshToken()))
-                .body(loginResponse.accessToken());
+        try {
+            var loginResponse = authenticationService.authenticate(authenticationRequest);
+            return ResponseEntity.ok()
+                    .headers(cookieService.getCookieHeader(loginResponse.refreshToken()))
+                    .body(loginResponse.accessToken());
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("""
+                    { "error" : "Unauthorized", "message" : "Login or password is not valid."}
+                    """);
+        } catch (DisabledException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("""
+                    { "error" : "Forbidden", "message" : "Account deactivated"}
+                    """);
+        }
     }
 
     @Override
