@@ -2055,7 +2055,7 @@ components:
       description:  Authentication form
       type: object
       properties:
-        email:
+        login:
           type: string
           pattern: '^(\+38|38|8)?0\d{9}$|^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$'
           x-pattern-message: "Format must be email or phone number"
@@ -2094,17 +2094,35 @@ components:
           type: string
     ResetPassword:
       description: Reset password
-      allOf:
-        - $ref: '#/components/schemas/AuthenticationRequest'
       properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+          pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[\w#@&]{8,}$'
+          x-pattern-message: "The password field must contain at least: 
+          one lowercase English letter, one uppercase English letter, 
+          one digit. It can also optionally contain a punctuation mark (#@&).
+          The number of characters is at least 8"
         hex:
           type: string
     RegistrationRequest:
       description: Registration form of user
-      allOf:
-        - $ref: '#/components/schemas/AuthenticationRequest'
       type: object
       properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+          pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[\w#@&]{8,}$'
+          x-pattern-message: "The password field must contain at least: 
+          one lowercase English letter, one uppercase English letter, 
+          one digit. It can also optionally contain a punctuation mark (#@&).
+          The number of characters is at least 8"
         firstName:
           type: string
           pattern: '^[A-ZА-ЯІЇЄ][a-zа-яіїє]{1,20}$'
