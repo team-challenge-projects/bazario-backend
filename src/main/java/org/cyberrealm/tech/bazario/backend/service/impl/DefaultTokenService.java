@@ -17,6 +17,7 @@ public class DefaultTokenService implements TokenService {
     private static final int DEFAULT_TOKEN_LENGTH = 2;
     private static final int EMAIL_INDEX = 0;
     private static final int CODE_INDEX = 1;
+    private static final int START_STRING_INDEX = 0;
     private final RedisTemplate<String, Object> redisTemplate;
     private final PasswordEncoder passwordEncoder;
     private final EncryptionUtils encryptionUtils;
@@ -61,7 +62,7 @@ public class DefaultTokenService implements TokenService {
 
     private String generateRandomCode(int length) {
         String uuid = UUID.randomUUID().toString();
-        return uuid.substring(EMAIL_INDEX, Math.min(length, uuid.length()));
+        return uuid.substring(START_STRING_INDEX, Math.min(length, uuid.length()));
     }
 
     private String getKey(String email, MessageType messageType) {
