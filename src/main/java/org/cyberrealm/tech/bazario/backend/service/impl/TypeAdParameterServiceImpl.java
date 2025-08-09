@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class TypeAdParameterServiceImpl implements TypeAdParameterService {
-    private static final String END_OF_LINE_SEPARATOR = ";";
+    private static final String END_OF_LINE_SEPARATOR = ";<br>";
     private static final String END_DOT = ".";
 
     private final TypeAdParameterRepository parameterRepository;
@@ -75,7 +75,8 @@ public class TypeAdParameterServiceImpl implements TypeAdParameterService {
         });
         if (!builder.isEmpty()) {
             int indexLastSeparator = builder.lastIndexOf(END_OF_LINE_SEPARATOR);
-            builder.replace(indexLastSeparator, indexLastSeparator + 1, END_DOT);
+            builder.replace(indexLastSeparator, indexLastSeparator
+                    + END_OF_LINE_SEPARATOR.length(), END_DOT);
             throw new ArgumentNotValidException(builder.toString());
         }
     }

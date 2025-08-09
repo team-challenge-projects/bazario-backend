@@ -43,7 +43,7 @@ public class ScriptInitializer implements CommandLineRunner {
         var categories = categoryInitializer.getCategories(credentials.getCategories(),
                 adTypes);
         var ads = adInitializer.createAds(credentials.getAds(), users, categories);
-        adParameterInitializer.addParameters(credentials.getUserParameters(), ads, adTypes);
+        adParameterInitializer.addParameters(credentials.getAdParameters(), ads, adTypes);
 
     }
 }
