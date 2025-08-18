@@ -20,6 +20,7 @@
 		<jjwt.version>0.12.5</jjwt.version>
 		<jackson-databind-nullable.version>0.2.6</jackson-databind-nullable.version>
 		<cloudinary.version>1.39.0</cloudinary.version>
+		<hibernate.version>6.6.4.Final</hibernate.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -118,6 +119,11 @@
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>42.7.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate.orm</groupId>
+			<artifactId>hibernate-spatial</artifactId>
+			<version>${hibernate.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>

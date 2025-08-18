@@ -22,6 +22,7 @@ import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 import org.cyberrealm.tech.bazario.backend.dto.AdStatus;
+import org.locationtech.jts.geom.Point;
 
 @Entity
 @Getter
@@ -34,6 +35,9 @@ public class Ad {
     private String title = "";
     private String description = "";
     private BigDecimal price = BigDecimal.ZERO;
+    private String cityName = "";
+    @Column(columnDefinition = "GEOMETRY(POINT, 4326)")
+    private Point cityCoordinate;
     private LocalDate publicationDate = LocalDate.now();
     @Enumerated(EnumType.STRING)
     private AdStatus status = AdStatus.NEW;

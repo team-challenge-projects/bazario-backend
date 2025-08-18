@@ -18,6 +18,7 @@ import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 import org.cyberrealm.tech.bazario.backend.model.enums.Role;
+import org.locationtech.jts.geom.Point;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -36,13 +37,14 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true)
     @Email
     private String email;
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String phoneNumber = "";
     @Column(nullable = false)
     private String password;
     private LocalDateTime createdAt = LocalDateTime.now();
     private String cityName = "";
-    private String cityCoordinate = "";
+    @Column(columnDefinition = "GEOMETRY(POINT, 4326)")
+    private Point cityCoordinate;
     @Enumerated(EnumType.STRING)
     private Role role;
     @Column(nullable = false)

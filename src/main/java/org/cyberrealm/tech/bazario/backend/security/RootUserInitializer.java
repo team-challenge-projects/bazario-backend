@@ -5,6 +5,7 @@ import org.cyberrealm.tech.bazario.backend.config.RootUserCredentials;
 import org.cyberrealm.tech.bazario.backend.mapper.UserMapper;
 import org.cyberrealm.tech.bazario.backend.model.enums.Role;
 import org.cyberrealm.tech.bazario.backend.repository.UserRepository;
+import org.cyberrealm.tech.bazario.backend.util.GeometryUtil;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,8 @@ public class RootUserInitializer implements CommandLineRunner {
             var root = mapper.toUser(credentials);
             root.setRole(Role.ROOT);
             root.setPassword(encoder.encode(root.getPassword()));
+            root.setCityCoordinate(GeometryUtil.createPoint(
+                    credentials.getCityCoordinate()));
             userRepository.save(root);
         }
 

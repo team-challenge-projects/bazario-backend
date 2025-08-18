@@ -25,11 +25,8 @@ import org.cyberrealm.tech.bazario.backend.service.AdDeleteService;
 import org.cyberrealm.tech.bazario.backend.service.AuthenticationUserService;
 import org.cyberrealm.tech.bazario.backend.service.UserService;
 import org.cyberrealm.tech.bazario.backend.service.VerificationService;
+import org.cyberrealm.tech.bazario.backend.util.GeometryUtil;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.geo.Circle;
-import org.springframework.data.geo.Distance;
-import org.springframework.data.geo.Metrics;
-import org.springframework.data.geo.Point;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +38,6 @@ public class UserServiceImpl implements UserService {
     private static final String REGEX_DELIMITER_COORDINATE = "\\|";
     private static final int INDEX_FIRST_COORDINATE = 0;
     private static final int INDEX_TWO_COORDINATE = 1;
-    private static final double ZERO_DISTANCE = 0.0;
     private static final int DIVIDER_TO_KILOMETERS = 1000;
 
     private final RedisTemplate<String, Object> redisTemplate;
@@ -54,6 +50,8 @@ public class UserServiceImpl implements UserService {
 
     @Value("${token.expiration.minutes:15}")
     private int expirationMinutes;
+    @Value("${user.defaultCoordinate}")
+    private String defaultCoordinate;
 
     @Transactional
     @Override
@@ -84,10 +82,12 @@ public class UserServiceImpl implements UserService {
                         authService.getCurrentUser().getId())
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Current user not found"));
-        return userMapper.toPublicInformation(user, Optional.ofNullable(redisTemplate.opsForGeo()
-                .distance(CITIES, currentUser.getCityName(),
-                        user.getCityName())).orElseGet(() -> new Distance(ZERO_DISTANCE))
-                .getValue() / DIVIDER_TO_KILOMETERS);
+        var pointUser = Optional.ofNullable(user.getCityCoordinate()).orElseGet(() ->
+                GeometryUtil.createPoint(defaultCoordinate));
+        var pointCurrentUser = Optional.ofNullable(currentUser.getCityCoordinate()).orElseGet(() ->
+                GeometryUtil.createPoint(defaultCoordinate));
+        return userMapper.toPublicInformation(user,
+                GeometryUtil.haversine(pointCurrentUser, pointUser));
     }
 
     @Override
@@ -95,8 +95,11 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByIdWithParameters(id).orElseThrow(() ->
                 new EntityNotFoundException("User not found"));
         checkUserRestrictions(patchUser, user);
-        setCityCoordinateInRedis(patchUser, user);
         userMapper.updateUser(patchUser, user);
+        if (patchUser.getCityCoordinate() != null) {
+            user.setCityCoordinate(GeometryUtil.createPoint(
+                    patchUser.getCityCoordinate()));
+        }
 
         return userMapper.toInformation(userRepository.save(user));
     }
@@ -132,19 +135,8 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new EntityNotFoundException(
                         "User not found"));
         checkUserRestrictions(patchUser, currentUser);
-        setCityCoordinateInRedis(patchUser, currentUser);
         userMapper.updateUser(patchUser, currentUser);
         return userMapper.toInformation(userRepository.save(currentUser));
-    }
-
-    private void setCityCoordinateInRedis(PatchUser patchUser, User user) {
-        if (patchUser.getCityCoordinate() != null && !patchUser.getCityCoordinate().equals(
-                user.getCityCoordinate()) && patchUser.getCityName() != null) {
-            var coordinate = patchUser.getCityCoordinate().split(REGEX_DELIMITER_COORDINATE);
-            redisTemplate.opsForGeo().add(CITIES, new Point(Double.parseDouble(
-                    coordinate[INDEX_FIRST_COORDINATE]), Double.parseDouble(
-                    coordinate[INDEX_TWO_COORDINATE])), patchUser.getCityName());
-        }
     }
 
     private void checkUserRestrictions(PatchUser dto, User user) {
@@ -156,6 +148,9 @@ public class UserServiceImpl implements UserService {
                     && userRepository.countByRole(Role.ROOT) < COUNT_MIN_ROOT_USER) {
                 throw new ForbiddenException(
                         "There must be at least one user with the ROOT role.");
+            }
+            if (Boolean.TRUE.equals(dto.getIsLocked())) {
+                throw new ForbiddenException("ROOT user cannot locked");
             }
         } else {
             if (dto.getRole() != null && !dto.getRole().equals(user.getRole().name())
@@ -201,16 +196,8 @@ public class UserServiceImpl implements UserService {
                         authService.getCurrentUser().getId())
                 .orElseThrow(() -> new EntityNotFoundException(
                         "User not found"));
-        var coordinate = currentUser.getCityCoordinate().split(REGEX_DELIMITER_COORDINATE);
-        var cities = redisTemplate.opsForGeo().radius(CITIES, new Circle(new Point(
-                Double.parseDouble(coordinate[INDEX_FIRST_COORDINATE]),
-                Double.parseDouble(coordinate[INDEX_TWO_COORDINATE])),
-                Metrics.KILOMETERS.getMultiplier() * distance));
-        if (cities != null) {
-            var names = cities.getContent().stream().map(e ->
-                    e.getContent().getName().toString()).toList();
-            return userRepository.findByCityNameIn(names).stream().map(User::getId).toList();
-        }
-        return List.of();
+
+        return userRepository.findByDistance(currentUser.getCityCoordinate(),
+                distance * DIVIDER_TO_KILOMETERS);
     }
 }

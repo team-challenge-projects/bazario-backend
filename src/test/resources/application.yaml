@@ -66,6 +66,7 @@ user:
       password: 'tesT1#test'
       cityName: 'Lviv'
       cityCoordinate: '49,5017|24,0123'
+  defaultCoordinate: 'POINT(30.3125 50.27)'
 bucket:
   global:
     tokens: 10

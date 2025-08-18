@@ -41,8 +41,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.geo.Distance;
-import org.springframework.data.redis.core.GeoOperations;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -62,8 +60,6 @@ class UserApiDelegateImplTest extends AbstractIntegrationTest {
     private TokenService tokenService;
     @MockitoBean
     private EmailTemplateBuilder templateBuilder;
-    @MockitoBean
-    private GeoOperations<String, Object> opsForGeo;
 
     @Test
     void createUser() throws Exception {
@@ -111,15 +107,13 @@ class UserApiDelegateImplTest extends AbstractIntegrationTest {
     void getOtherUserInformation() throws Exception {
         var user = new User();
         user.setId(ID_ONE);
-        var dto = new UserInformation().id(ID_ONE).email("test@test.com")
-                .phoneNumber("+380671234567").firstName("Тест")
-                .lastName("Тест").avatar("http://test/test.png")
-                .cityName("Kiev").distance(1.0);
-        when(redisTemplate.opsForGeo()).thenReturn(opsForGeo);
+        var dto = new UserInformation().id(3L).email("test3@test.com")
+                .phoneNumber("+380670034500").firstName("Рут")
+                .lastName("Рут").avatar("http://test/test.png")
+                .cityName("Львов").distance(459.2388132067447);
         when(authService.getCurrentUser()).thenReturn(user);
-        when(opsForGeo.distance(anyString(), anyString(), anyString()))
-                .thenReturn(new Distance(1000.0));
-        mockMvc.perform(get("/private/user/" + ID_ONE))
+
+        mockMvc.perform(get("/private/user/" + 3))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(dto)));
     }
@@ -133,7 +127,7 @@ class UserApiDelegateImplTest extends AbstractIntegrationTest {
         var dto = new PrivateUserInformation().id(ID_ONE).email("test@test.com")
                 .phoneNumber("+380671234567").firstName("Тест")
                 .lastName("Тест").avatar("http://test/test.png")
-                .cityName("Kiev").cityCoordinate("50,27|30,3125")
+                .cityName("Kiev").cityCoordinate("POINT (30.3125 50.27)")
                 .parameters(List.of(new BasicParameter().id(ID_ONE)
                         .typeName("Тестовий тип").typeId(ID_ONE)
                         .parameterValue("ТестТип")
@@ -172,7 +166,7 @@ class UserApiDelegateImplTest extends AbstractIntegrationTest {
         var user = userRepository.findById(ID_ONE).orElseThrow();
         when(authService.getCurrentUser()).thenReturn(user);
         var dto = new PrivateUserInformation()
-                .cityCoordinate("50,27|30,3125")
+                .cityCoordinate("POINT (30.3125 50.27)")
                 .parameters(List.of()).email("test@test.com")
                 .phoneNumber("+380671234567").id(ID_ONE)
                 .firstName("Change").lastName("Тест")
@@ -193,7 +187,7 @@ class UserApiDelegateImplTest extends AbstractIntegrationTest {
         when(authService.getCurrentUser()).thenReturn(user);
 
         var dto = new PrivateUserInformation()
-                .cityCoordinate("50,27|30,3125")
+                .cityCoordinate("POINT (30.3125 50.27)")
                 .parameters(List.of()).email("test@test.com")
                 .phoneNumber("+380671234567").id(ID_ONE)
                 .firstName("Change").lastName("Тест")

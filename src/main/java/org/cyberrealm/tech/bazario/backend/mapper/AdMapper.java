@@ -42,6 +42,7 @@ public interface AdMapper {
     @Mapping(target = "category", ignore = true)
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "parameters", ignore = true)
+    @Mapping(target = "cityCoordinate", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateAdFromDto(PatchAd patchAd, @MappingTarget Ad ad);
 
@@ -68,6 +69,7 @@ public interface AdMapper {
     @Mapping(target = "category", ignore = true)
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "parameters", ignore = true)
+    @Mapping(target = "cityCoordinate", ignore = true)
     Ad toAd(AdCredentials credentials);
 
     @Mapping(target = "imageUrl", expression =

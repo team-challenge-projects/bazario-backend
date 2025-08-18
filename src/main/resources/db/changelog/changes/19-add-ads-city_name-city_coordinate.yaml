@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-ads-city_name-city_coordinate
+      author: Andrey Sitarskiy
+      changes:
+        - addColumn:
+            tableName: ads
+            columns:
+              - column:
+                  name: city_name
+                  type: varchar(200)
+              - column:
+                  name: city_coordinate
+                  type: GEOMETRY(POINT, 4326)
+                  constraints:
+                    nullable: true

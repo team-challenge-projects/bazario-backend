@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - changeSet:
+      id: modify-users-city_coordinate
+      author: Andrey Sitarskiy
+      changes:
+        - modifyDataType:
+            tableName: users
+            columnName: city_coordinate
+            newDataType: GEOMETRY(POINT, 4326)
+        - createIndex:
+            tableName: users
+            indexName: idx_users_city_coordinate
+            using: GIST
+            columns:
+              - column:
+                  name: city_coordinate

@@ -2194,16 +2194,14 @@ components:
            Ukrainian letters. The number of characters is between 1 and 20."
         cityName:
           type: string
-          minLength: 3
-          maxLength: 100
+          pattern: '^[А-ЯІЇЄа-яіїє\w\s\,\.\!\?]{3,200}$'
+          x-pattern-message: "The text consists of letters, numbers, and punctuation marks (.!?,) from 3 to 200 characters long."
         cityCoordinate:
           type: string
-          pattern: '^\d+\.?\d*\|\d\.?\d*$'
-          x-pattern-message: "City coordinates contain width and longitude values 
-          separated by a separator (|). Values contain one or more digits before 
-          the decimal point and may or may not contain digits after the decimal 
-          point. Values contain one or more digits before the decimal point and may 
-          or may not contain digits after the decimal point."
+          pattern: '^POINT\(\d{1,2}(\.\d+)?\s\d{1,2}(\.\d+)?\)$'
+          x-pattern-message: "The text consists of city coordinates in Well-Known Text format(only point). Example: POINT(0.25 0.63)"
+          description: A point represented in WKT (Well-Known Text) format.
+          example: "POINT(40.2 30.56)"
         userParameters:
           type: array
           items:
@@ -2351,6 +2349,16 @@ components:
         categoryId:
           type: integer
           format: int64
+        cityName:
+          type: string
+          pattern: '^[А-ЯІЇЄа-яіїє\w\s\,\.\!\?]{3,200}$'
+          x-pattern-message: "The text consists of letters, numbers, and punctuation marks (.!?,) from 3 to 200 characters long."
+        cityCoordinate:
+          type: string
+          pattern: '^POINT\(\d{1,2}(\.\d+)?\s\d{1,2}(\.\d+)?\)$'
+          x-pattern-message: "The text consists of city coordinates in Well-Known Text format(only point). Example: POINT(0.25 0.63)"
+          description: A point represented in WKT (Well-Known Text) format.
+          example: "POINT(40.2 30.56)"
         adParameters:
           type: array
           items:
@@ -2391,6 +2399,8 @@ components:
           format: uri
         price:
           type: number
+        cityName:
+          type: string
         category:
           type: integer
           format: int64

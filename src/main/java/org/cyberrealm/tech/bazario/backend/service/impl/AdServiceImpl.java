@@ -23,6 +23,7 @@ import org.cyberrealm.tech.bazario.backend.service.AdService;
 import org.cyberrealm.tech.bazario.backend.service.AuthenticationUserService;
 import org.cyberrealm.tech.bazario.backend.service.ImageService;
 import org.cyberrealm.tech.bazario.backend.service.TypeAdParameterService;
+import org.cyberrealm.tech.bazario.backend.util.GeometryUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -77,6 +78,9 @@ public class AdServiceImpl implements AdService {
         }
 
         adMapper.updateAdFromDto(patchAd, ad);
+        if (patchAd.getCityCoordinate() != null) {
+            ad.setCityCoordinate(GeometryUtil.createPoint(patchAd.getCityCoordinate()));
+        }
 
         Long categoryId = patchAd.getCategoryId();
         if (categoryId != null && !ad.getCategory().getId().equals(categoryId)) {
