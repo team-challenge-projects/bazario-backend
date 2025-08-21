@@ -11,6 +11,8 @@ databaseChangeLog:
               - column: { name: price, value: "1000.00" }
               - column: { name: publication_date, value: "2025-05-06" }
               - column: { name: status, value: "ACTIVE" }
+              - column: { name: city_name, value: "Kiev" }
+              - column: { name: city_coordinate, value: SRID=4326;POINT(30.3125 50.27) }
               - column: { name: user_id, value: "1" }
               - column: { name: category_id, value: "1" }
         - insert:
@@ -21,6 +23,8 @@ databaseChangeLog:
               - column: { name: price, value: "3500.00" }
               - column: { name: publication_date, value: "2025-03-06" }
               - column: { name: status, value: "ACTIVE" }
+              - column: { name: city_name, value: "Lviv" }
+              - column: { name: city_coordinate, value: SRID=4326;POINT(24.0123 49.5017) }
               - column: { name: user_id, value: "2" }
               - column: { name: category_id, value: "2" }
         - insert:
@@ -31,5 +35,7 @@ databaseChangeLog:
               - column: { name: price, value: "5000.00" }
               - column: { name: publication_date, value: "2025-01-06" }
               - column: { name: status, value: "ACTIVE" }
+              - column: { name: city_name, value: "Kiev" }
+              - column: { name: city_coordinate, value: SRID=4326;POINT(30.3125 50.27) }
               - column: { name: user_id, value: "3" }
               - column: { name: category_id, value: "1" }

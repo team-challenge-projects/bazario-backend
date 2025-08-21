@@ -14,7 +14,7 @@ databaseChangeLog:
               - column: { name: password, value: "$2a$10$sYui9pSD.mXdCfshD8hV6O/DS0CgH3FfhkzJQ4ONhRVzd.OUwBOoG" }
               - column: { name: created_at, value: "2025-05-06 22:41:21" }
               - column: { name: city_name, value: "Kiev" }
-              - column: { name: city_coordinate, value: "50,27|30,3125" }
+              - column: { name: city_coordinate, value: SRID=4326;POINT(30.3125 50.27) }
               - column: { name: role, value: "USER" }
               - column: { name: is_locked, value: "false" }
         - insert:
@@ -28,7 +28,7 @@ databaseChangeLog:
               - column: { name: password, value: "$2a$10$sYui9pSD.mXdCfshD8hV6O/DS0CgH3FfhkzJQ4ONhRVzd.OUwBOoG" }
               - column: { name: created_at, value: "2025-05-06 22:41:21" }
               - column: { name: city_name, value: "Kiev" }
-              - column: { name: city_coordinate, value: "50,27|30,3125" }
+              - column: { name: city_coordinate, value: SRID=4326;POINT(30.3125 50.27) }
               - column: { name: role, value: "ADMIN" }
               - column: { name: is_locked, value: "false" }
         - insert:
@@ -37,11 +37,11 @@ databaseChangeLog:
               - column: { name: first_name, value: "Рут" }
               - column: { name: last_name, value: "Рут" }
               - column: { name: email, value: "test3@test.com" }
-              - column: { name: avatar, value: "" }
+              - column: { name: avatar, value: "http://test/test.png" }
               - column: { name: phone_number, value: "+380670034500" }
               - column: { name: password, value: "$2a$10$sYui9pSD.mXdCfshD8hV6O/DS0CgH3FfhkzJQ4ONhRVzd.OUwBOoG" }
               - column: { name: created_at, value: "2025-05-06 22:41:21" }
-              - column: { name: city_name, value: "Kiev" }
-              - column: { name: city_coordinate, value: "50,27|30,3125" }
+              - column: { name: city_name, value: "Львов" }
+              - column: { name: city_coordinate, value: SRID=4326;POINT(24.0123 49.5017) }
               - column: { name: role, value: "ROOT" }
               - column: { name: is_locked, value: "false" }

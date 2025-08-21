@@ -42,8 +42,12 @@ public class AdsServiceImpl implements AdsService {
     private static final int INDEX_KEY = 0;
     private static final int INDEX_VALUE = 1;
     private static final String REGEX_BETWEEN_DELIMITER = "\\|\\|";
-    private static final String REGEX_BETWEEN = "^\\d+\\.?\\d*\\|\\|\\d+\\.?\\d*$";
-    private static final String BETWEEN_DELIMITER = "||";
+    private static final String REGEX_BETWEEN = "^\\d*\\.?\\d+\\|\\|\\d*\\.?\\d+$";
+    private static final String REGEX_DOUBLE = "^\\d*\\.?\\d+$";
+    private static final String REGEX_NUMBER = "^\\d+$";
+    private static final int FACTOR_METER_TO_KILOMETER = 1000;
+    private static final String REGEX_BETWEEN_DATE =
+            "^\\d{4}-\\d{2}-\\d{2}\\|\\|\\d{4}-\\d{2}-\\d{2}$";
 
     private final UserParameterService userParameterService;
     private final AdParameterService adParameterService;
@@ -74,7 +78,7 @@ public class AdsServiceImpl implements AdsService {
         filters.forEach((key, value) -> {
             switch (key) {
                 case "price" -> {
-                    if (value.contains(BETWEEN_DELIMITER)) {
+                    if (value.matches(REGEX_BETWEEN)) {
                         try {
                             var parts = value.split(REGEX_BETWEEN_DELIMITER);
                             var pricePredicate = builder.between(root.get("price"),
@@ -87,25 +91,30 @@ public class AdsServiceImpl implements AdsService {
                     }
                 }
                 case "publicationDate" -> {
-                    if (value.contains(BETWEEN_DELIMITER)) {
-                        try {
-                            var parts = value.split(REGEX_BETWEEN_DELIMITER);
-                            var datePredicate = builder.between(root.get("publicationDate"),
-                                    LocalDate.parse(parts[INDEX_KEY]),
-                                    LocalDate.parse(parts[INDEX_VALUE]));
-                            predicate.add(datePredicate);
-                        } catch (Exception e) {
-                            builder.conjunction();
-                        }
+                    if (value.matches(REGEX_BETWEEN_DATE)) {
+                        var parts = value.split(REGEX_BETWEEN_DELIMITER);
+                        var datePredicate = builder.between(root.get("publicationDate"),
+                                LocalDate.parse(parts[INDEX_KEY]),
+                                LocalDate.parse(parts[INDEX_VALUE]));
+                        predicate.add(datePredicate);
                     }
                 }
                 case "title" -> predicate.add(builder.like(root.get("title"), "%" + value + "%"));
                 case "category" -> {
-                    try {
+                    if (value.matches(REGEX_NUMBER)) {
                         predicate.add(builder.equal(root.get("category").get("id"),
                                 Long.parseLong(value)));
-                    } catch (NumberFormatException e) {
-                        builder.conjunction();
+
+                    }
+                }
+                case "distance" -> {
+                    if (value.matches(REGEX_DOUBLE)) {
+                        var startPoint = authUserService.getCurrentUser().getCityCoordinate();
+                        predicate.add(builder.lt(builder.function("ST_DistanceSphere",
+                                        Double.class, root.get("cityCoordinate"),
+                                        builder.literal(startPoint)),
+                                builder.literal(Double.parseDouble(value)
+                                        * FACTOR_METER_TO_KILOMETER)));
                     }
                 }
                 case "status" -> setPredicateStatus(root, builder, value, predicate);
@@ -169,13 +178,9 @@ public class AdsServiceImpl implements AdsService {
     private jakarta.persistence.criteria.Predicate getPredicateByUser(
             Root<Ad> root, CriteriaBuilder builder, Map<String, String> filters) {
         Set<Long> userIds = new HashSet<>();
-        if (filters.containsKey("user")) {
-            try {
-                return builder.equal(root.get("user").get("id"),
-                        Long.parseLong(filters.get("user")));
-            } catch (NumberFormatException e) {
-                return builder.conjunction();
-            }
+        if (filters.containsKey("user") && filters.get("user").matches(REGEX_NUMBER)) {
+            return builder.equal(root.get("user").get("id"),
+                    Long.parseLong(filters.get("user")));
         }
         var userParamFieldFilter = filters.entrySet().stream()
                 .filter(exceptNonNumeric(PREFIX_USER_PARAM))
@@ -205,7 +210,7 @@ public class AdsServiceImpl implements AdsService {
                     }
                 });
         filters.entrySet().stream().filter(entry -> entry.getKey()
-                .equals("distance") && entry.getValue().matches("\\d+"))
+                        .equals("user_distance") && entry.getValue().matches(REGEX_DOUBLE))
                 .map(e -> Double.parseDouble(e.getValue())).findFirst()
                 .ifPresent(distance -> {
                     var ids = userService.getUserIdByDistance(distance);

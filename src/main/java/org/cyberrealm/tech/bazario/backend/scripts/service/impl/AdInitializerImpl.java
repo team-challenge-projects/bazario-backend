@@ -12,6 +12,7 @@ import org.cyberrealm.tech.bazario.backend.model.TypeAdParameter;
 import org.cyberrealm.tech.bazario.backend.model.User;
 import org.cyberrealm.tech.bazario.backend.repository.AdRepository;
 import org.cyberrealm.tech.bazario.backend.scripts.service.AdInitializer;
+import org.cyberrealm.tech.bazario.backend.util.GeometryUtil;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,7 @@ public class AdInitializerImpl implements AdInitializer {
                          List<TypeAdParameter> adTypes) {
         if (!repository.existsByTitleAndPrice(credentials.getTitle(), credentials.getPrice())) {
             var ad = mapper.toAd(credentials);
+            ad.setCityCoordinate(GeometryUtil.createPoint(credentials.getCityCoordinate()));
             ad.setUser(users.get(credentials.getUser()));
             ad.setCategory(categories.get(credentials.getCategory()));
             repository.save(ad);
@@ -60,6 +62,7 @@ public class AdInitializerImpl implements AdInitializer {
                                   List<Category> categories) {
         return credentials.stream().map(dto -> {
             var ad = mapper.toAd(dto);
+            ad.setCityCoordinate(GeometryUtil.createPoint(dto.getCityCoordinate()));
             ad.setUser(users.get(dto.getUser()));
             ad.setCategory(categories.get(dto.getCategory()));
             return ad;

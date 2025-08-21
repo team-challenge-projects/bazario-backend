@@ -34,6 +34,10 @@ databaseChangeLog:
   - include:
       file: db/changelog/changes/17-insert-type-user-parameters.yaml
   - include:
+      file: db/changelog/changes/18-modify-users-city_coordinate.yaml
+  - include:
+      file: db/changelog/changes/19-add-ads-city_name-city_coordinate.yaml
+  - include:
       file: db/changelog/changes/18-insert-categories.yaml
   - include:
       file: db/changelog/changes/19-insert-user.yaml

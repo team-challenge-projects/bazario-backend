@@ -1,0 +1,42 @@
+databaseChangeLog:
+  - changeSet:
+      id: alter-users-city_coordinate-to-geometry
+      author: Andrey Sitarskiy
+      changes:
+        - renameColumn:
+            tableName: users
+            oldColumnName: city_coordinate
+            newColumnName: city_coordinate_temp
+            columnDataType: VARCHAR(150)
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: city_coordinate
+                  type: GEOMETRY(POINT, 4326)
+                  constraints:
+                    nullable: true
+        - sql:
+            sql: |
+              UPDATE users
+              SET city_coordinate = ST_SetSRID(
+                ST_MakePoint(
+                  (SPLIT_PART(city_coordinate_temp, '|', 1))::DOUBLE PRECISION,
+                  (SPLIT_PART(city_coordinate_temp, '|', 2))::DOUBLE PRECISION
+                ),
+                4326
+              )
+              WHERE city_coordinate_temp IS NOT NULL
+                AND city_coordinate_temp ~ '^[-+]?[0-9]*\.?[0-9]+\|[-+]?[0-9]*\.?[0-9]+$';
+        - dropColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: city_coordinate_temp
+        - createIndex:
+            tableName: users
+            indexName: idx_users_city_coordinate
+            using: GIST
+            columns:
+              - column:
+                  name: city_coordinate

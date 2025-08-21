@@ -106,10 +106,11 @@ user:
       phoneNumber: '+380982687965'
       password: 'rooT1#root'
       cityName: 'Lviv'
-      cityCoordinate: '49.5017|24.0123'
+      cityCoordinate: 'POINT(24.0123 49.5017)'
   user:
     credentials:
       password: 'useR1#user'
+  defaultCoordinate: 'POINT(30.3125 50.27)'
 bucket:
   global:
     tokens: 10

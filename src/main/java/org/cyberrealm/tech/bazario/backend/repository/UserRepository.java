@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import org.cyberrealm.tech.bazario.backend.model.User;
 import org.cyberrealm.tech.bazario.backend.model.enums.Role;
+import org.locationtech.jts.geom.Point;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,6 +15,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
             SELECT u FROM User u LEFT JOIN FETCH u.parameters
              LEFT JOIN FETCH u.parameters.parameter
              WHERE u.id = :userId""";
+    String RADIUS_CAPTURING_COORDINATE = """
+            SELECT u.id FROM users u WHERE
+             ST_DistanceSphere(u.city_coordinate, :point) <= :radius""";
 
     Optional<User> findByEmail(String email);
 
@@ -31,4 +35,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByCityNameIn(List<String> names);
 
     Optional<User> findByEmailOrPhoneNumber(String email, String phone);
+
+    @Query(value = RADIUS_CAPTURING_COORDINATE, nativeQuery = true)
+    List<Long> findByDistance(@Param("point") Point point, @Param("radius") Double radius);
 }

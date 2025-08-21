@@ -46,6 +46,7 @@ public interface UserMapper {
     @Mapping(target = "locked", ignore = true)
     @Mapping(target = "parameters", ignore = true)
     @Mapping(target = "authorities", ignore = true)
+    @Mapping(target = "cityCoordinate", ignore = true)
     User toUser(RootUserCredentials credentials);
 
     @Mapping(target = "id", ignore = true)
@@ -53,8 +54,11 @@ public interface UserMapper {
     @Mapping(target = "locked", ignore = true)
     @Mapping(target = "parameters", ignore = true)
     @Mapping(target = "authorities", ignore = true)
+    @Mapping(target = "cityCoordinate", ignore = true)
     User toUser(UserCredentials credentials);
 
+    @Mapping(target = "cityCoordinate",
+            expression = "java(currentUser.getCityCoordinate().toText())")
     PrivateUserInformation toInformation(User currentUser);
 
     PublicUserInformation toInformationForAnonymous(User user);
@@ -69,6 +73,7 @@ public interface UserMapper {
     @Mapping(target = "parameters", ignore = true)
     @Mapping(target = "authorities", ignore = true)
     @Mapping(target = "email", ignore = true)
+    @Mapping(target = "cityCoordinate", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateUser(PatchUser patchUser, @MappingTarget User user);
 

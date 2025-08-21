@@ -14,4 +14,6 @@ public class AdCredentials {
     private AdStatus status;
     private int user;
     private int category;
+    private String cityName;
+    private String cityCoordinate;
 }

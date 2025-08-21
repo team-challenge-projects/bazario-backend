@@ -31,3 +31,7 @@ databaseChangeLog:
       file: db/changelog/changes/16-change-size-url-ad-images.yaml
   - include:
       file: db/changelog/changes/17-drop-unique-phone-number.yaml
+  - include:
+      file: db/changelog/changes/18-alter-users-city_coordinate-to-geometry.yaml
+  - include:
+      file: db/changelog/changes/19-add-ads-city_name-city_coordinate.yaml
