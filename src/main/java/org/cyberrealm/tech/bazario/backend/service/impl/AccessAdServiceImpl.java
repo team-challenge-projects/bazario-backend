@@ -1,6 +1,7 @@
 package org.cyberrealm.tech.bazario.backend.service.impl;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -52,7 +53,7 @@ public class AccessAdServiceImpl implements AccessAdService {
                 .orElseThrow(() -> new EntityNotFoundException("Ad by id " + id
                         + " not found")));
         var deleteList = incrementScoreOfLeaderBoardAndGetDeleteList(id);
-        if (deleteList != null) {
+        if (!deleteList.isEmpty()) {
             deleteList.forEach(cache::remove);
         }
         return cache.get(key);
@@ -76,11 +77,11 @@ public class AccessAdServiceImpl implements AccessAdService {
                         listForNewAd.get(board + e) != null).count() : 0;
             } while (end < maxSizeLeaderBoard && (end - count) < countDeleteAd);
             var deleteList = range.stream().filter(e -> listForNewAd.get(board + e) == null)
-                    .map(String.class::cast).toList();
+                    .toArray();
             set.remove(LEADER_BOARD, deleteList);
-            return deleteList;
+            return Arrays.stream(deleteList).map(e -> "AD_ID_" + e).toList();
         }
-        return null;
+        return List.of();
     }
 
     @Override
