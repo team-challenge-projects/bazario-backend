@@ -2358,7 +2358,7 @@ components:
           pattern: '^POINT\(\d{1,2}(\.\d+)?\s\d{1,2}(\.\d+)?\)$'
           x-pattern-message: "The text consists of city coordinates in Well-Known Text format(only point). Example: POINT(0.25 0.63)"
           description: A point represented in WKT (Well-Known Text) format.
-          example: "POINT(40.2 30.56)"
+          example: "POINT(30.3125 50.27)"
         adParameters:
           type: array
           items:
