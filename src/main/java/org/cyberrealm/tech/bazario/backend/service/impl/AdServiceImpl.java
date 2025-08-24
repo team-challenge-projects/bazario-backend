@@ -24,6 +24,7 @@ import org.cyberrealm.tech.bazario.backend.service.AuthenticationUserService;
 import org.cyberrealm.tech.bazario.backend.service.ImageService;
 import org.cyberrealm.tech.bazario.backend.service.TypeAdParameterService;
 import org.cyberrealm.tech.bazario.backend.util.GeometryUtil;
+import org.locationtech.jts.geom.Point;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -44,10 +45,18 @@ public class AdServiceImpl implements AdService {
 
     @Value("${image.min-num}")
     private int minNumImages;
+    @Value("${user.defaultCoordinate}")
+    private String defaultWkt;
 
     @Override
     public AdDto findById(Long id) {
-        return adMapper.toDto(accessAdService.getPublicAd(id));
+        Ad ad = accessAdService.getPublicAd(id);
+        Point startPoint = null;
+        if (authUserService.isAuthenticationUser()) {
+            startPoint = authUserService.getCurrentUser().getCityCoordinate();
+        }
+        return adMapper.toDto(ad, GeometryUtil.haversine(startPoint,
+                ad.getCityCoordinate(), defaultWkt));
     }
 
     @Override
@@ -129,6 +138,7 @@ public class AdServiceImpl implements AdService {
                             .orElseThrow());
                     return adRepository.save(newAd);
                 });
-        return adMapper.toDto(ad);
+        return adMapper.toDto(ad, GeometryUtil.haversine(user.getCityCoordinate(),
+                ad.getCityCoordinate(), defaultWkt));
     }
 }

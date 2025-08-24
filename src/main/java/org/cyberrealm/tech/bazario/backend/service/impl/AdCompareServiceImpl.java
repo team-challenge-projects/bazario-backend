@@ -18,6 +18,7 @@ import org.cyberrealm.tech.bazario.backend.repository.UserRepository;
 import org.cyberrealm.tech.bazario.backend.service.AdCompareService;
 import org.cyberrealm.tech.bazario.backend.service.AuthenticationUserService;
 import org.cyberrealm.tech.bazario.backend.util.GeometryUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -40,6 +41,9 @@ public class AdCompareServiceImpl implements AdCompareService {
     private final UserRepository userRepository;
     private final AuthenticationUserService authService;
     private final CommentRepository commentRepository;
+
+    @Value("${user.defaultCoordinate}")
+    private String defaultWkt;
 
     @Override
     public PageCompareAd compares(List<Long> ids) {
@@ -95,7 +99,7 @@ public class AdCompareServiceImpl implements AdCompareService {
     private Map<Long, Double> getDistances(List<Ad> ads) {
         var startPoint = authService.getCurrentUser().getCityCoordinate();
         return ads.stream().collect(Collectors.toMap(Ad::getId, ad ->
-                GeometryUtil.haversine(startPoint, ad.getCityCoordinate())));
+                GeometryUtil.haversine(startPoint, ad.getCityCoordinate(), defaultWkt)));
     }
 
     private Map<Long, Double> getUserDistances(List<Long> userIds) {
@@ -103,7 +107,7 @@ public class AdCompareServiceImpl implements AdCompareService {
         var users = userRepository.findAllById(userIds);
         return users.stream().collect(Collectors.toMap(User::getId, user ->
                 GeometryUtil.haversine(currentUser.getCityCoordinate(),
-                        user.getCityCoordinate())));
+                        user.getCityCoordinate(), defaultWkt)));
     }
 
     private Map<String, Double> getMinMaxMap(

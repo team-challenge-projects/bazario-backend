@@ -2324,6 +2324,13 @@ components:
             format: uri
         price:
           type: number
+        cityName:
+          type: string
+        cityCoordinate:
+          type: string
+        distance:
+          type: number
+          format: double
         adParameters:
           type: array
           items:

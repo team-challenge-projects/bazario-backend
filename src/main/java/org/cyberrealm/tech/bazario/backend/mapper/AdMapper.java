@@ -25,8 +25,11 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 @Mapper(config = MapperConfig.class)
 public interface AdMapper {
 
-    @Mapping(target = "adParameters", source = "parameters")
-    AdDto toDto(Ad ad);
+    @Mapping(target = "adParameters", source = "ad.parameters")
+    @Mapping(target = "cityCoordinate", expression =
+            "java(ad.getCityCoordinate() != null ? ad.getCityCoordinate().toText() : \"null\")")
+    @Mapping(target = "distance", source = "distance")
+    AdDto toDto(Ad ad, double distance);
 
     @Mapping(target = "imageUrl", expression =
             "java(URI.create(ad.getImages().stream().findFirst().orElse(\"\")))")
