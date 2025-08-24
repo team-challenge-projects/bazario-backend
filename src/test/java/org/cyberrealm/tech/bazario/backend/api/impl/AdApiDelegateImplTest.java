@@ -75,7 +75,8 @@ class AdApiDelegateImplTest extends AbstractIntegrationTest {
     @Test
     void createOrGetAd() {
         var dto = new AdDto().id(ID_FOUR).title("").description("")
-                .price(BigDecimal.ZERO);
+                .price(BigDecimal.ZERO).cityName("")
+                .cityCoordinate("null").distance(0.0);
         mockMvc.perform(post("/private/ad"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(dto)));
@@ -155,7 +156,9 @@ class AdApiDelegateImplTest extends AbstractIntegrationTest {
                         URI.create("http://test/old-test.png")))
                 .addAdParametersItem(new BasicUserParameter()
                         .id(ID_ONE).parameterValue("ТестПошта")
-                        .typeId(ID_ONE).typeName("Доставка тест"));
+                        .typeId(ID_ONE).typeName("Доставка тест"))
+                .cityName("Kiev").distance(0.0)
+                .cityCoordinate("POINT (30.3125 50.27)");
         mockMvc.perform(get("/public/ad/" + ID_ONE))
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(dto)));

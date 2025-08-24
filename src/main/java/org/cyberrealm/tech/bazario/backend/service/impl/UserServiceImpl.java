@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService {
         var pointCurrentUser = Optional.ofNullable(currentUser.getCityCoordinate()).orElseGet(() ->
                 GeometryUtil.createPoint(defaultCoordinate));
         return userMapper.toPublicInformation(user,
-                GeometryUtil.haversine(pointCurrentUser, pointUser));
+                GeometryUtil.haversine(pointCurrentUser, pointUser, defaultCoordinate));
     }
 
     @Override

@@ -15,6 +15,7 @@ import org.cyberrealm.tech.bazario.backend.dto.PatchAd;
 import org.cyberrealm.tech.bazario.backend.dto.script.AdCredentials;
 import org.cyberrealm.tech.bazario.backend.model.Ad;
 import org.cyberrealm.tech.bazario.backend.model.AdParameter;
+import org.cyberrealm.tech.bazario.backend.util.GeometryUtil;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
@@ -22,11 +23,14 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
-@Mapper(config = MapperConfig.class)
+@Mapper(config = MapperConfig.class, imports = GeometryUtil.class)
 public interface AdMapper {
 
-    @Mapping(target = "adParameters", source = "parameters")
-    AdDto toDto(Ad ad);
+    @Mapping(target = "adParameters", source = "ad.parameters")
+    @Mapping(target = "cityCoordinate", expression =
+            "java(ad.getCityCoordinate() != null ? ad.getCityCoordinate().toText() : \"null\")")
+    @Mapping(target = "distance", source = "distance")
+    AdDto toDto(Ad ad, double distance);
 
     @Mapping(target = "imageUrl", expression =
             "java(URI.create(ad.getImages().stream().findFirst().orElse(\"\")))")
