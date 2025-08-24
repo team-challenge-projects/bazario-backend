@@ -15,7 +15,6 @@ import org.cyberrealm.tech.bazario.backend.dto.PatchAd;
 import org.cyberrealm.tech.bazario.backend.dto.script.AdCredentials;
 import org.cyberrealm.tech.bazario.backend.model.Ad;
 import org.cyberrealm.tech.bazario.backend.model.AdParameter;
-import org.cyberrealm.tech.bazario.backend.util.GeometryUtil;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
@@ -23,7 +22,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
-@Mapper(config = MapperConfig.class, imports = GeometryUtil.class)
+@Mapper(config = MapperConfig.class)
 public interface AdMapper {
 
     @Mapping(target = "adParameters", source = "ad.parameters")
