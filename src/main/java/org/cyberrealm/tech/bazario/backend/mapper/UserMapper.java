@@ -57,8 +57,9 @@ public interface UserMapper {
     @Mapping(target = "cityCoordinate", ignore = true)
     User toUser(UserCredentials credentials);
 
-    @Mapping(target = "cityCoordinate",
-            expression = "java(currentUser.getCityCoordinate().toText())")
+    @Mapping(target = "cityCoordinate", expression =
+            "java(currentUser.getCityCoordinate() != null "
+                    + "? currentUser.getCityCoordinate().toText() : \"\")")
     PrivateUserInformation toInformation(User currentUser);
 
     PublicUserInformation toInformationForAnonymous(User user);
