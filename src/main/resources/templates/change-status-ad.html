@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Підтвердження електронної пошти</title>
+    <style type="text/css">
+        /* Загальний скидання стандартних стилів */
+        body, table, td, a {
+          -webkit-text-size-adjust: 100%;
+          -ms-text-size-adjust: 100%;
+        }
+        table, td {
+          mso-table-lspace: 0pt;
+          mso-table-rspace: 0pt;
+        }
+        img {
+          -ms-interpolation-mode: bicubic;
+        }
+        /* Основні стилі */
+        body {
+          margin: 0;
+          padding: 0;
+          background-color: #f2f4f6;
+          width: 100% !important;
+          height: 100% !important;
+          font-family: Arial, sans-serif;
+        }
+        /* Медіа запит для адаптивності */
+        @media screen and (max-width:600px) {
+          .container {
+            width: 100% !important;
+          }
+        }
+    </style>
+</head>
+<body style="background-color: #f2f4f6;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+        <td align="center">
+            <!-- Контейнер листа -->
+            <table border="0" cellpadding="0" cellspacing="0" width="600" class="container"
+                   style="background-color: #ffffff; border-radius: 8px; overflow: hidden; margin: 20px;">
+                <!-- Шапка листа -->
+                <tr>
+                    <td align="center" style="padding: 40px 0; background-color: #1a82e2;">
+                        <h1 style="margin: 0; color: #ffffff; font-size: 24px;">Повідомлення про зміну статусу
+                            оголошень</h1>
+                    </td>
+                </tr>
+                <!-- Зміст листа -->
+                <tr>
+                    <td style="padding: 30px 40px; color: #555555; font-size: 16px;">
+                        <p>Доброго дня,</p>
+                        <p>Ми нагадуемо про закінчення строку <strong th:text="${typeMessage}">активації</strong>
+                            наступних оголошень:</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <table border="1px solid black" width="100%">
+                            <colgroup>
+                                <col width="20%">
+                                <col width="65%">
+                            </colgroup>
+                            <tr>
+                                <th>Дата</th>
+                                <th>Назва</th>
+                                <th>Статус</th>
+                            </tr>
+                            <tr th:each="ad : ${ads}">
+                                <td th:text="${ad.publicationDate}">2022-02-03</td>
+                                <td th:text="${ad.title}">Well</td>
+                                <td th:text="${ad.status.name}">DISABLE</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding: 30px 40px; color: #555555; font-size: 16px;">
+                        <p>Якщо повідомлення актуальні активуйте їх до 1 числа наступного місяця  у особистому кабінеті, інакше вони <strong th:text="${changeStatus}">деактивуються</strong></p>
+                        <p th:if="${activeTextDisable}">
+                            Користувач може зберігати не більше <strong th:text="${capacityDisable}">6</strong> деактивованих оголошень.
+                            Нові деактивовані оголошення будут видаляти старіші у разі перевищення кількості.
+                        </p>
+                        <p>З повагою,<br/>Ваша команда</p>
+                    </td>
+                </tr>
+                <!-- Футер листа -->
+                <tr>
+                    <td align="center"
+                        style="padding: 20px; background-color: #f2f4f6; font-size: 12px; color: #999999;">
+                        <p>&copy; 2025 Ваша Компанія. Всі права захищено.</p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

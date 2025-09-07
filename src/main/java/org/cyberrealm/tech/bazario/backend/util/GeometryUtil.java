@@ -1,6 +1,5 @@
 package org.cyberrealm.tech.bazario.backend.util;
 
-import java.util.Optional;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
@@ -29,16 +28,15 @@ public class GeometryUtil {
 
     }
 
-    public static double haversine(Point startPoint, Point endPoint, String defaultWkt) {
-        var startPointCurrent = Optional.ofNullable(startPoint).orElseGet(() ->
-                createPoint(defaultWkt));
-        double longitudeStart = startPointCurrent.getX();
-        double latitudeStart = startPointCurrent.getY();
+    public static double haversine(Point startPoint, Point endPoint) {
+        if (startPoint == null || endPoint == null) {
+            return 0.0;
+        }
 
-        var endPointCurrent = Optional.ofNullable(endPoint).orElseGet(() ->
-                createPoint(defaultWkt));
-        double longitudeEnd = endPointCurrent.getX();
-        double latitudeEnd = endPointCurrent.getY();
+        double longitudeStart = startPoint.getX();
+        double latitudeStart = startPoint.getY();
+        double longitudeEnd = endPoint.getX();
+        double latitudeEnd = endPoint.getY();
 
         double latDistance = Math.toRadians(Math.abs(latitudeEnd - latitudeStart));
         double lonDistance = Math.toRadians(Math.abs(longitudeEnd - longitudeStart));
