@@ -82,6 +82,7 @@ ad:
     disable: 180 #days ago
   capacity:
     disable: 6
+    reserve: 3
 bucket:
   global:
     tokens: 10

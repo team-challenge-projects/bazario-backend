@@ -40,6 +40,8 @@ public class AutomaticChangeAdServiceImpl {
     private int deadlineActive;
     @Value("${ad.deadline.disable}")
     private int deadlineDisable;
+    @Value("${ad.capacity.reserve}")
+    private long reserveCapacity;
     @Value("${user.test.email}")
     private String testEmail;
 
@@ -52,11 +54,13 @@ public class AutomaticChangeAdServiceImpl {
         Specification<Ad> spec = (root, query, cb) -> {
             Predicate activeDeadline = cb.and(
                     cb.lessThan(root.get("publicationDate"), deadlineActiveDate),
-                    cb.equal(root.get("status"), AdStatus.ACTIVE)
+                    cb.equal(root.get("status"), AdStatus.ACTIVE),
+                    cb.greaterThan(root.get("id"), reserveCapacity)
             );
             Predicate disableDeadline = cb.and(
                     cb.lessThan(root.get("publicationDate"), deadlineDisableDate),
-                    cb.equal(root.get("status"), AdStatus.DISABLE)
+                    cb.equal(root.get("status"), AdStatus.DISABLE),
+                    cb.greaterThan(root.get("id"), reserveCapacity)
             );
             return cb.or(activeDeadline, disableDeadline);
         };
@@ -135,7 +139,8 @@ public class AutomaticChangeAdServiceImpl {
         Specification<Ad> spec = (root, query, cb) ->
                 cb.and(
                         cb.lessThan(root.get("publicationDate"), deadlineDate),
-                        cb.equal(root.get("status"), status)
+                        cb.equal(root.get("status"), status),
+                        cb.greaterThan(root.get("id"), reserveCapacity)
                 );
         return adRepository.findAll(spec);
     }
