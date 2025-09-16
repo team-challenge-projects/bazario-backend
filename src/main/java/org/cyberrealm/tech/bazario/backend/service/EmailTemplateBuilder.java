@@ -1,5 +1,8 @@
 package org.cyberrealm.tech.bazario.backend.service;
 
+import java.util.List;
+import org.cyberrealm.tech.bazario.backend.model.Ad;
+
 public interface EmailTemplateBuilder {
     /**
      * Build HTML page reset password and convert to string
@@ -20,4 +23,6 @@ public interface EmailTemplateBuilder {
      * @return HTML page convert to string
      */
     String buildEmailVerificationEmail(int expirationHours, String verificationLink);
+
+    String buildChangeStatusEmail(List<Ad> userAds, int capacityDisable);
 }

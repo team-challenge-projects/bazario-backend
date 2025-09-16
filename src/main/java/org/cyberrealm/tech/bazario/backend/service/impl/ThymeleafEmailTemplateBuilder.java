@@ -1,6 +1,9 @@
 package org.cyberrealm.tech.bazario.backend.service.impl;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.cyberrealm.tech.bazario.backend.dto.AdStatus;
+import org.cyberrealm.tech.bazario.backend.model.Ad;
 import org.cyberrealm.tech.bazario.backend.service.EmailTemplateBuilder;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
@@ -30,5 +33,34 @@ public class ThymeleafEmailTemplateBuilder implements EmailTemplateBuilder {
         context.setVariable(EXPIRATION_MINUTES_CONTEXT, expirationHours);
         context.setVariable(VERIFICATION_LINK_CONTEXT, verificationLink);
         return templateEngine.process(EMAIL_VERIFICATION_CONTEXT, context);
+    }
+
+    @Override
+    public String buildChangeStatusEmail(List<Ad> userAds, int capacityDisable) {
+        boolean existsActiveAd = false;
+        boolean existsDisableAd = false;
+        for (Ad ad : userAds) {
+            if (!existsActiveAd) {
+                existsActiveAd = ad.getStatus().equals(AdStatus.ACTIVE);
+            }
+            if (!existsDisableAd) {
+                existsDisableAd = ad.getStatus().equals(AdStatus.DISABLE);
+            }
+        }
+        var typeMessage = "%s%s%s".formatted(
+                existsActiveAd ? "активації" : "",
+                existsActiveAd && existsDisableAd ? " та " : "",
+                existsDisableAd ? "зберігання" : "");
+        var changeStatus = "%s%s%s".formatted(
+                existsActiveAd ? "деактивуються" : "",
+                existsActiveAd && existsDisableAd ? " або " : "",
+                existsDisableAd ? "видаляться" : "");
+        Context context = new Context();
+        context.setVariable("typeMessage", typeMessage);
+        context.setVariable("ads", userAds);
+        context.setVariable("activeTextDisable", existsActiveAd);
+        context.setVariable("changeStatus", changeStatus);
+        context.setVariable("capacityDisable", capacityDisable);
+        return templateEngine.process("change-status-ad", context);
     }
 }

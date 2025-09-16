@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService {
         var pointCurrentUser = Optional.ofNullable(currentUser.getCityCoordinate()).orElseGet(() ->
                 GeometryUtil.createPoint(defaultCoordinate));
         return userMapper.toPublicInformation(user,
-                GeometryUtil.haversine(pointCurrentUser, pointUser, defaultCoordinate));
+                GeometryUtil.haversine(pointCurrentUser, pointUser));
     }
 
     @Override
@@ -105,6 +105,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void deleteById(Long id) {
         User user = userRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("User by id %d not found"

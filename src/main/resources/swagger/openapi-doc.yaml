@@ -2370,6 +2370,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/BasicUserParameter'
+        publicationDate:
+          type: string
+          format: date
         status:
           $ref: '#/components/schemas/AdStatus'
     AdStatus:

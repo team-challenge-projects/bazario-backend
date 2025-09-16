@@ -1,6 +1,7 @@
 package org.cyberrealm.tech.bazario.backend.service.impl;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -29,6 +30,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -45,8 +48,9 @@ public class AdServiceImpl implements AdService {
 
     @Value("${image.min-num}")
     private int minNumImages;
-    @Value("${user.defaultCoordinate}")
-    private String defaultWkt;
+
+    @Value("${ad.capacity.disable}")
+    private long capacityAdDisable;
 
     @Override
     public AdDto findById(Long id) {
@@ -56,7 +60,7 @@ public class AdServiceImpl implements AdService {
             startPoint = authUserService.getCurrentUser().getCityCoordinate();
         }
         return adMapper.toDto(ad, GeometryUtil.haversine(startPoint,
-                ad.getCityCoordinate(), defaultWkt));
+                ad.getCityCoordinate()));
     }
 
     @Override
@@ -70,37 +74,64 @@ public class AdServiceImpl implements AdService {
 
     @Override
     public void patchById(Long id, PatchAd patchAd) {
-        if (patchAd.getStatus().equals(AdStatus.NEW)) {
-            throw new ForbiddenException("Ad is not change status to NEW");
-        }
+
         typeAdParameterService.checkParameters(patchAd.getAdParameters());
         var ad = adRepository.findByIdWithParameters(id).orElseThrow(() ->
                 new EntityNotFoundException("Ad with id " + id + "not found"));
         if (accessAdService.isNotAccessAd(ad)) {
             throw new ForbiddenException("The user not access to ad");
         }
-        if (ad.getStatus().equals(AdStatus.DELETE)) {
-            ad.getImages().forEach(urlImage ->
-                    imageService.deleteFile(URI.create(urlImage)));
-            favoriteRepository.deleteByAd(ad);
-            ad.setImages(Set.of());
-        }
+        checkStatus(patchAd, ad);
 
         adMapper.updateAdFromDto(patchAd, ad);
-        if (patchAd.getCityCoordinate() != null) {
-            ad.setCityCoordinate(GeometryUtil.createPoint(patchAd.getCityCoordinate()));
-        }
+        Optional.ofNullable(patchAd.getCityCoordinate()).ifPresent(coordinate ->
+                ad.setCityCoordinate(GeometryUtil.createPoint(coordinate)));
+
+        Optional.ofNullable(patchAd.getPublicationDate()).ifPresent(
+                date -> ad.setPublicationDate(authUserService.isAdmin()
+                        ? date : LocalDate.now()));
 
         Long categoryId = patchAd.getCategoryId();
         if (categoryId != null && !ad.getCategory().getId().equals(categoryId)) {
             ad.setCategory(categoryRepository.findById(categoryId).orElseThrow(() ->
                     new EntityNotFoundException("Not category with id " + id)));
         }
-        if (ad.getStatus().equals(AdStatus.ACTIVE)
-                && ad.getImages().size() < minNumImages) {
-            throw new ForbiddenException("Minimum size of images is " + minNumImages);
-        }
         adRepository.save(ad);
+    }
+
+    private void checkStatus(PatchAd patchAd, Ad ad) {
+        if (patchAd.getStatus() != null && !ad.getStatus().equals(patchAd.getStatus())) {
+            ad.setPublicationDate(LocalDate.now());
+        }
+        switch (patchAd.getStatus()) {
+            case NEW -> throw new ForbiddenException("Ad is not change status to NEW");
+            case ACTIVE -> {
+                if (ad.getImages().size() < minNumImages) {
+                    throw new ForbiddenException("Minimum size of images is " + minNumImages);
+                }
+
+            }
+            case DISABLE -> {
+                if (!ad.getStatus().equals(AdStatus.DISABLE)) {
+                    Specification<Ad> spec = ((root, query, cb) ->
+                            cb.and(cb.equal(root.get("status"), AdStatus.DISABLE),
+                                    cb.equal(root.get("user").get("id"), ad.getUser().getId())
+                            ));
+                    if (adRepository.count(spec) >= capacityAdDisable) {
+                        var adMinDate = adRepository.findAll(spec, PageRequest.of(0, 1,
+                                Sort.by("publicationDate").ascending())).getContent().get(0);
+                        adRepository.delete(adMinDate);
+                    }
+                }
+            }
+            case DELETE -> {
+                ad.getImages().forEach(urlImage ->
+                        imageService.deleteFile(URI.create(urlImage)));
+                favoriteRepository.deleteByAd(ad);
+                ad.setImages(Set.of());
+            }
+            default -> { }
+        }
     }
 
     @Override
@@ -139,6 +170,6 @@ public class AdServiceImpl implements AdService {
                     return adRepository.save(newAd);
                 });
         return adMapper.toDto(ad, GeometryUtil.haversine(user.getCityCoordinate(),
-                ad.getCityCoordinate(), defaultWkt));
+                ad.getCityCoordinate()));
     }
 }

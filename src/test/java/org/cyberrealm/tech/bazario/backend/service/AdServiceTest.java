@@ -25,7 +25,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.util.ReflectionTestUtils;
 
 @ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
@@ -48,11 +47,9 @@ class AdServiceTest {
     private FavoriteRepository favoriteRepository;
     @InjectMocks
     private AdServiceImpl adService;
-    private String defaultWkt = "POINT(30.3125 50.27)";
 
     @Test
     void findById() {
-        ReflectionTestUtils.setField(adService, "defaultWkt", defaultWkt);
         var user = new User();
         var ad = new Ad();
         when(authUserService.isAuthenticationUser()).thenReturn(true);
@@ -61,7 +58,7 @@ class AdServiceTest {
         adService.findById(1L);
 
         verify(adMapper).toDto(ad, GeometryUtil.haversine(user.getCityCoordinate(),
-                ad.getCityCoordinate(), defaultWkt));
+                ad.getCityCoordinate()));
     }
 
     @Test
@@ -80,7 +77,6 @@ class AdServiceTest {
 
     @Test
     void createOrGet() {
-        ReflectionTestUtils.setField(adService, "defaultWkt", defaultWkt);
         var user = new User();
         var ad = new Ad();
         when(authUserService.getCurrentUser()).thenReturn(user);
@@ -91,7 +87,7 @@ class AdServiceTest {
         adService.createOrGet();
 
         verify(adMapper).toDto(ad, GeometryUtil.haversine(user.getCityCoordinate(),
-                ad.getCityCoordinate(), defaultWkt));
+                ad.getCityCoordinate()));
     }
 
     @Test

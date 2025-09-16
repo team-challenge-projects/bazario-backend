@@ -1,5 +1,7 @@
 spring:
   config:
+    import:
+      - optional:file:.env[.properties]
     activate:
       on-profile: test
   security:
@@ -67,6 +69,18 @@ user:
       cityName: 'Lviv'
       cityCoordinate: '49,5017|24,0123'
   defaultCoordinate: 'POINT(30.3125 50.27)'
+ad:
+  cron:
+    test: 0 0/15 19 * * ?
+    send-message: 0 0 3 L-3 * ?
+    active: 0 0 3 1 * ?
+    disable: 0 0 4 1 * ?
+  deadline:
+    active: 1 #day of month
+    disable: 180 #days ago
+  capacity:
+    disable: 6
+    reserve: 3
 bucket:
   global:
     tokens: 10
