@@ -46,7 +46,7 @@ public class AutomaticChangeAdServiceImpl {
     @Scheduled(cron = Scheduled.CRON_DISABLED)
     @Async
     protected void sendMessage() {
-        var deadlineActiveDate = LocalDate.now().minusMonths(1).withDayOfMonth(deadlineActive);
+        var deadlineActiveDate = LocalDate.now().withDayOfMonth(deadlineActive);
         var deadlineDisableDate = deadlineActiveDate.minusDays(deadlineDisable);
 
         Specification<Ad> spec = (root, query, cb) -> {
