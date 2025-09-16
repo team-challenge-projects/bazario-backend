@@ -42,8 +42,6 @@ public class AutomaticChangeAdServiceImpl {
     private int deadlineDisable;
     @Value("${ad.capacity.reserve}")
     private long reserveCapacity;
-    @Value("${user.test.email}")
-    private String testEmail;
 
     @Scheduled(cron = Scheduled.CRON_DISABLED)
     @Async
@@ -68,7 +66,7 @@ public class AutomaticChangeAdServiceImpl {
                 Collectors.groupingBy(ad -> ad.getUser().getId()));
         var users = userRepository.findAllById(ads.keySet());
         users.forEach(user -> {
-            emailSender.sendEmail(testEmail, "Change ad status",
+            emailSender.sendEmail(user.getEmail(), "Change ad status",
                     templateBuilder.buildChangeStatusEmail(ads.get(user.getId()),
                             capacityDisable));
         });

@@ -111,8 +111,6 @@ user:
     credentials:
       password: 'useR1#user'
   defaultCoordinate: 'POINT(30.3125 50.27)'
-  test:
-    email: ${TEST_EMAIL}
 ad:
   cron:
     test: 0 0/15 19 * * ?
