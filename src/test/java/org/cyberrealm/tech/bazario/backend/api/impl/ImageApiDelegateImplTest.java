@@ -109,7 +109,7 @@ class ImageApiDelegateImplTest extends AbstractIntegrationTest {
 
         UUID expectedUuid = UUID.fromString(
                 "00000000-0000-0000-0000-000000000001");
-        var expectedUrl = "http://test/image/%s_%s"
+        var expectedUrl = "https://test/image/%s_%s"
                 .formatted(expectedUuid, nameFile);
 
         when(fileUpload.uploadFile(mockFile, "%s_test-image".formatted(expectedUuid)))
