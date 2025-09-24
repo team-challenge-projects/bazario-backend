@@ -22,7 +22,7 @@ public class FileUploadImpl implements FileUpload {
                     .uploader()
                     .upload(multipartFile.getBytes(), Map.of("public_id", key))
                     .get("url")
-                    .toString();
+                    .toString().replace("http", "https");
         } catch (IOException e) {
             throw new ArgumentNotValidException("The file is damaged or missing.");
         }

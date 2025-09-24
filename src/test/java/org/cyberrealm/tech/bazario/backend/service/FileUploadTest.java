@@ -35,7 +35,7 @@ class FileUploadTest {
         when(uploader.upload(file.getBytes(), Map.of("public_id", "key")))
                 .thenReturn(Map.of("url", "http"));
 
-        assertEquals("http", fileUpload.uploadFile(file, "key"));
+        assertEquals("https", fileUpload.uploadFile(file, "key"));
     }
 
     @Test
