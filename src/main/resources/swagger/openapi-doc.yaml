@@ -1398,8 +1398,6 @@ paths:
     get:
       tags:
         - Type ad parameter
-      security:
-        - bearerAuth: []
       summary: Get page of ad parameter
       description: Get page of ad parameter with pagination
       operationId: getAdParameters
@@ -1620,12 +1618,57 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /public/ads:
+  /private/ads:
     get:
       tags:
         - Ad
       security:
         - bearerAuth: [ ]
+      summary: Get ads for user
+      description: |
+        Get ads by filter for user.Adding filter by status and distance.<br>
+        A map of key-value pairs for filtering.<br>
+        Example Pageable:  "size":"16", "page":"0","sort":"price,desc"(field,asc|desc)<br>
+        Example search: "title":"abc"<br>
+        Example ad parameter: "ad_id_256":"Bosh|Samsung|LG"(ad_id_ is type ad id prefix, | is separator for multi parameter)<br>
+        Example user parameter: "user_id_35":"Student"(user_id is type user id prefix)<br>
+        Example price: "price":"10.53||156.20"(10.53<= price <=156.20, || is separator)<br>
+        Example rating: "rating":"2.5||7.8","rating":"3||10"<br>
+        Example distance: "distance":"100"<br>
+        Example status: "status":"*"(for user * is status: NEW,ACTIVE,DISABLE, for admin adding DELETE)
+        Example staus: "status":"NEW"(NEW,DISABLE only user and admin, DELETE only admin)
+      operationId: getAdsForUser
+      parameters:
+        - $ref: '#/components/parameters/filtersParameter'
+      responses:
+        200:
+          description: Get ads successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageAd'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /public/ads:
+    get:
+      tags:
+        - Ad
       summary: Get ads
       description: |
         Get ads by filter.<br>
@@ -1636,7 +1679,6 @@ paths:
         Example user parameter: "user_id_35":"Student"(user_id is type user id prefix)<br>
         Example price: "price":"10.53||156.20"(10.53<= price <=156.20, || is separator)<br>
         Example rating: "rating":"2.5||7.8","rating":"3||10"<br>
-        Example distance: "distance":"100"
       operationId: getAds
       parameters:
         - $ref: '#/components/parameters/filtersParameter'
@@ -1669,8 +1711,6 @@ paths:
     get:
       tags:
         - Ad
-      security:
-        - bearerAuth: [ ]
       summary: Get ad
       description: Get ad by id
       operationId: getAd
@@ -1683,6 +1723,55 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AdDto'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not found ad
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /private/compares/ad/{ids}:
+    get:
+      tags:
+        - Ad
+      security:
+        - bearerAuth: [ ]
+      summary: Compares ad for user
+      description: Compares ad parameter by ads for user
+      operationId: comparesAdForUser
+      parameters:
+        - in: path
+          required: true
+          name: ids
+          schema:
+            type: array
+            items:
+              type: integer
+              format: int64
+      responses:
+        200:
+          description: Compare ads successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageCompareAd'
         400:
           description: Invalid input
           content:
@@ -1797,6 +1886,47 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
   /private/ad/{id}:
+    get:
+      tags:
+        - Ad
+      security:
+        - bearerAuth: [ ]
+      summary: Get ad
+      description: Get ad by id
+      operationId: getAdForUser
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        200:
+          description: Get ad successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdDto'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not found ad
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
     patch:
       tags:
         - Ad
@@ -2411,6 +2541,9 @@ components:
           type: number
         cityName:
           type: string
+        distance:
+          type: number
+          format: double
         category:
           type: integer
           format: int64

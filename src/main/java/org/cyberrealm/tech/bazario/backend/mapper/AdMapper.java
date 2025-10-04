@@ -35,6 +35,7 @@ public interface AdMapper {
             "java(URI.create(ad.getImages().stream().findFirst().orElse(\"\")))")
 
     @Mapping(target = "category", source = "category.id")
+    @Mapping(target = "distance", ignore = true)
     AdResponseDto toResponseDto(Ad ad);
 
     List<URI> toListUri(Set<String> uris);
@@ -80,6 +81,7 @@ public interface AdMapper {
 
     @Mapping(target = "category", source = "category.id")
     @Mapping(target = "compares", ignore = true)
+    @Mapping(target = "distance", ignore = true)
     AdComparesDto toComparesDto(Ad ad);
 
     @AfterMapping

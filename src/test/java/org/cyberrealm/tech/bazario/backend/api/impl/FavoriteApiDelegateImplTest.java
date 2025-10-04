@@ -64,7 +64,8 @@ class FavoriteApiDelegateImplTest extends AbstractIntegrationTest {
         var dto = new AdResponseDto().id(ID_ONE).title("Тест")
                 .description("Тест").price(BigDecimal.valueOf(1000.00))
                 .category(ID_ONE).cityName("Kiev")
-                .imageUrl(URI.create("http://test/test.png"));
+                .imageUrl(URI.create("http://test/test.png"))
+                .distance(0.0);
         var pageDto = new PageImpl<AdResponseDto>(List.of(dto),
                 PageRequest.of(0, 16,
                         Sort.by("id").ascending()), 1);

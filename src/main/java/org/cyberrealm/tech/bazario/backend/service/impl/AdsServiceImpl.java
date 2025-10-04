@@ -26,6 +26,7 @@ import org.cyberrealm.tech.bazario.backend.service.CommentService;
 import org.cyberrealm.tech.bazario.backend.service.PageableService;
 import org.cyberrealm.tech.bazario.backend.service.UserParameterService;
 import org.cyberrealm.tech.bazario.backend.service.UserService;
+import org.cyberrealm.tech.bazario.backend.util.GeometryUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -66,7 +67,47 @@ public class AdsServiceImpl implements AdsService {
                         getPredicateByUser(root, builder, filters),
                         getByAdParam(root, builder, filters),
                         getPredicateByFields(root, builder, filters));
+
         return adRepository.findAll(spec, pageable).map(adMapper::toResponseDto);
+    }
+
+    @Override
+    public Page<AdResponseDto> findAllForUser(Map<String, String> filters) {
+        Pageable pageable = pageableService.get(filters);
+        Specification<Ad> spec = (root, query, builder) ->
+                builder.and(
+                        getPredicateByUser(root, builder, filters),
+                        getByAdParam(root, builder, filters),
+                        getPredicateByFields(root, builder, filters),
+                        getPredicateByFieldsForUser(root, builder, filters));
+
+        return adRepository.findAll(spec, pageable).map(ad ->
+                adMapper.toResponseDto(ad).distance(
+                        GeometryUtil.haversine(authUserService.getCurrentUser().getCityCoordinate(),
+                                ad.getCityCoordinate())));
+    }
+
+    private jakarta.persistence.criteria.Predicate getPredicateByFieldsForUser(
+            Root<Ad> root, CriteriaBuilder builder, Map<String, String> filters) {
+        var predicate = new ArrayList<jakarta.persistence.criteria.Predicate>();
+        filters.forEach((key, value) -> {
+            switch (key) {
+                case "distance" -> {
+                    if (value.matches(REGEX_DOUBLE)) {
+                        var startPoint = authUserService.getCurrentUser().getCityCoordinate();
+                        predicate.add(builder.lt(builder.function("ST_DistanceSphere",
+                                        Double.class, root.get("cityCoordinate"),
+                                        builder.literal(startPoint)),
+                                builder.literal(Double.parseDouble(value)
+                                        * FACTOR_METER_TO_KILOMETER)));
+                    }
+                }
+                case "status" -> setPredicateStatus(root, builder, value, predicate);
+                default -> {
+                }
+            }
+        });
+        return builder.and(predicate.toArray(jakarta.persistence.criteria.Predicate[]::new));
     }
 
     private jakarta.persistence.criteria.Predicate getPredicateByFields(
@@ -107,18 +148,8 @@ public class AdsServiceImpl implements AdsService {
 
                     }
                 }
-                case "distance" -> {
-                    if (value.matches(REGEX_DOUBLE)) {
-                        var startPoint = authUserService.getCurrentUser().getCityCoordinate();
-                        predicate.add(builder.lt(builder.function("ST_DistanceSphere",
-                                        Double.class, root.get("cityCoordinate"),
-                                        builder.literal(startPoint)),
-                                builder.literal(Double.parseDouble(value)
-                                        * FACTOR_METER_TO_KILOMETER)));
-                    }
+                default -> {
                 }
-                case "status" -> setPredicateStatus(root, builder, value, predicate);
-                default -> builder.conjunction();
             }
         });
         return builder.and(predicate.toArray(jakarta.persistence.criteria.Predicate[]::new));
@@ -209,18 +240,20 @@ public class AdsServiceImpl implements AdsService {
                                 .forEach(userIds::remove);
                     }
                 });
-        filters.entrySet().stream().filter(entry -> entry.getKey()
-                        .equals("user_distance") && entry.getValue().matches(REGEX_DOUBLE))
-                .map(e -> Double.parseDouble(e.getValue())).findFirst()
-                .ifPresent(distance -> {
-                    var ids = userService.getUserIdByDistance(distance);
-                    if (userIds.isEmpty()) {
-                        userIds.addAll(ids);
-                    } else {
-                        userIds.stream().filter(id -> !ids.contains(id))
-                                .forEach(userIds::remove);
-                    }
-                });
+        if (authUserService.isAuthenticationUser()) {
+            filters.entrySet().stream().filter(entry -> entry.getKey()
+                            .equals("user_distance") && entry.getValue().matches(REGEX_DOUBLE))
+                    .map(e -> Double.parseDouble(e.getValue())).findFirst()
+                    .ifPresent(distance -> {
+                        var ids = userService.getUserIdByDistance(distance);
+                        if (userIds.isEmpty()) {
+                            userIds.addAll(ids);
+                        } else {
+                            userIds.stream().filter(id -> !ids.contains(id))
+                                    .forEach(userIds::remove);
+                        }
+                    });
+        }
 
         return userIds.isEmpty() ? builder.conjunction() : root.get("user").get("id").in(userIds);
     }

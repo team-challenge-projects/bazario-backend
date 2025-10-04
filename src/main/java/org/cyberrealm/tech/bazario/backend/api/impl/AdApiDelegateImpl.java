@@ -22,6 +22,11 @@ public class AdApiDelegateImpl implements AdApiDelegate {
     private final AdCompareService compareService;
 
     @Override
+    public ResponseEntity<PageCompareAd> comparesAdForUser(List<Long> ids) {
+        return ResponseEntity.ok(compareService.compares(ids));
+    }
+
+    @Override
     public ResponseEntity<PageCompareAd> comparesAd(List<Long> ids) {
         return ResponseEntity.ok(compareService.compares(ids));
     }
@@ -46,6 +51,16 @@ public class AdApiDelegateImpl implements AdApiDelegate {
     @Override
     public ResponseEntity<AdDto> getAd(Long id) {
         return ResponseEntity.ok(adService.findById(id));
+    }
+
+    @Override
+    public ResponseEntity<AdDto> getAdForUser(Long id) {
+        return ResponseEntity.ok(adService.findById(id));
+    }
+
+    @Override
+    public ResponseEntity<Page> getAdsForUser(Map<String, String> filters) {
+        return ResponseEntity.ok(adsService.findAllForUser(filters));
     }
 
     @Override

@@ -13,6 +13,7 @@ import org.cyberrealm.tech.bazario.backend.repository.FavoriteRepository;
 import org.cyberrealm.tech.bazario.backend.service.AuthenticationUserService;
 import org.cyberrealm.tech.bazario.backend.service.FavoriteService;
 import org.cyberrealm.tech.bazario.backend.service.PageableService;
+import org.cyberrealm.tech.bazario.backend.util.GeometryUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -58,6 +59,8 @@ public class FavoriteServiceImpl implements FavoriteService {
         var pageable = pageableService.get(filters);
         var user = authService.getCurrentUser();
         return favoriteRepository.findByUser_Id(user.getId(), pageable)
-                .map(favorite -> adMapper.toResponseDto(favorite.getAd()));
+                .map(favorite -> adMapper.toResponseDto(favorite.getAd())
+                        .distance(GeometryUtil.haversine(user.getCityCoordinate(),
+                                favorite.getAd().getCityCoordinate())));
     }
 }

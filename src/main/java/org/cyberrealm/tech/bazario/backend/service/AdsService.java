@@ -15,4 +15,15 @@ public interface AdsService {
      * @return Page ad dto
      */
     Page<AdResponseDto> findAll(Map<String, String> filters);
+
+    /**
+     * Filtering of ads by fields, by related ad parameters, by fields
+     * of the related user and its calculated parameters: rating, distance,
+     * user parameters.
+     *
+     * @author Andrey Sitarskiy
+     * @param filters Name parameter and value
+     * @return Page ad dto
+     */
+    Page<AdResponseDto> findAllForUser(Map<String, String> filters);
 }
