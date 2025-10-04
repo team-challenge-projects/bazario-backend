@@ -39,7 +39,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-        if ("/api/login/oauth2/code/google".equals(request.getRequestURI())) {
+        if (request.getRequestURI().matches(
+                "^/api/(public|login/oauth2/code/google).*$")) {
             filterChain.doFilter(request, response);
             return;
         }

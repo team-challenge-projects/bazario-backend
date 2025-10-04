@@ -1,5 +1,6 @@
 package org.cyberrealm.tech.bazario.backend.service.impl;
 
+import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -44,11 +45,9 @@ public class AdCompareServiceImpl implements AdCompareService {
     @Override
     public PageCompareAd compares(List<Long> ids) {
         var ads = adRepository.findAllById(ids);
-        var userIds = ads.stream().map(ad -> ad.getUser().getId())
-                .distinct().toList();
+        var userIds = ads.stream().map(ad -> ad.getUser().getId()).distinct().toList();
         var userDistances = getUserDistances(userIds);
         var distances = getDistances(ads);
-
         var ratings = commentRepository.getAvgRatingByUserIds(userIds);
         var ratingMap = ratings.stream().collect(Collectors.toMap(UserScore::id, UserScore::score));
 
@@ -74,16 +73,36 @@ public class AdCompareServiceImpl implements AdCompareService {
                     .score(ratingMap.get(ad.getUser().getId()))
                     .percent((ratingMap.get(ad.getUser().getId()) - minMaxMap.get(RATING_MIN))
                             / (minMaxMap.get(RATING_MAX) - minMaxMap.get(RATING_MIN)));
+            Double distanceScore = 0.0;
+            double distancePercent = 0.0;
+            if (!distances.isEmpty()) {
+                distanceScore = distances.get(ad.getId());
+                if (distanceScore == null) {
+                    distanceScore = 0.0;
+                } else {
+                    distancePercent = (distanceScore - minMaxMap.get(DISTANCE_MIN))
+                            / (minMaxMap.get(DISTANCE_MAX) - minMaxMap.get(DISTANCE_MIN));
+                }
+            }
             ItemComparesDto distance = new ItemComparesDto().name(DISTANCE)
-                    .score(distances.get(ad.getId()))
-                    .percent((distances.get(ad.getId()) - minMaxMap.get(DISTANCE_MIN))
-                            / (minMaxMap.get(DISTANCE_MAX) - minMaxMap.get(DISTANCE_MIN)));
-            ItemComparesDto userDistance = new ItemComparesDto().name(USER_DISTANCE)
-                    .score(userDistances.get(ad.getUser().getId()))
-                    .percent((userDistances.get(ad.getUser().getId())
+                    .score(distanceScore)
+                    .percent(distancePercent);
+            Double userDistanceScore = 0.0;
+            double userDistancePercent = 0.0;
+            if (!userDistances.isEmpty()) {
+                userDistanceScore = userDistances.get(ad.getUser().getId());
+                if (userDistanceScore == null) {
+                    userDistanceScore = 0.0;
+                } else {
+                    userDistancePercent = (userDistances.get(ad.getUser().getId())
                             - minMaxMap.get(USER_DISTANCE_MIN))
                             / (minMaxMap.get(USER_DISTANCE_MAX)
-                            - minMaxMap.get(USER_DISTANCE_MIN)));
+                            - minMaxMap.get(USER_DISTANCE_MIN));
+                }
+            }
+            ItemComparesDto userDistance = new ItemComparesDto().name(USER_DISTANCE)
+                    .score(userDistanceScore)
+                    .percent(userDistancePercent);
             return new AdComparesDto().id(ad.getId()).title(ad.getTitle())
                     .description(ad.getDescription()).price(ad.getPrice())
                     .category(ad.getCategory().getId())
@@ -93,12 +112,18 @@ public class AdCompareServiceImpl implements AdCompareService {
     }
 
     private Map<Long, Double> getDistances(List<Ad> ads) {
+        if (!authService.isAuthenticationUser()) {
+            return Map.of();
+        }
         var startPoint = authService.getCurrentUser().getCityCoordinate();
         return ads.stream().collect(Collectors.toMap(Ad::getId, ad ->
                 GeometryUtil.haversine(startPoint, ad.getCityCoordinate())));
     }
 
     private Map<Long, Double> getUserDistances(List<Long> userIds) {
+        if (!authService.isAuthenticationUser()) {
+            return Map.of();
+        }
         var currentUser = authService.getCurrentUser();
         var users = userRepository.findAllById(userIds);
         return users.stream().collect(Collectors.toMap(User::getId, user ->
@@ -111,22 +136,25 @@ public class AdCompareServiceImpl implements AdCompareService {
             Map<Long, Double> userDistances) {
         Comparator<Ad> comparatorPrice = Comparator.comparingDouble(ad ->
                 ad.getPrice().doubleValue());
-        var minPrice = ads.stream().min(comparatorPrice).orElseThrow()
+        var defaultAd = new Ad();
+        defaultAd.setPrice(BigDecimal.ZERO);
+        var minPrice = ads.stream().min(comparatorPrice).orElse(defaultAd)
                 .getPrice().doubleValue();
-        var maxPrice = ads.stream().max(comparatorPrice).orElseThrow()
+        var maxPrice = ads.stream().max(comparatorPrice).orElse(defaultAd)
                 .getPrice().doubleValue();
 
         Comparator<UserScore> comparatorRating = Comparator.comparingDouble(UserScore::score);
-        var minRating = ratings.stream().min(comparatorRating).orElseThrow().score();
-        var maxRating = ratings.stream().max(comparatorRating).orElseThrow().score();
+        var defaultRating = new UserScore(0L, 0.0);
+        var minRating = ratings.stream().min(comparatorRating).orElse(defaultRating).score();
+        var maxRating = ratings.stream().max(comparatorRating).orElse(defaultRating).score();
 
         var valueUserDistance = userDistances.values();
-        var minUserDistance = valueUserDistance.stream().min(Double::compareTo).orElseThrow();
-        var maxUserDistance = valueUserDistance.stream().max(Double::compareTo).orElseThrow();
+        var minUserDistance = valueUserDistance.stream().min(Double::compareTo).orElse(0.0);
+        var maxUserDistance = valueUserDistance.stream().max(Double::compareTo).orElse(0.0);
 
         var valuesDistance = distances.values();
-        var minDistance = valuesDistance.stream().min(Double::compareTo).orElseThrow();
-        var maxDistance = valuesDistance.stream().max(Double::compareTo).orElseThrow();
+        var minDistance = valuesDistance.stream().min(Double::compareTo).orElse(0.0);
+        var maxDistance = valuesDistance.stream().max(Double::compareTo).orElse(0.0);
 
         return Map.of(PRICE_MIN, minPrice, PRICE_MAX, maxPrice,
                 RATING_MIN, minRating, RATING_MAX, maxRating,
