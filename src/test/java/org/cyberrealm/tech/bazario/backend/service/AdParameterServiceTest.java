@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 import org.cyberrealm.tech.bazario.backend.AbstractIntegrationTest;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -18,7 +17,7 @@ class AdParameterServiceTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @MethodSource
-    void filterByParam(Map<Long, String> filters, List<Long> adIds) throws JsonProcessingException {
+    void filterByParam(String filters, List<Long> adIds) throws JsonProcessingException {
         var list = parameterService.filterByParam(filters);
         assertEquals(objectMapper.writeValueAsString(adIds),
                 objectMapper.writeValueAsString(list));
@@ -26,18 +25,9 @@ class AdParameterServiceTest extends AbstractIntegrationTest {
 
     public static Stream<Arguments> filterByParam() {
         return Stream.of(
-                Arguments.of(
-                        Map.of(1L, "ТестПошта|ТестовийСклад"),
-                        List.of(1L, 2L)
-                ),
-                Arguments.of(
-                        Map.of(1L, "ТестПошта"),
-                        List.of(1L)
-                ),
-                Arguments.of(
-                        Map.of(1L, "ТестовийСклад"),
-                        List.of(2L)
-                )
+                Arguments.of("1|2", List.of(1L, 2L)),
+                Arguments.of("1", List.of(1L)),
+                Arguments.of("2", List.of(2L, 1L))
         );
     }
 }

@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - changeSet:
+      id: change-tables-for-category
+      author: Andrey Sitarskiy
+      changes:
+        - addColumn:
+            tableName: category_type_ad_parameters
+            columns:
+              - column:
+                  name: name
+                  type: varchar(100)
+                  defaultValue: "Текст"
+        - dropForeignKeyConstraint:
+            baseTableName: ad_parameters
+            constraintName: fk_ad_param_type_ad_param
+        - addForeignKeyConstraint:
+            baseTableName: ad_parameters
+            constraintName: fk_ad_param_category_type_ad_param
+            baseColumnNames: parameter_id
+            referencedTableName: category_type_ad_parameters
+            referencedColumnNames: id
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+        - dropColumn:
+            tableName: ad_parameters
+            columns:
+              - column:
+                  name: parameter_value

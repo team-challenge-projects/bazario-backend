@@ -1,5 +1,6 @@
 package org.cyberrealm.tech.bazario.backend.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -8,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.HashSet;
 import java.util.Set;
@@ -26,11 +28,8 @@ public class Category {
     private String name;
     private String image = "";
 
-    @ManyToMany
-    @JoinTable(name = "category_type_ad_parameters",
-            joinColumns = @JoinColumn(name = "category_id"),
-            inverseJoinColumns = @JoinColumn(name = "type_id"))
-    private Set<TypeAdParameter> adParameters = new HashSet<>();
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    private Set<CategoryTypeAdParameter> adParameters = new HashSet<>();
 
     @ManyToMany
     @JoinTable(name = "category_type_user_parameters",

@@ -35,3 +35,7 @@ databaseChangeLog:
       file: db/changelog/changes/18-alter-users-city_coordinate-to-geometry.yaml
   - include:
       file: db/changelog/changes/19-add-ads-city_name-city_coordinate.yaml
+  - include:
+      file: db/changelog/changes/20-change-restriction_pattern-to-type_view.yaml
+  - include:
+      file: db/changelog/changes/21-change-tables-for-category.yaml

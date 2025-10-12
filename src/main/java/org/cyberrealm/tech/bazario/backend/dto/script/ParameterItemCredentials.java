@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CategoryCredentials {
-    private String name;
-    private String image;
+public class ParameterItemCredentials {
+    private int ownerId;
+    private int typeParameter;
 }

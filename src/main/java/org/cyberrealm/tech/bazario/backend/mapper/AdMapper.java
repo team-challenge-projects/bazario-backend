@@ -1,7 +1,7 @@
 package org.cyberrealm.tech.bazario.backend.mapper;
 
 import java.net.URI;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -9,12 +9,14 @@ import java.util.stream.Collectors;
 import org.cyberrealm.tech.bazario.backend.config.MapperConfig;
 import org.cyberrealm.tech.bazario.backend.dto.AdComparesDto;
 import org.cyberrealm.tech.bazario.backend.dto.AdDto;
+import org.cyberrealm.tech.bazario.backend.dto.AdDtoGet;
 import org.cyberrealm.tech.bazario.backend.dto.AdResponseDto;
-import org.cyberrealm.tech.bazario.backend.dto.BasicUserParameter;
+import org.cyberrealm.tech.bazario.backend.dto.BasicAdParameter;
 import org.cyberrealm.tech.bazario.backend.dto.PatchAd;
 import org.cyberrealm.tech.bazario.backend.dto.script.AdCredentials;
 import org.cyberrealm.tech.bazario.backend.model.Ad;
 import org.cyberrealm.tech.bazario.backend.model.AdParameter;
+import org.cyberrealm.tech.bazario.backend.model.CategoryTypeAdParameter;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
@@ -24,8 +26,12 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper(config = MapperConfig.class)
 public interface AdMapper {
+    @Mapping(target = "cityCoordinate", expression =
+            "java(ad.getCityCoordinate() != null ? ad.getCityCoordinate().toText() : \"null\")")
+    @Mapping(target = "distance", source = "distance")
+    @Mapping(target = "adParameters", source = "parameters")
+    AdDtoGet toDtoGet(Ad ad, double distance, List<BasicAdParameter> parameters);
 
-    @Mapping(target = "adParameters", source = "ad.parameters")
     @Mapping(target = "cityCoordinate", expression =
             "java(ad.getCityCoordinate() != null ? ad.getCityCoordinate().toText() : \"null\")")
     @Mapping(target = "distance", source = "distance")
@@ -49,19 +55,6 @@ public interface AdMapper {
     @Mapping(target = "cityCoordinate", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateAdFromDto(PatchAd patchAd, @MappingTarget Ad ad);
-
-    @Mapping(target = "ad", ignore = true)
-    @Mapping(target = "parameter.id", source = "typeId")
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateAdParameterFromDto(BasicUserParameter dto, @MappingTarget AdParameter adParameter);
-
-    @Mapping(target = "ad", ignore = true)
-    @Mapping(target = "parameter.id", source = "typeId")
-    AdParameter toAdParameterFromDto(BasicUserParameter dto);
-
-    @Mapping(target = "typeId", source = "parameter.id")
-    @Mapping(target = "typeName", source = "parameter.name")
-    BasicUserParameter toDtoFromAdParameter(AdParameter adParameter);
 
     default URI mapStringToUri(String value) {
         return URI.create(value);
@@ -94,29 +87,44 @@ public interface AdMapper {
         }
         if (parameters == null) {
             ad.setParameters(dtoParameters.stream().map(dto -> {
-                var adParameter = toAdParameterFromDto(dto);
+                var adParameter = new AdParameter();
+                var categoryType = new CategoryTypeAdParameter();
+                categoryType.setId(dto);
+                adParameter.setParameter(categoryType);
                 adParameter.setAd(ad);
                 return adParameter;
             }).collect(Collectors.toSet()));
             return;
         }
-        Set<AdParameter> toRemove = new HashSet<>(parameters);
-        for (BasicUserParameter dto : dtoParameters) {
-            boolean found = false;
+        List<AdParameter> toRemove = new ArrayList<>(parameters);
+        List<Long> toUpdate = new ArrayList<>(dtoParameters);
+        for (Long dto : dtoParameters) {
             for (AdParameter parameter : parameters) {
-                if (Objects.equals(dto.getId(), parameter.getId())) {
-                    updateAdParameterFromDto(dto, parameter);
+                if (Objects.equals(dto, parameter.getParameter().getId())) {
                     toRemove.remove(parameter);
-                    found = true;
-                    break;
+                    toUpdate.remove(dto);
                 }
             }
-            if (!found) {
-                AdParameter adParameter = toAdParameterFromDto(dto);
-                adParameter.setAd(ad);
-                parameters.add(adParameter);
+        }
+        if (!toUpdate.isEmpty()) {
+            var sizeRemove = toRemove.size();
+            for (int i = 0; i < toUpdate.size(); i++) {
+                if (i < sizeRemove) {
+                    var categoryType = new CategoryTypeAdParameter();
+                    categoryType.setId(toUpdate.get(i));
+                    toRemove.remove(i).setParameter(categoryType);
+                } else {
+                    var adParameter = new AdParameter();
+                    adParameter.setAd(ad);
+                    var categoryParameter = new CategoryTypeAdParameter();
+                    categoryParameter.setId(toUpdate.get(i));
+                    adParameter.setParameter(categoryParameter);
+                    parameters.add(adParameter);
+                }
             }
         }
-        parameters.removeAll(toRemove);
+        if (!toRemove.isEmpty()) {
+            toRemove.forEach(parameters::remove);
+        }
     }
 }

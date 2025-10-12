@@ -20,11 +20,9 @@ public class AdParameter {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parameter_id")
-    private TypeAdParameter parameter;
-
-    private String parameterValue;
+    private CategoryTypeAdParameter parameter;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ad_id")

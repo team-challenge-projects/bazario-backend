@@ -6,12 +6,15 @@ databaseChangeLog:
         - insert:
             tableName: ad_parameters
             columns:
-              - column: { name: parameter_value, value: "ТестПошта" }
               - column: { name: parameter_id, value: "1" }
               - column: { name: ad_id, value: "1" }
         - insert:
             tableName: ad_parameters
             columns:
-              - column: { name: parameter_value, value: "ТестовийСклад" }
-              - column: { name: parameter_id, value: "1" }
+              - column: { name: parameter_id, value: "2" }
               - column: { name: ad_id, value: "2" }
+        - insert:
+            tableName: ad_parameters
+            columns:
+              - column: { name: parameter_id, value: "2" }
+              - column: { name: ad_id, value: "1" }

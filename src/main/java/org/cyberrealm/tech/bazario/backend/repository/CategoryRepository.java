@@ -13,6 +13,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
             SELECT c FROM Category c
              LEFT JOIN FETCH c.adParameters
              LEFT JOIN FETCH c.userParameters
+             LEFT JOIN FETCH c.adParameters.type
              WHERE c.id = :id""";
 
     @Query(CATEGORY_WITH_PARAMETERS)

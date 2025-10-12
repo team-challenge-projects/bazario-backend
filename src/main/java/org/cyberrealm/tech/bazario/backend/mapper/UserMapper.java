@@ -1,8 +1,8 @@
 package org.cyberrealm.tech.bazario.backend.mapper;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.cyberrealm.tech.bazario.backend.config.MapperConfig;
 import org.cyberrealm.tech.bazario.backend.config.RootUserCredentials;
@@ -14,6 +14,7 @@ import org.cyberrealm.tech.bazario.backend.dto.RegistrationRequest;
 import org.cyberrealm.tech.bazario.backend.dto.UserInformation;
 import org.cyberrealm.tech.bazario.backend.dto.UserResponseDto;
 import org.cyberrealm.tech.bazario.backend.dto.script.UserCredentials;
+import org.cyberrealm.tech.bazario.backend.model.TypeUserParameter;
 import org.cyberrealm.tech.bazario.backend.model.User;
 import org.cyberrealm.tech.bazario.backend.model.UserParameter;
 import org.mapstruct.AfterMapping;
@@ -22,11 +23,14 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.springframework.beans.factory.annotation.Autowired;
 
-@Mapper(config = MapperConfig.class, uses = {JsonNullableMapper.class,
-        UserParameterMapper.class})
-public interface UserMapper {
-    UserResponseDto toUserResponse(User user);
+@Mapper(config = MapperConfig.class, uses = {UserParameterMapper.class})
+public abstract class UserMapper {
+    @Autowired
+    protected UserParameterMapper userParameterMapper;
+
+    public abstract UserResponseDto toUserResponse(User user);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "lastName", ignore = true)
@@ -38,7 +42,7 @@ public interface UserMapper {
     @Mapping(target = "locked", ignore = true)
     @Mapping(target = "parameters", ignore = true)
     @Mapping(target = "authorities", ignore = true)
-    User toModel(RegistrationRequest requestDto);
+    public abstract User toModel(RegistrationRequest requestDto);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
@@ -47,7 +51,7 @@ public interface UserMapper {
     @Mapping(target = "parameters", ignore = true)
     @Mapping(target = "authorities", ignore = true)
     @Mapping(target = "cityCoordinate", ignore = true)
-    User toUser(RootUserCredentials credentials);
+    public abstract User toUser(RootUserCredentials credentials);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
@@ -55,17 +59,17 @@ public interface UserMapper {
     @Mapping(target = "parameters", ignore = true)
     @Mapping(target = "authorities", ignore = true)
     @Mapping(target = "cityCoordinate", ignore = true)
-    User toUser(UserCredentials credentials);
+    public abstract User toUser(UserCredentials credentials);
 
     @Mapping(target = "cityCoordinate", expression =
             "java(currentUser.getCityCoordinate() != null "
                     + "? currentUser.getCityCoordinate().toText() : \"\")")
-    PrivateUserInformation toInformation(User currentUser);
+    public abstract PrivateUserInformation toInformation(User currentUser);
 
-    PublicUserInformation toInformationForAnonymous(User user);
+    public abstract PublicUserInformation toInformationForAnonymous(User user);
 
     @Mapping(target = "distance", source = "distance")
-    UserInformation toPublicInformation(User user, double distance);
+    public abstract UserInformation toPublicInformation(User user, double distance);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
@@ -76,10 +80,10 @@ public interface UserMapper {
     @Mapping(target = "email", ignore = true)
     @Mapping(target = "cityCoordinate", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateUser(PatchUser patchUser, @MappingTarget User user);
+    public abstract void updateUser(PatchUser patchUser, @MappingTarget User user);
 
     @AfterMapping
-    default void updateOrAddUserParameters(PatchUser patchUser, @MappingTarget User currentUser) {
+    public void updateOrAddUserParameters(PatchUser patchUser, @MappingTarget User currentUser) {
         var dtoParameters = patchUser.getUserParameters();
         var parameters = currentUser.getParameters();
 
@@ -89,29 +93,51 @@ public interface UserMapper {
 
         if (parameters == null) {
             currentUser.setParameters(dtoParameters.stream().map(dto -> {
-                var userParam = UserParameterMapper.INSTANCE.toUserParameter(dto);
+                var userParam = userParameterMapper.toUserParameter(dto);
                 userParam.setUser(currentUser);
                 return userParam;
             }).collect(Collectors.toSet()));
             return;
         }
-        Set<UserParameter> toRemove = new HashSet<>(parameters);
+        List<UserParameter> toRemove = new ArrayList<>(parameters);
+        List<BasicUserParameter> toUpdate = new ArrayList<>(dtoParameters);
         for (BasicUserParameter dto : dtoParameters) {
             boolean found = false;
             for (UserParameter param : parameters) {
-                if (Objects.equals(dto.getId(), param.getId())) {
-                    UserParameterMapper.INSTANCE.updateUserParameter(dto, param);
+                if (Objects.equals(dto.getTypeId(), param.getParameter().getId())) {
+                    if (dto.getParameterValue() != null && param.getParameterValue() != null
+                            && !dto.getParameterValue().equals(param.getParameterValue())) {
+                        userParameterMapper.updateUserParameter(dto, param);
+                    }
                     toRemove.remove(param);
-                    found = true;
-                    break;
+                    toUpdate.remove(dto);
                 }
             }
-            if (!found) {
-                var userParam = UserParameterMapper.INSTANCE.toUserParameter(dto);
-                userParam.setUser(currentUser);
-                parameters.add(userParam);
+        }
+        if (!toUpdate.isEmpty()) {
+            var sizeRemove = toRemove.size();
+            for (int i = 0; i < toUpdate.size(); i++) {
+                if (i < sizeRemove) {
+                    var typeParameter = new TypeUserParameter();
+                    typeParameter.setId(toUpdate.get(i).getTypeId());
+                    UserParameter userParameter = toRemove.remove(i);
+                    userParameter.setParameter(typeParameter);
+                    userParameter.setParameterValue(
+                            toUpdate.get(i).getParameterValue());
+                } else {
+                    var userParameter = new UserParameter();
+                    userParameter.setUser(currentUser);
+                    var typeParameter = new TypeUserParameter();
+                    typeParameter.setId(toUpdate.get(i).getTypeId());
+                    userParameter.setParameter(typeParameter);
+                    userParameter.setParameterValue(
+                            toUpdate.get(i).getParameterValue());
+                    parameters.add(userParameter);
+                }
             }
         }
-        parameters.removeAll(toRemove);
+        if (!toRemove.isEmpty()) {
+            toRemove.forEach(parameters::remove);
+        }
     }
 }

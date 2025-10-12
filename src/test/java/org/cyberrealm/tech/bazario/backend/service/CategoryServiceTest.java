@@ -9,10 +9,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.cyberrealm.tech.bazario.backend.dto.CategoryRequestDto;
+import org.cyberrealm.tech.bazario.backend.dto.CategoryResponseDto;
 import org.cyberrealm.tech.bazario.backend.mapper.CategoryMapper;
 import org.cyberrealm.tech.bazario.backend.model.Category;
 import org.cyberrealm.tech.bazario.backend.repository.CategoryRepository;
-import org.cyberrealm.tech.bazario.backend.repository.TypeAdParameterRepository;
+import org.cyberrealm.tech.bazario.backend.repository.CategoryTypeAdParameterRepository;
 import org.cyberrealm.tech.bazario.backend.repository.TypeUserParameterRepository;
 import org.cyberrealm.tech.bazario.backend.service.impl.CategoryServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +33,7 @@ class CategoryServiceTest {
     @Mock
     private CategoryMapper categoryMapper;
     @Mock
-    private TypeAdParameterRepository adParamRepository;
+    private CategoryTypeAdParameterRepository adParamRepository;
     @Mock
     private TypeUserParameterRepository userParamRepository;
     @InjectMocks
@@ -93,11 +94,15 @@ class CategoryServiceTest {
 
     @Test
     void getCategoryWithParameters() {
+        var oldDto = new CategoryResponseDto().name("OLd value");
         when(categoryRepository.findByIdWithParameters(ONE_ID))
                 .thenReturn(Optional.of(category));
+        when(categoryMapper.toCategoryDto(category)).thenReturn(
+                oldDto);
 
-        categoryService.getCategoryWithParameters(ONE_ID);
+        var dto = categoryService.getCategoryWithParameters(ONE_ID);
 
+        assertEquals(oldDto, dto);
         verify(categoryMapper).toCategoryDto(category);
     }
 

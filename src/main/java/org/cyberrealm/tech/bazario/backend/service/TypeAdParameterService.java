@@ -1,10 +1,8 @@
 package org.cyberrealm.tech.bazario.backend.service;
 
-import java.util.List;
 import java.util.Map;
 import org.cyberrealm.tech.bazario.backend.dto.BasicAdminParameter;
 import org.cyberrealm.tech.bazario.backend.dto.BasicAdminParameterResponse;
-import org.cyberrealm.tech.bazario.backend.dto.BasicUserParameter;
 import org.springframework.data.domain.Page;
 
 public interface TypeAdParameterService {
@@ -44,13 +42,4 @@ public interface TypeAdParameterService {
      * @param id Type ad parameter id
      */
     void delete(Long id);
-
-    /**
-     * Check parameter of dto by restriction pattern from
-     * type ad parameter
-     *
-     * @author Andrey Sitarskiy
-     * @param adParameters Ad parameter from dto
-     */
-    void checkParameters(List<BasicUserParameter> adParameters);
 }
