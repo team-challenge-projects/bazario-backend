@@ -92,7 +92,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:3000",
                 "http://localhost:3001", "http://localhost:3002", "http://localhost:3003",
-                "https://bazario-marketplace-35cx.vercel.app/"));
+                "https://bazario-marketplace-35cx.vercel.app/", "https://accounts.google.com"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE",
                 "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
