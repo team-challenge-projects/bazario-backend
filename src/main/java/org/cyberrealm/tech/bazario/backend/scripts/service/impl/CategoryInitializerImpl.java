@@ -2,7 +2,6 @@ package org.cyberrealm.tech.bazario.backend.scripts.service.impl;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.dto.script.CategoryCredentials;
@@ -22,12 +21,11 @@ public class CategoryInitializerImpl implements CategoryInitializer {
     @Override
     public Category getCategory(CategoryCredentials credentials, List<TypeAdParameter> parameters) {
         return repository.findByName(credentials.getName())
-                .orElseGet(() -> getNewCategory(credentials, parameters));
+                .orElseGet(() -> getNewCategory(credentials));
     }
 
     @Override
-    public List<Category> getCategories(List<CategoryCredentials> credentials,
-                                        List<TypeAdParameter> parameters) {
+    public List<Category> getCategories(List<CategoryCredentials> credentials) {
         var existsCategories = repository.findByNameIn(credentials.stream()
                 .map(CategoryCredentials::getName).toList());
         var notExistsCredentials = notExistsCredentials(credentials, existsCategories);
@@ -36,19 +34,13 @@ public class CategoryInitializerImpl implements CategoryInitializer {
             return existsCategories;
         }
 
-        var notExistsCategories = createCategory(notExistsCredentials, parameters);
+        var notExistsCategories = createCategory(notExistsCredentials);
         return Stream.of(existsCategories, notExistsCategories)
                 .flatMap(Collection::stream).toList();
     }
 
-    private List<Category> createCategory(List<CategoryCredentials> credentials,
-                                          List<TypeAdParameter> parameters) {
-        var categories = credentials.stream().map(dto -> {
-            var category = mapper.toCategory(dto);
-            category.setAdParameters(dto.getTypeAdParameters().stream()
-                    .map(parameters::get).collect(Collectors.toSet()));
-            return category;
-        }).toList();
+    private List<Category> createCategory(List<CategoryCredentials> credentials) {
+        var categories = credentials.stream().map(mapper::toCategory).toList();
         return repository.saveAll(categories);
     }
 
@@ -59,13 +51,10 @@ public class CategoryInitializerImpl implements CategoryInitializer {
                 !namesCategories.contains(dto.getName())).toList();
     }
 
-    private Category getNewCategory(CategoryCredentials credentials,
-                                    List<TypeAdParameter> parameters) {
+    private Category getNewCategory(CategoryCredentials credentials) {
         Category category = new Category();
         category.setName(credentials.getName());
         category.setImage(credentials.getImage());
-        category.setAdParameters(credentials.getTypeAdParameters().stream()
-                .map(parameters::get).collect(Collectors.toSet()));
         return repository.save(category);
     }
 }

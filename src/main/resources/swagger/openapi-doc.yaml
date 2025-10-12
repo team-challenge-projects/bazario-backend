@@ -50,6 +50,9 @@ tags:
   - name: Image
     description: |
       Endpoints for users to manage image on the website.
+  - name: Category item of ad parameter
+    description: |
+      Endpoints for user to manage category items of ad parameter on the website.
 
 paths:
   /anonymous/login:
@@ -80,6 +83,12 @@ paths:
                 type: string
         400:
           description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -128,6 +137,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         429:
           description: Too many request
           content:
@@ -165,6 +180,12 @@ paths:
                 example: JWT_REFRESH_TOKEN=abcs123
         400:
           description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -740,6 +761,152 @@ paths:
       responses:
         204:
           description: Delete user parameter successful.
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /admin/category/parameter:
+    post:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - Category item of ad parameter
+      summary: Creating a category item parameter type by the administrator
+      description: Creating a category item parameter type by the administrator
+      operationId: createCategoryItemParameter
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryItemRequest'
+        required: true
+      responses:
+        201:
+          description: Create a category type item. Get id of category type item
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /admin/category/parameter/{id}:
+    put:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - Category item of ad parameter
+      summary: Put category type item by admin
+      description: Put category type item by admin
+      operationId: putCategoryItemParameter
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryItemRequest'
+        required: true
+      responses:
+        204:
+          description: Change category type item type successful.
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        429:
+          description: Too many request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - Category item of ad parameter
+      security:
+        - bearerAuth: [ ]
+      summary: Delete category type item by admin
+      description: Delete category type item by admin
+      operationId: deleteCategoryItemParameter
+      parameters:
+        - $ref: '#/components/parameters/idParam'
+      responses:
+        204:
+          description: Delete category type item successful.
         400:
           description: Invalid input
           content:
@@ -1630,7 +1797,7 @@ paths:
         A map of key-value pairs for filtering.<br>
         Example Pageable:  "size":"16", "page":"0","sort":"price,desc"(field,asc|desc)<br>
         Example search: "title":"abc"<br>
-        Example ad parameter: "ad_id_256":"Bosh|Samsung|LG"(ad_id_ is type ad id prefix, | is separator for multi parameter)<br>
+        Example ad parameter: "adParameters":"1|2|3"(multiparametric item of category type)<br>
         Example user parameter: "user_id_35":"Student"(user_id is type user id prefix)<br>
         Example price: "price":"10.53||156.20"(10.53<= price <=156.20, || is separator)<br>
         Example rating: "rating":"2.5||7.8","rating":"3||10"<br>
@@ -1675,7 +1842,7 @@ paths:
         A map of key-value pairs for filtering.<br>
         Example Pageable:  "size":"16", "page":"0","sort":"price,desc"(field,asc|desc)<br>
         Example search: "title":"abc"<br>
-        Example ad parameter: "ad_id_256":"Bosh|Samsung|LG"(ad_id_ is type ad id prefix, | is separator for multi parameter)<br>
+        Example ad parameter: "adParameters":"1|2|3"(multiparametric item of category type)<br>
         Example user parameter: "user_id_35":"Student"(user_id is type user id prefix)<br>
         Example price: "price":"10.53||156.20"(10.53<= price <=156.20, || is separator)<br>
         Example rating: "rating":"2.5||7.8","rating":"3||10"<br>
@@ -1722,7 +1889,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AdDto'
+                $ref: '#/components/schemas/AdDtoGet'
         400:
           description: Invalid input
           content:
@@ -1902,7 +2069,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AdDto'
+                $ref: '#/components/schemas/AdDtoGet'
         400:
           description: Invalid input
           content:
@@ -2344,24 +2511,21 @@ components:
       description: Basis user parameter for user or ad
       type: object
       properties:
-        id:
-          type: integer
-          format: int64
-        typeName:
-          type: string
         typeId:
           type: integer
           format: int64
         parameterValue:
           type: string
+          pattern: '^[А-ЯІЇЄа-яіїє@\w\s\.]{3,100}$'
+          x-pattern-message: "The text consists of letters, numbers, and punctuation marks (@.) from 3 to 100 characters long."
     BasicAdminParameter:
       description: Basis admin parameter for user or ad
       type: object
       properties:
         name:
           type: string
-        restrictionPattern:
-          type: string
+        typeView:
+          $ref: '#/components/schemas/TypeView'
         descriptionPattern:
           type: string
     BasicAdminParameterResponse:
@@ -2372,15 +2536,40 @@ components:
         id:
           type: integer
           format: int64
+    BasicItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+    BasicAdminParameterCategory:
+      allOf:
+        - $ref: '#/components/schemas/BasicAdminParameter'
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/BasicItem'
     BasicParameter:
       allOf:
         - $ref: '#/components/schemas/BasicUserParameter'
       type: object
       properties:
-        restrictionPattern:
+        typeName:
           type: string
+        typeView:
+          $ref: '#/components/schemas/TypeView'
         descriptionPattern:
           type: string
+        id:
+          type: integer
+          format: int64
     CategoryDto:
       type: object
       properties:
@@ -2416,7 +2605,7 @@ components:
         adParameters:
           type: array
           items:
-            $ref: '#/components/schemas/BasicAdminParameterResponse'
+            $ref: '#/components/schemas/BasicAdminParameterCategory'
         userParameters:
           type: array
           items:
@@ -2436,6 +2625,19 @@ components:
           x-pattern-message: "The text consists of letters, numbers, and 
           punctuation marks (.!?,) from 3 to 200 characters long. It cannot 
           contain phone numbers (digits greater than 9) or hyperlinks."
+    BasicAdParameter:
+      type: object
+      properties:
+        typeItemId:
+          type: integer
+          format: int64
+        typeItemValue:
+          type: string
+        typeId:
+          type: integer
+          format: int64
+        typeValue:
+          type: string
     AdDto:
       description: Ad information
       type: object
@@ -2461,10 +2663,15 @@ components:
         distance:
           type: number
           format: double
+    AdDtoGet:
+      allOf:
+        - $ref: '#/components/schemas/AdDto'
+      type: object
+      properties:
         adParameters:
           type: array
           items:
-            $ref: '#/components/schemas/BasicUserParameter'
+            $ref: '#/components/schemas/BasicAdParameter'
     PatchAd:
       description: Patch ad
       type: object
@@ -2499,7 +2706,8 @@ components:
         adParameters:
           type: array
           items:
-            $ref: '#/components/schemas/BasicUserParameter'
+            type: integer
+            format: int64
         publicationDate:
           type: string
           format: date
@@ -2513,6 +2721,12 @@ components:
         - DISABLE
         - DELETE
       default: "ACTIVE"
+    TypeView:
+      type: string
+      enum:
+        - SELECT
+        - CHECKBOX
+        - RADIOGROUP
     TypeImage:
       type: string
       enum:
@@ -2631,6 +2845,17 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AdComparesDto'
+    CategoryItemRequest:
+      type: object
+      properties:
+        categoryId:
+          type: integer
+          format: int64
+        typeAdParameterId:
+          type: integer
+          format: int64
+        name:
+          type: string
   parameters:
     idParam:
       name: id

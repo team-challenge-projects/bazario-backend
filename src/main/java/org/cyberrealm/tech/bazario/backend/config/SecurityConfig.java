@@ -5,6 +5,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.security.SecuritySchemes;
+import jakarta.servlet.http.HttpServletResponse;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.model.enums.Role;
@@ -12,7 +14,6 @@ import org.cyberrealm.tech.bazario.backend.security.JwtAuthenticationFilter;
 import org.cyberrealm.tech.bazario.backend.security.OAuth2LoginSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -67,17 +68,18 @@ public class SecurityConfig {
                 .httpBasic(withDefaults())
                 .oauth2Login(oauth2 -> oauth2.successHandler(successHandler))
                 .exceptionHandling(e -> e.authenticationEntryPoint((
-                        (request, response,
-                         authException) -> {
-                            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                        (request, response, authException) -> {
+                            response.getWriter().write("{\"message\": \"%s\", \"timestamp\":\"%s\"}"
+                                    .formatted(response.getStatus() == HttpServletResponse
+                                            .SC_UNAUTHORIZED
+                                            ? "Expired or invalid JWT token"
+                                            : "Authentication required", LocalDate.now()));
                             response.setContentType("application/json");
-                            response.getWriter().write("""
-                                    { "error": "Unauthorized",
-                                     "message": "Authentication required" }
-                                    """);
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                         })))
                 .sessionManagement(
-                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                        session -> session.sessionCreationPolicy(
+                                SessionCreationPolicy.STATELESS)
                 )
                 .addFilterBefore(jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class)

@@ -2,6 +2,7 @@ package org.cyberrealm.tech.bazario.backend.service;
 
 import java.util.Map;
 import org.cyberrealm.tech.bazario.backend.dto.AdDto;
+import org.cyberrealm.tech.bazario.backend.dto.AdDtoGet;
 import org.cyberrealm.tech.bazario.backend.dto.AdLeaderBoardDto;
 import org.cyberrealm.tech.bazario.backend.dto.PatchAd;
 import org.springframework.data.domain.Page;
@@ -10,11 +11,11 @@ public interface AdService {
     /**
      * Find ad by ad id and return public information
      *
-     * @author Andrey Sitarskiy
      * @param id Ad id
      * @return Public information about ad
+     * @author Andrey Sitarskiy
      */
-    AdDto findById(Long id);
+    AdDtoGet findById(Long id);
 
     /**
      * Delete ad by ad id

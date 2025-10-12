@@ -22,9 +22,10 @@ import java.util.Set;
 import lombok.SneakyThrows;
 import org.cyberrealm.tech.bazario.backend.AbstractIntegrationTest;
 import org.cyberrealm.tech.bazario.backend.dto.AdDto;
+import org.cyberrealm.tech.bazario.backend.dto.AdDtoGet;
 import org.cyberrealm.tech.bazario.backend.dto.AdResponseDto;
 import org.cyberrealm.tech.bazario.backend.dto.AdStatus;
-import org.cyberrealm.tech.bazario.backend.dto.BasicUserParameter;
+import org.cyberrealm.tech.bazario.backend.dto.BasicAdParameter;
 import org.cyberrealm.tech.bazario.backend.dto.PatchAd;
 import org.cyberrealm.tech.bazario.backend.repository.AdRepository;
 import org.cyberrealm.tech.bazario.backend.repository.UserRepository;
@@ -97,9 +98,7 @@ class AdApiDelegateImplTest extends AbstractIntegrationTest {
         String newValue = "Новий Тест";
         var dto = new PatchAd().title(newValue).description(newValue)
                 .status(AdStatus.ACTIVE).price(BigDecimal.valueOf(2000.00))
-                .categoryId(ID_ONE).addAdParametersItem(new BasicUserParameter()
-                        .id(ID_ONE).typeId(ID_ONE).parameterValue("ТестПошта")
-                        .typeName("Доставка тест"));
+                .categoryId(ID_ONE).addAdParametersItem(ID_ONE);
 
         var oldEntity = adRepository.findByIdWithParameters(ID_ONE).orElseThrow();
         entityManager.clear();
@@ -135,8 +134,6 @@ class AdApiDelegateImplTest extends AbstractIntegrationTest {
     @SneakyThrows
     @Test
     void getAd() {
-        var ad = adRepository.findById(ID_ONE).orElseThrow();
-
         when(redisTemplate.opsForZSet()).thenReturn(opsForZSet);
         when(redisTemplate.opsForValue()).thenReturn(opsForValue);
         when(opsForZSet.addIfAbsent(ArgumentMatchers.anyString(),
@@ -150,13 +147,18 @@ class AdApiDelegateImplTest extends AbstractIntegrationTest {
                 .thenReturn(true);
         when(opsForZSet.size(ArgumentMatchers.anyString())).thenReturn(1L);
 
-        var dto = new AdDto().id(ID_ONE).title("Тест")
+        var adParametersItemOne = new BasicAdParameter()
+                .typeItemId(ID_ONE).typeItemValue("ТестПошта")
+                .typeId(ID_ONE).typeValue("Доставка тест");
+        var adParametersItemTwo = new BasicAdParameter()
+                .typeItemId(ID_TWO).typeItemValue("ТестовийСклад")
+                .typeId(ID_ONE).typeValue("Доставка тест");
+        var dto = new AdDtoGet().id(ID_ONE).title("Тест")
                 .description("Тест").price(BigDecimal.valueOf(1000.00))
                 .images(List.of(URI.create("http://test/test.png"),
                         URI.create("http://test/old-test.png")))
-                .addAdParametersItem(new BasicUserParameter()
-                        .id(ID_ONE).parameterValue("ТестПошта")
-                        .typeId(ID_ONE).typeName("Доставка тест"))
+                .addAdParametersItem(adParametersItemOne)
+                .addAdParametersItem(adParametersItemTwo)
                 .cityName("Kiev").distance(0.0)
                 .cityCoordinate("POINT (30.3125 50.27)");
         mockMvc.perform(get("/public/ad/" + ID_ONE))

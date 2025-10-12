@@ -14,6 +14,7 @@ import org.cyberrealm.tech.bazario.backend.mapper.AdMapper;
 import org.cyberrealm.tech.bazario.backend.model.Ad;
 import org.cyberrealm.tech.bazario.backend.model.Category;
 import org.cyberrealm.tech.bazario.backend.model.User;
+import org.cyberrealm.tech.bazario.backend.repository.AdParameterRepository;
 import org.cyberrealm.tech.bazario.backend.repository.AdRepository;
 import org.cyberrealm.tech.bazario.backend.repository.CategoryRepository;
 import org.cyberrealm.tech.bazario.backend.repository.FavoriteRepository;
@@ -31,6 +32,8 @@ import org.springframework.test.context.ActiveProfiles;
 class AdServiceTest {
     @Mock
     private AdRepository adRepository;
+    @Mock
+    private AdParameterRepository adParameterRepository;
     @Mock
     private AuthenticationUserService authUserService;
     @Mock
@@ -55,10 +58,11 @@ class AdServiceTest {
         when(authUserService.isAuthenticationUser()).thenReturn(true);
         when(authUserService.getCurrentUser()).thenReturn(user);
         when(accessAdService.getPublicAd(1L)).thenReturn(ad);
+        when(adParameterRepository.findByAd(ad)).thenReturn(List.of());
         adService.findById(1L);
 
-        verify(adMapper).toDto(ad, GeometryUtil.haversine(user.getCityCoordinate(),
-                ad.getCityCoordinate()));
+        verify(adMapper).toDtoGet(ad, GeometryUtil.haversine(user.getCityCoordinate(),
+                ad.getCityCoordinate()), List.of());
     }
 
     @Test

@@ -62,10 +62,10 @@ class AdsServiceTest extends AbstractIntegrationTest {
                 Arguments.of(Map.of("publicationDate","2025-01-01||2025-02-06"),
                         new PageImpl<AdResponseDto>(
                                 List.of(DtoAd.THREE.getDto()), pageable, ID_ONE)),
-                Arguments.of(Map.of("ad_id_1","ТестПошта"),
+                Arguments.of(Map.of("adParameters","1"),
                         new PageImpl<AdResponseDto>(
                                 List.of(DtoAd.ONE.getDto()), pageable, ID_ONE)),
-                Arguments.of(Map.of("ad_id_1","ТестПошта|ТестовийСклад"),
+                Arguments.of(Map.of("adParameters","1|2"),
                         new PageImpl<AdResponseDto>(
                                 List.of(DtoAd.ONE.getDto(), DtoAd.TWO.getDto()),
                                 pageable, ID_TWO)),

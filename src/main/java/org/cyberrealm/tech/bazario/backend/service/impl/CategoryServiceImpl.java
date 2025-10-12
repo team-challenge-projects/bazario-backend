@@ -2,15 +2,19 @@ package org.cyberrealm.tech.bazario.backend.service.impl;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.cyberrealm.tech.bazario.backend.dto.BasicAdminParameterCategory;
+import org.cyberrealm.tech.bazario.backend.dto.BasicItem;
 import org.cyberrealm.tech.bazario.backend.dto.CategoryDto;
 import org.cyberrealm.tech.bazario.backend.dto.CategoryRequestDto;
 import org.cyberrealm.tech.bazario.backend.dto.CategoryResponseDto;
 import org.cyberrealm.tech.bazario.backend.exception.custom.EntityNotFoundException;
 import org.cyberrealm.tech.bazario.backend.mapper.CategoryMapper;
 import org.cyberrealm.tech.bazario.backend.model.Category;
+import org.cyberrealm.tech.bazario.backend.model.CategoryTypeAdParameter;
 import org.cyberrealm.tech.bazario.backend.repository.CategoryRepository;
-import org.cyberrealm.tech.bazario.backend.repository.TypeAdParameterRepository;
+import org.cyberrealm.tech.bazario.backend.repository.CategoryTypeAdParameterRepository;
 import org.cyberrealm.tech.bazario.backend.repository.TypeUserParameterRepository;
 import org.cyberrealm.tech.bazario.backend.service.CategoryService;
 import org.springframework.stereotype.Service;
@@ -20,7 +24,7 @@ import org.springframework.stereotype.Service;
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
-    private final TypeAdParameterRepository adParamRepository;
+    private final CategoryTypeAdParameterRepository adParamRepository;
     private final TypeUserParameterRepository userParamRepository;
 
     @Override
@@ -62,7 +66,22 @@ public class CategoryServiceImpl implements CategoryService {
         var category = categoryRepository.findByIdWithParameters(id).orElseThrow(() ->
                 new EntityNotFoundException("Category with id %s is not found"
                         .formatted(id)));
-        return categoryMapper.toCategoryDto(category);
+        CategoryResponseDto categoryDto = categoryMapper.toCategoryDto(category);
+        var parameters = category.getAdParameters().stream().collect(
+                Collectors.groupingBy(CategoryTypeAdParameter::getType));
+        var dtoParameters = parameters.entrySet().stream().map(entry ->
+                new BasicAdminParameterCategory()
+                        .id(entry.getKey().getId())
+                        .descriptionPattern(entry.getKey().getDescriptionPattern())
+                        .typeView(entry.getKey().getTypeView())
+                        .name(entry.getKey().getName())
+                        .values(entry.getValue().stream().map(v ->
+                                new BasicItem().id(v.getId()).name(v.getName()))
+                                .toList())
+        ).toList();
+
+        categoryDto.setAdParameters(dtoParameters);
+        return categoryDto;
     }
 
     @Override

@@ -9,6 +9,8 @@ import org.mapstruct.Mapping;
 
 @Mapper(config = MapperConfig.class)
 public interface CategoryMapper {
+    @Mapping(target = "adParameters", ignore = true)
+    @Mapping(target = "userParameters", ignore = true)
     CategoryResponseDto toCategoryDto(Category category);
 
     @Mapping(target = "id", ignore = true)

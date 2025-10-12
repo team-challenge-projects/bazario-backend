@@ -27,6 +27,7 @@ import org.cyberrealm.tech.bazario.backend.dto.EmailRequest;
 import org.cyberrealm.tech.bazario.backend.dto.PrivateUserInformation;
 import org.cyberrealm.tech.bazario.backend.dto.RegistrationRequest;
 import org.cyberrealm.tech.bazario.backend.dto.TypeEmailMessage;
+import org.cyberrealm.tech.bazario.backend.dto.TypeView;
 import org.cyberrealm.tech.bazario.backend.dto.UserInformation;
 import org.cyberrealm.tech.bazario.backend.dto.VerificationEmail;
 import org.cyberrealm.tech.bazario.backend.model.User;
@@ -131,7 +132,7 @@ class UserApiDelegateImplTest extends AbstractIntegrationTest {
                 .parameters(List.of(new BasicParameter().id(ID_ONE)
                         .typeName("Тестовий тип").typeId(ID_ONE)
                         .parameterValue("ТестТип")
-                        .restrictionPattern("^(ТестТип|ЮридичнийТип)$")
+                        .typeView(TypeView.CHECKBOX)
                         .descriptionPattern("Це тестовий тип")));
         mockMvc.perform(get("/private/user"))
                 .andExpect(status().isOk())

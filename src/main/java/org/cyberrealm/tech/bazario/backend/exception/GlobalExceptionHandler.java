@@ -1,5 +1,6 @@
 package org.cyberrealm.tech.bazario.backend.exception;
 
+import io.jsonwebtoken.JwtException;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.time.LocalDateTime;
@@ -44,6 +45,17 @@ public class GlobalExceptionHandler {
 
         ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now());
         return ResponseEntity.status(ex.getHttpStatus()).body(response);
+    }
+
+    @ExceptionHandler(JwtException.class)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "400", description = "Authentication fail")
+    })
+    public ResponseEntity<ErrorResponse> handleJwtException(final JwtException ex) {
+        log.error(ex.getClass().getSimpleName(), ex.getMessage());
+
+        ErrorResponse response = new ErrorResponse(ex.getMessage(), LocalDateTime.now());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     @ExceptionHandler(AuthenticationException.class)

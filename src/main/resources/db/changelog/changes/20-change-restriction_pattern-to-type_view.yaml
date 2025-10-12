@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: change-restriction_pattern-to-type_view
+      author: Andrey Sitarskiy
+      changes:
+        - dropColumn:
+            tableName: type_user_parameters
+            columns:
+              - column:
+                  name: restriction_pattern
+        - addColumn:
+            tableName: type_user_parameters
+            columns:
+              - column:
+                  name: type_view
+                  type: varchar(30)
+                  defaultValue: "CHECKBOX"
+        - dropColumn:
+            tableName: type_ad_parameters
+            columns:
+              - column:
+                  name: restriction_pattern
+        - addColumn:
+            tableName: type_ad_parameters
+            columns:
+              - column:
+                  name: type_view
+                  type: varchar(30)
+                  defaultValue: "CHECKBOX"

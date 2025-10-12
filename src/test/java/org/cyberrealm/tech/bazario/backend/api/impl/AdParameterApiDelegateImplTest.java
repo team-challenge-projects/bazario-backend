@@ -17,6 +17,7 @@ import lombok.SneakyThrows;
 import org.cyberrealm.tech.bazario.backend.AbstractIntegrationTest;
 import org.cyberrealm.tech.bazario.backend.dto.BasicAdminParameter;
 import org.cyberrealm.tech.bazario.backend.dto.BasicAdminParameterResponse;
+import org.cyberrealm.tech.bazario.backend.dto.TypeView;
 import org.cyberrealm.tech.bazario.backend.repository.TypeAdParameterRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -34,7 +35,7 @@ class AdParameterApiDelegateImplTest extends AbstractIntegrationTest {
     static void beforeAll() {
         dto = new BasicAdminParameter()
                 .name("Test")
-                .restrictionPattern("^Test$")
+                .typeView(TypeView.SELECT)
                 .descriptionPattern("The test");
     }
 
@@ -69,8 +70,8 @@ class AdParameterApiDelegateImplTest extends AbstractIntegrationTest {
         var entity = repository.findById(ID_TWO).orElseThrow();
         assertAll(
                 () -> assertEquals(dto.getName(), entity.getName()),
-                () -> assertEquals(dto.getRestrictionPattern(),
-                        entity.getRestrictionPattern()),
+                () -> assertEquals(dto.getTypeView(),
+                        entity.getTypeView()),
                 () -> assertEquals(dto.getDescriptionPattern(),
                         entity.getDescriptionPattern())
         );
@@ -94,7 +95,7 @@ class AdParameterApiDelegateImplTest extends AbstractIntegrationTest {
         entityManager.clear();
         var response = new BasicAdminParameterResponse().id(ID_ONE)
                 .name(dto.getName())
-                .restrictionPattern(dto.getRestrictionPattern())
+                .typeView(TypeView.SELECT)
                 .descriptionPattern(dto.getDescriptionPattern());
         mockMvc.perform(put("/admin/ad/parameter/" + ID_ONE)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -106,13 +107,13 @@ class AdParameterApiDelegateImplTest extends AbstractIntegrationTest {
         assertAll(
                 () -> assertEquals(oldEntity.getId(), newEntity.getId()),
                 () -> assertNotEquals(oldEntity.getName(), newEntity.getName()),
-                () -> assertNotEquals(oldEntity.getRestrictionPattern(),
-                        newEntity.getRestrictionPattern()),
+                () -> assertNotEquals(oldEntity.getTypeView(),
+                        newEntity.getTypeView()),
                 () -> assertNotEquals(oldEntity.getDescriptionPattern(),
                         newEntity.getDescriptionPattern()),
                 () -> assertEquals(dto.getName(), newEntity.getName()),
-                () -> assertEquals(dto.getRestrictionPattern(),
-                        newEntity.getRestrictionPattern()),
+                () -> assertEquals(dto.getTypeView(),
+                        newEntity.getTypeView()),
                 () -> assertEquals(dto.getDescriptionPattern(),
                         newEntity.getDescriptionPattern())
         );

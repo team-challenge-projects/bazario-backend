@@ -30,13 +30,17 @@ databaseChangeLog:
   - include:
       file: db/changelog/changes/16-change-size-url-ad-images.yaml
   - include:
-      file: db/changelog/changes/16-insert-type-ad-parameters.yaml
-  - include:
-      file: db/changelog/changes/17-insert-type-user-parameters.yaml
-  - include:
       file: db/changelog/changes/18-modify-users-city_coordinate.yaml
   - include:
       file: db/changelog/changes/19-add-ads-city_name-city_coordinate.yaml
+  - include:
+      file: db/changelog/changes/20-change-restriction_pattern-to-type_view.yaml
+  - include:
+      file: db/changelog/changes/21-change-tables-for-category.yaml
+  - include:
+      file: db/changelog/changes/16-insert-type-ad-parameters.yaml
+  - include:
+      file: db/changelog/changes/17-insert-type-user-parameters.yaml
   - include:
       file: db/changelog/changes/18-insert-categories.yaml
   - include:
@@ -45,6 +49,8 @@ databaseChangeLog:
       file: db/changelog/changes/20-insert-ad.yaml
   - include:
       file: db/changelog/changes/21-insert-ad-image.yaml
+  - include:
+      file: db/changelog/changes/21-insert-category-type-item.yaml
   - include:
       file: db/changelog/changes/22-insert-ad-parameter.yaml
   - include:

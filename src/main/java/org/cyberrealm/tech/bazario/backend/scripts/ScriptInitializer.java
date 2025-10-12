@@ -5,6 +5,7 @@ import org.cyberrealm.tech.bazario.backend.config.ScriptCredentials;
 import org.cyberrealm.tech.bazario.backend.scripts.service.AdInitializer;
 import org.cyberrealm.tech.bazario.backend.scripts.service.AdParameterInitializer;
 import org.cyberrealm.tech.bazario.backend.scripts.service.AdTypeInitializer;
+import org.cyberrealm.tech.bazario.backend.scripts.service.CategoriesTypeInitializer;
 import org.cyberrealm.tech.bazario.backend.scripts.service.CategoryInitializer;
 import org.cyberrealm.tech.bazario.backend.scripts.service.UserInitializer;
 import org.cyberrealm.tech.bazario.backend.scripts.service.UserParameterInitializer;
@@ -26,6 +27,7 @@ public class ScriptInitializer implements CommandLineRunner {
     private final UserParameterInitializer userParameterInitializer;
     private final AdTypeInitializer adTypeInitializer;
     private final CategoryInitializer categoryInitializer;
+    private final CategoriesTypeInitializer categoriesTypeInitializer;
     private final AdInitializer adInitializer;
     private final AdParameterInitializer adParameterInitializer;
 
@@ -40,10 +42,11 @@ public class ScriptInitializer implements CommandLineRunner {
         userParameterInitializer.addParameters(credentials.getUserParameters(),
                 users, userTypeParameters);
         var adTypes = adTypeInitializer.getAdTypes(credentials.getAdTypeParameters());
-        var categories = categoryInitializer.getCategories(credentials.getCategories(),
-                adTypes);
+        var categories = categoryInitializer.getCategories(credentials.getCategories());
+        var categoryTypeItems = categoriesTypeInitializer.get(credentials.getCategoryTypeItems(),
+                categories, adTypes);
         var ads = adInitializer.createAds(credentials.getAds(), users, categories);
-        adParameterInitializer.addParameters(credentials.getAdParameters(), ads, adTypes);
+        adParameterInitializer.addParameters(credentials.getAdParameters(), ads, categoryTypeItems);
 
     }
 }

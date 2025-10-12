@@ -7,6 +7,6 @@ import lombok.Setter;
 @Setter
 public class BasicTypeParameter {
     private String name;
-    private String restrictionPattern;
+    private String typeView;
     private String descriptionPattern;
 }

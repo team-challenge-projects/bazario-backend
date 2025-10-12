@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-category-type-item
+      author: Andrey Sitarskiy
+      changes:
+        - insert:
+            tableName: category_type_ad_parameters
+            columns:
+              - column: { name: name, value: "ТестПошта" }
+              - column: { name: category_id, value: "1" }
+              - column: { name: type_id, value: "1" }
+        - insert:
+            tableName: category_type_ad_parameters
+            columns:
+              - column: { name: name, value: "ТестовийСклад" }
+              - column: { name: category_id, value: "1" }
+              - column: { name: type_id, value: "1" }

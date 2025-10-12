@@ -8,14 +8,17 @@ import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.dto.AdDto;
+import org.cyberrealm.tech.bazario.backend.dto.AdDtoGet;
 import org.cyberrealm.tech.bazario.backend.dto.AdLeaderBoardDto;
 import org.cyberrealm.tech.bazario.backend.dto.AdStatus;
 import org.cyberrealm.tech.bazario.backend.dto.PatchAd;
 import org.cyberrealm.tech.bazario.backend.exception.custom.EntityNotFoundException;
 import org.cyberrealm.tech.bazario.backend.exception.custom.ForbiddenException;
 import org.cyberrealm.tech.bazario.backend.mapper.AdMapper;
+import org.cyberrealm.tech.bazario.backend.mapper.CategoryTypeAdParameterMapper;
 import org.cyberrealm.tech.bazario.backend.model.Ad;
 import org.cyberrealm.tech.bazario.backend.model.User;
+import org.cyberrealm.tech.bazario.backend.repository.AdParameterRepository;
 import org.cyberrealm.tech.bazario.backend.repository.AdRepository;
 import org.cyberrealm.tech.bazario.backend.repository.CategoryRepository;
 import org.cyberrealm.tech.bazario.backend.repository.FavoriteRepository;
@@ -38,6 +41,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AdServiceImpl implements AdService {
     private final AdRepository adRepository;
+    private final AdParameterRepository adParameterRepository;
+    private final CategoryTypeAdParameterMapper parameterMapper;
     private final AuthenticationUserService authUserService;
     private final AdMapper adMapper;
     private final AccessAdService accessAdService;
@@ -53,14 +58,17 @@ public class AdServiceImpl implements AdService {
     private long capacityAdDisable;
 
     @Override
-    public AdDto findById(Long id) {
+    public AdDtoGet findById(Long id) {
         Ad ad = accessAdService.getPublicAd(id);
         Point startPoint = null;
         if (authUserService.isAuthenticationUser()) {
             startPoint = authUserService.getCurrentUser().getCityCoordinate();
         }
-        return adMapper.toDto(ad, GeometryUtil.haversine(startPoint,
-                ad.getCityCoordinate()));
+        var dtoParameters = adParameterRepository.findByAd(ad).stream()
+                .map(param -> parameterMapper.toBasicParameter(
+                        param.getParameter())).toList();
+        return adMapper.toDtoGet(ad, GeometryUtil.haversine(startPoint,
+                ad.getCityCoordinate()), dtoParameters);
     }
 
     @Override
@@ -74,8 +82,6 @@ public class AdServiceImpl implements AdService {
 
     @Override
     public void patchById(Long id, PatchAd patchAd) {
-
-        typeAdParameterService.checkParameters(patchAd.getAdParameters());
         var ad = adRepository.findByIdWithParameters(id).orElseThrow(() ->
                 new EntityNotFoundException("Ad with id " + id + "not found"));
         if (accessAdService.isNotAccessAd(ad)) {

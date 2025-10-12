@@ -5,6 +5,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.api.AdApiDelegate;
 import org.cyberrealm.tech.bazario.backend.dto.AdDto;
+import org.cyberrealm.tech.bazario.backend.dto.AdDtoGet;
 import org.cyberrealm.tech.bazario.backend.dto.PageCompareAd;
 import org.cyberrealm.tech.bazario.backend.dto.PatchAd;
 import org.cyberrealm.tech.bazario.backend.service.AdCompareService;
@@ -49,12 +50,12 @@ public class AdApiDelegateImpl implements AdApiDelegate {
     }
 
     @Override
-    public ResponseEntity<AdDto> getAd(Long id) {
+    public ResponseEntity<AdDtoGet> getAd(Long id) {
         return ResponseEntity.ok(adService.findById(id));
     }
 
     @Override
-    public ResponseEntity<AdDto> getAdForUser(Long id) {
+    public ResponseEntity<AdDtoGet> getAdForUser(Long id) {
         return ResponseEntity.ok(adService.findById(id));
     }
 

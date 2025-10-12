@@ -1,6 +1,7 @@
 package org.cyberrealm.tech.bazario.backend.service.impl;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Root;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -62,11 +63,12 @@ public class AdsServiceImpl implements AdsService {
     @Override
     public Page<AdResponseDto> findAll(Map<String, String> filters) {
         Pageable pageable = pageableService.get(filters);
-        Specification<Ad> spec = (root, query, builder) ->
-                builder.and(
-                        getPredicateByUser(root, builder, filters),
-                        getByAdParam(root, builder, filters),
-                        getPredicateByFields(root, builder, filters));
+        Specification<Ad> spec = (root, query, builder) -> {
+            root.fetch("images", JoinType.LEFT);
+            return builder.and(
+                    getPredicateByUser(root, builder, filters),
+                    getPredicateByFields(root, builder, filters));
+        };
 
         return adRepository.findAll(spec, pageable).map(adMapper::toResponseDto);
     }
@@ -74,12 +76,13 @@ public class AdsServiceImpl implements AdsService {
     @Override
     public Page<AdResponseDto> findAllForUser(Map<String, String> filters) {
         Pageable pageable = pageableService.get(filters);
-        Specification<Ad> spec = (root, query, builder) ->
-                builder.and(
-                        getPredicateByUser(root, builder, filters),
-                        getByAdParam(root, builder, filters),
-                        getPredicateByFields(root, builder, filters),
-                        getPredicateByFieldsForUser(root, builder, filters));
+        Specification<Ad> spec = (root, query, builder) -> {
+            root.fetch("images", JoinType.LEFT);
+            return builder.and(
+                    getPredicateByUser(root, builder, filters),
+                    getPredicateByFields(root, builder, filters),
+                    getPredicateByFieldsForUser(root, builder, filters));
+        };
 
         return adRepository.findAll(spec, pageable).map(ad ->
                 adMapper.toResponseDto(ad).distance(
@@ -148,6 +151,13 @@ public class AdsServiceImpl implements AdsService {
 
                     }
                 }
+                case "adParameters" -> {
+                    if (Arrays.stream(value.split("\\|")).allMatch(v ->
+                            v.matches("\\d+"))) {
+                        var ids = adParameterService.filterByParam(value);
+                        predicate.add(root.get("id").in(ids));
+                    }
+                }
                 default -> {
                 }
             }
@@ -191,21 +201,6 @@ public class AdsServiceImpl implements AdsService {
         }
     }
 
-    private jakarta.persistence.criteria.Predicate getByAdParam(
-            Root<Ad> root, CriteriaBuilder builder, Map<String, String> filters) {
-        var adParamFieldFilter = filters.entrySet().stream()
-                .filter(exceptNonNumeric(PREFIX_AD_PARAM))
-                .collect(Collectors.toMap(entry ->
-                                Long.parseLong(entry.getKey()
-                                        .replaceFirst(PREFIX_AD_PARAM, EMPTY)),
-                        Map.Entry::getValue));
-        if (adParamFieldFilter.isEmpty()) {
-            return builder.conjunction();
-        }
-        var adIdsFiltered = adParameterService.filterByParam(adParamFieldFilter);
-        return root.get("id").in(adIdsFiltered);
-    }
-
     private jakarta.persistence.criteria.Predicate getPredicateByUser(
             Root<Ad> root, CriteriaBuilder builder, Map<String, String> filters) {
         Set<Long> userIds = new HashSet<>();
@@ -214,7 +209,7 @@ public class AdsServiceImpl implements AdsService {
                     Long.parseLong(filters.get("user")));
         }
         var userParamFieldFilter = filters.entrySet().stream()
-                .filter(exceptNonNumeric(PREFIX_USER_PARAM))
+                .filter(isExceptNonNumericKey(PREFIX_USER_PARAM))
                 .collect(Collectors.toMap(entry ->
                                 Long.parseLong(entry.getKey()
                                         .replaceFirst(PREFIX_USER_PARAM, EMPTY)),
@@ -258,7 +253,7 @@ public class AdsServiceImpl implements AdsService {
         return userIds.isEmpty() ? builder.conjunction() : root.get("user").get("id").in(userIds);
     }
 
-    private Predicate<Map.Entry<String, String>> exceptNonNumeric(String prefix) {
+    private Predicate<Map.Entry<String, String>> isExceptNonNumericKey(String prefix) {
         return entry -> {
             var regex = "^%s\\d+$".formatted(prefix);
             return entry.getKey().matches(regex);

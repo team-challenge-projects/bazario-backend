@@ -7,6 +7,7 @@ import org.cyberrealm.tech.bazario.backend.dto.script.AdCredentials;
 import org.cyberrealm.tech.bazario.backend.dto.script.BasicTypeParameter;
 import org.cyberrealm.tech.bazario.backend.dto.script.CategoryCredentials;
 import org.cyberrealm.tech.bazario.backend.dto.script.ParameterCredentials;
+import org.cyberrealm.tech.bazario.backend.dto.script.ParameterItemCredentials;
 import org.cyberrealm.tech.bazario.backend.dto.script.UserCredentials;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -22,5 +23,6 @@ public class ScriptCredentials {
     private List<BasicTypeParameter> adTypeParameters;
     private List<CategoryCredentials> categories;
     private List<AdCredentials> ads;
-    private List<ParameterCredentials> adParameters;
+    private List<ParameterCredentials> categoryTypeItems;
+    private List<ParameterItemCredentials> adParameters;
 }

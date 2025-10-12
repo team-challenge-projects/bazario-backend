@@ -1,14 +1,17 @@
 package org.cyberrealm.tech.bazario.backend.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
+import org.cyberrealm.tech.bazario.backend.dto.TypeView;
 
 @Entity
 @Getter
@@ -19,9 +22,10 @@ public class TypeAdParameter {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private String restrictionPattern;
+    @Enumerated(EnumType.STRING)
+    private TypeView typeView;
     private String descriptionPattern;
 
-    @ManyToMany(mappedBy = "adParameters")
-    private Set<Category> categories;
+    @OneToMany(mappedBy = "type")
+    private Set<CategoryTypeAdParameter> parameters;
 }

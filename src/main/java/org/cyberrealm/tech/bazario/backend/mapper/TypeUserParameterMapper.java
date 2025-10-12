@@ -2,6 +2,7 @@ package org.cyberrealm.tech.bazario.backend.mapper;
 
 import org.cyberrealm.tech.bazario.backend.config.MapperConfig;
 import org.cyberrealm.tech.bazario.backend.dto.BasicAdminParameter;
+import org.cyberrealm.tech.bazario.backend.dto.BasicAdminParameterCategory;
 import org.cyberrealm.tech.bazario.backend.dto.BasicAdminParameterResponse;
 import org.cyberrealm.tech.bazario.backend.dto.script.BasicTypeParameter;
 import org.cyberrealm.tech.bazario.backend.model.TypeUserParameter;
@@ -22,4 +23,7 @@ public interface TypeUserParameterMapper {
     TypeUserParameter toTypeUserParameter(Long id, BasicAdminParameter parameter);
 
     BasicAdminParameterResponse toBasicAdminParameter(TypeUserParameter parameter);
+
+    @Mapping(target = "values", ignore = true)
+    BasicAdminParameterCategory toBasicAdminParameterCategory(TypeUserParameter parameter);
 }
