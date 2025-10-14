@@ -52,7 +52,7 @@ public class SecurityConfig {
                                 .requestMatchers(
                                         "/anonymous/**"
                                 ).anonymous()
-                                .requestMatchers("/api/admin/**").hasAnyRole(
+                                .requestMatchers("/admin/**").hasAnyRole(
                                         Role.ROOT.getAuthority(),
                                         Role.ADMIN.getAuthority())
                                 .requestMatchers(
@@ -67,15 +67,24 @@ public class SecurityConfig {
                 )
                 .httpBasic(withDefaults())
                 .oauth2Login(oauth2 -> oauth2.successHandler(successHandler))
-                .exceptionHandling(e -> e.authenticationEntryPoint((
-                        (request, response, authException) -> {
+                .exceptionHandling(e -> e
+                        .authenticationEntryPoint(((request, response,
+                                                    authException) -> {
                             response.getWriter().write("{\"message\": \"%s\", \"timestamp\":\"%s\"}"
                                     .formatted(response.getStatus() == HttpServletResponse
-                                            .SC_UNAUTHORIZED
-                                            ? "Expired or invalid JWT token"
-                                            : "Authentication required", LocalDate.now()));
+                                                    .SC_UNAUTHORIZED
+                                                    ? "Expired or invalid JWT token"
+                                                    : "Authentication required",
+                                            LocalDate.now()));
                             response.setContentType("application/json");
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        }))
+                        .accessDeniedHandler(((request, response, accessDeniedException) -> {
+                            response.getWriter().write("{\"message\": \"%s\", \"timestamp\":\"%s\"}"
+                                    .formatted("Access Denied: User does not have required role",
+                                            LocalDate.now()));
+                            response.setContentType("application/json");
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                         })))
                 .sessionManagement(
                         session -> session.sessionCreationPolicy(
