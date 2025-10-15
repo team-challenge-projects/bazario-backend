@@ -7,9 +7,9 @@ databaseChangeLog:
             tableName: categories
             columns:
               - column: { name: name, value: "Тест" }
-              - column: { name: image, value: "http://test/test.png" }
+              - column: { name: image, value: "http://test/test.jpg" }
         - insert:
             tableName: categories
             columns:
               - column: { name: name, value: "Тест_two" }
-              - column: { name: image, value: "http://test/test2.png" }
+              - column: { name: image, value: "http://test/test2.jpg" }

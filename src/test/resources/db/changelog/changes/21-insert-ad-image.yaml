@@ -7,9 +7,9 @@ databaseChangeLog:
             tableName: ad_images
             columns:
               - column: { name: ad_id, value: "1" }
-              - column: { name: url, value: "http://test/test.png" }
+              - column: { name: url, value: "http://test/test.jpg" }
         - insert:
             tableName: ad_images
             columns:
               - column: { name: ad_id, value: "1" }
-              - column: { name: url, value: "http://test/old-test.png" }
+              - column: { name: url, value: "http://test/old-test.jpg" }

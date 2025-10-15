@@ -155,8 +155,8 @@ class AdApiDelegateImplTest extends AbstractIntegrationTest {
                 .typeId(ID_ONE).typeValue("Доставка тест");
         var dto = new AdDtoGet().id(ID_ONE).title("Тест")
                 .description("Тест").price(BigDecimal.valueOf(1000.00))
-                .images(List.of(URI.create("http://test/test.png"),
-                        URI.create("http://test/old-test.png")))
+                .images(List.of(URI.create("http://test/test.jpg"),
+                        URI.create("http://test/old-test.jpg")))
                 .addAdParametersItem(adParametersItemOne)
                 .addAdParametersItem(adParametersItemTwo)
                 .cityName("Kiev").distance(0.0)
@@ -171,7 +171,7 @@ class AdApiDelegateImplTest extends AbstractIntegrationTest {
     void getAds() {
         var contentDto = new AdResponseDto().id(ID_ONE).title("Тест")
                 .description("Тест").price(BigDecimal.valueOf(1000.00))
-                .imageUrl(URI.create("http://test/test.png"))
+                .imageUrl(URI.create("http://test/test.jpg"))
                 .category(ID_ONE).cityName("Kiev");
         var contentDtoTwo = new AdResponseDto().id(ID_TWO).title("Тест search text")
                 .description("Тест search text").price(BigDecimal.valueOf(3500.00))

@@ -4,6 +4,7 @@ import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.cyberrealm.tech.bazario.backend.api.ImageApiDelegate;
 import org.cyberrealm.tech.bazario.backend.dto.TypeImage;
+import org.cyberrealm.tech.bazario.backend.exception.custom.ArgumentNotValidException;
 import org.cyberrealm.tech.bazario.backend.service.ImageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,11 +14,17 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @RequiredArgsConstructor
 public class ImageApiDelegateImpl implements ImageApiDelegate {
+    public static final String FORMAT_IMAGE_REGEX = "^image/(jpeg|webp)$";
     private final ImageService imageService;
 
     @Override
     public ResponseEntity<URI> changeImage(TypeImage type, Long id, URI oldValue,
-                                              MultipartFile file) {
+                                           MultipartFile file) {
+        if (file.getContentType() == null || !file.getContentType()
+                .matches(FORMAT_IMAGE_REGEX)) {
+            throw new ArgumentNotValidException(
+                    "File is not null.Only JPG or WebP files are allowed.");
+        }
         var url = imageService.change(type, id, oldValue, file);
         return ResponseEntity.ok(URI.create(url));
     }
@@ -30,6 +37,11 @@ public class ImageApiDelegateImpl implements ImageApiDelegate {
 
     @Override
     public ResponseEntity<URI> saveImage(TypeImage type, Long id, MultipartFile file) {
+        if (file.getContentType() == null || !file.getContentType()
+                .matches(FORMAT_IMAGE_REGEX)) {
+            throw new ArgumentNotValidException(
+                    "File is not null.Only JPG or WebP files are allowed.");
+        }
         var url = imageService.save(type, id, file);
         return ResponseEntity.status(HttpStatus.CREATED).body(URI.create(url));
     }

@@ -65,14 +65,18 @@ public class AdCompareServiceImpl implements AdCompareService {
         );
 
         var content = ads.stream().map(ad -> {
+            double differentPriceMaxMin = minMaxMap.get(PRICE_MAX) - minMaxMap.get(PRICE_MIN);
             ItemComparesDto price = new ItemComparesDto().name(PRICE)
                     .score(ad.getPrice().doubleValue())
-                    .percent((ad.getPrice().doubleValue() - minMaxMap.get(PRICE_MIN))
-                            / (minMaxMap.get(PRICE_MAX) - minMaxMap.get(PRICE_MIN)));
+                    .percent(differentPriceMaxMin > 0.0
+                            ? (ad.getPrice().doubleValue() - minMaxMap.get(PRICE_MIN))
+                            / differentPriceMaxMin : 0.0);
+            double differentRatingMaxMin = minMaxMap.get(RATING_MAX) - minMaxMap.get(RATING_MIN);
             ItemComparesDto rating = new ItemComparesDto().name(RATING)
                     .score(ratingMap.get(ad.getUser().getId()))
-                    .percent((ratingMap.get(ad.getUser().getId()) - minMaxMap.get(RATING_MIN))
-                            / (minMaxMap.get(RATING_MAX) - minMaxMap.get(RATING_MIN)));
+                    .percent(differentRatingMaxMin > 0.0
+                            ? (ratingMap.get(ad.getUser().getId()) - minMaxMap.get(RATING_MIN))
+                            / differentRatingMaxMin : 0.0);
             Double distanceScore = 0.0;
             double distancePercent = 0.0;
             if (!distances.isEmpty()) {
@@ -103,10 +107,11 @@ public class AdCompareServiceImpl implements AdCompareService {
             ItemComparesDto userDistance = new ItemComparesDto().name(USER_DISTANCE)
                     .score(userDistanceScore)
                     .percent(userDistancePercent);
-            return new AdComparesDto().id(ad.getId()).title(ad.getTitle())
+            AdComparesDto compares = new AdComparesDto().id(ad.getId()).title(ad.getTitle())
                     .description(ad.getDescription()).price(ad.getPrice())
                     .category(ad.getCategory().getId())
                     .compares(List.of(price, rating, distance, userDistance));
+            return compares;
         }).toList();
         return new PageCompareAd().content(content).minMax(minMaxList);
     }
