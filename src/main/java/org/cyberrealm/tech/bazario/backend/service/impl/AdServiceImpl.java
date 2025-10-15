@@ -142,8 +142,8 @@ public class AdServiceImpl implements AdService {
 
     @Override
     public Page<AdLeaderBoardDto> getLeaderBoard(Map<String, String> filters) {
-        var size = Integer.parseInt(Optional.of(filters.get("size")).orElse("16"));
-        var page = Integer.parseInt(Optional.of(filters.get("page")).orElse("0"));
+        var size = Integer.parseInt(Optional.ofNullable(filters.get("size")).orElse("16"));
+        var page = Integer.parseInt(Optional.ofNullable(filters.get("page")).orElse("0"));
 
         var content = accessAdService.getLeaderBoardContent(filters).stream()
                 .map(tuple -> new AdLeaderBoardDto()

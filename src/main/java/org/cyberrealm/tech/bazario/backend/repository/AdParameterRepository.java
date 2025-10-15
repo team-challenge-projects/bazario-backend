@@ -10,6 +10,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 public interface AdParameterRepository extends JpaRepository<AdParameter, Long>,
         JpaSpecificationExecutor<AdParameter> {
 
-    @EntityGraph(attributePaths = {"parameter"})
+    @EntityGraph(attributePaths = {"parameter", "parameter.type"})
     List<AdParameter> findByAd(Ad ad);
 }

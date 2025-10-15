@@ -58,7 +58,7 @@ class ImageApiDelegateImplTest extends AbstractIntegrationTest {
     @ParameterizedTest
     @EnumSource(TypeImage.class)
     void changeImage(TypeImage type) throws Exception {
-        var nameFile = "test-image.png";
+        var nameFile = "test-image.jpg";
         var mockFile = getMockFile(nameFile);
 
         UUID expectedUuid = UUID.fromString(
@@ -79,7 +79,7 @@ class ImageApiDelegateImplTest extends AbstractIntegrationTest {
                             .contentType(MediaType.MULTIPART_FORM_DATA)
                             .with(request -> {
                                 request.setMethod("PUT");
-                                request.addParameter("oldValue", "http://test/test.png");
+                                request.addParameter("oldValue", "http://test/test.jpg");
                                 return request;
                             }))
                     .andExpect(status().isOk())
@@ -96,7 +96,7 @@ class ImageApiDelegateImplTest extends AbstractIntegrationTest {
         when(authService.getCurrentUser()).thenReturn(user);
         mockMvc.perform(delete("/image/{type}/{id}", type, ID_ONE)
                         .param("url", type.equals(TypeImage.AD)
-                                ? "http://test/old-test.png" : "http://test/test.png"))
+                                ? "http://test/old-test.jpg" : "http://test/test.jpg"))
                 .andExpect(status().isNoContent());
     }
 
@@ -104,7 +104,7 @@ class ImageApiDelegateImplTest extends AbstractIntegrationTest {
     @ParameterizedTest
     @EnumSource(TypeImage.class)
     void saveImage(TypeImage type) throws Exception {
-        var nameFile = "test-image.png";
+        var nameFile = "test-image.jpg";
         var mockFile = getMockFile(nameFile);
 
         UUID expectedUuid = UUID.fromString(
@@ -134,6 +134,6 @@ class ImageApiDelegateImplTest extends AbstractIntegrationTest {
     private static MockMultipartFile getMockFile(String nameFile) {
         var content = "some image content".getBytes();
         return new MockMultipartFile("file",
-                nameFile, MediaType.IMAGE_PNG_VALUE, content);
+                nameFile, MediaType.IMAGE_JPEG_VALUE, content);
     }
 }
