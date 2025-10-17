@@ -5,6 +5,7 @@ import org.cyberrealm.tech.bazario.backend.dto.PatchUser;
 import org.cyberrealm.tech.bazario.backend.dto.PrivateUserInformation;
 import org.cyberrealm.tech.bazario.backend.dto.PublicUserInformation;
 import org.cyberrealm.tech.bazario.backend.dto.RegistrationRequest;
+import org.cyberrealm.tech.bazario.backend.dto.RegistrationResponse;
 import org.cyberrealm.tech.bazario.backend.dto.UserInformation;
 import org.cyberrealm.tech.bazario.backend.exception.custom.RegistrationException;
 
@@ -19,7 +20,7 @@ public interface UserService {
      * @author Andrey Sitarskiy
      * @param requestDto Registration form
      */
-    void register(RegistrationRequest requestDto) throws RegistrationException;
+    RegistrationResponse register(RegistrationRequest requestDto) throws RegistrationException;
 
     /**
      * Get full information about user

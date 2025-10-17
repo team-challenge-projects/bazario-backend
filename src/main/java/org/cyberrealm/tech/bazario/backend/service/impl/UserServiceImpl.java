@@ -12,6 +12,7 @@ import org.cyberrealm.tech.bazario.backend.dto.PatchUser;
 import org.cyberrealm.tech.bazario.backend.dto.PrivateUserInformation;
 import org.cyberrealm.tech.bazario.backend.dto.PublicUserInformation;
 import org.cyberrealm.tech.bazario.backend.dto.RegistrationRequest;
+import org.cyberrealm.tech.bazario.backend.dto.RegistrationResponse;
 import org.cyberrealm.tech.bazario.backend.dto.UserInformation;
 import org.cyberrealm.tech.bazario.backend.exception.custom.EntityNotFoundException;
 import org.cyberrealm.tech.bazario.backend.exception.custom.ForbiddenException;
@@ -55,7 +56,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void register(RegistrationRequest requestDto)
+    public RegistrationResponse register(RegistrationRequest requestDto)
             throws RegistrationException {
         if (userRepository.existsByEmail(requestDto.getEmail())) {
             throw new RegistrationException("User with email: " + requestDto.getEmail()
@@ -67,6 +68,7 @@ public class UserServiceImpl implements UserService {
             redisTemplate.opsForValue().set(requestDto.getEmail()
                             + VerificationService.EMAIL_VERIFICATION_KEY_SUFFIX,
                     jsonUser, Duration.ofMinutes(expirationMinutes));
+            return userMapper.toRegistrationResponse(requestDto);
         } catch (JsonProcessingException e) {
             throw new RegistrationException("Not convert request to json by user with email %s"
                     .formatted(requestDto.getEmail()));

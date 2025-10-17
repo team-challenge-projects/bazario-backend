@@ -11,6 +11,7 @@ import org.cyberrealm.tech.bazario.backend.dto.PatchUser;
 import org.cyberrealm.tech.bazario.backend.dto.PrivateUserInformation;
 import org.cyberrealm.tech.bazario.backend.dto.PublicUserInformation;
 import org.cyberrealm.tech.bazario.backend.dto.RegistrationRequest;
+import org.cyberrealm.tech.bazario.backend.dto.RegistrationResponse;
 import org.cyberrealm.tech.bazario.backend.dto.UserInformation;
 import org.cyberrealm.tech.bazario.backend.dto.UserResponseDto;
 import org.cyberrealm.tech.bazario.backend.dto.script.UserCredentials;
@@ -140,4 +141,6 @@ public abstract class UserMapper {
             toRemove.forEach(parameters::remove);
         }
     }
+
+    public abstract RegistrationResponse toRegistrationResponse(RegistrationRequest requestDto);
 }

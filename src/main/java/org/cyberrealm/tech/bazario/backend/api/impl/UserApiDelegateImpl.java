@@ -7,6 +7,7 @@ import org.cyberrealm.tech.bazario.backend.dto.PatchUser;
 import org.cyberrealm.tech.bazario.backend.dto.PrivateUserInformation;
 import org.cyberrealm.tech.bazario.backend.dto.PublicUserInformation;
 import org.cyberrealm.tech.bazario.backend.dto.RegistrationRequest;
+import org.cyberrealm.tech.bazario.backend.dto.RegistrationResponse;
 import org.cyberrealm.tech.bazario.backend.dto.TypeEmailMessage;
 import org.cyberrealm.tech.bazario.backend.dto.UserInformation;
 import org.cyberrealm.tech.bazario.backend.dto.VerificationEmail;
@@ -30,9 +31,10 @@ public class UserApiDelegateImpl implements UserApiDelegate {
     }
 
     @Override
-    public ResponseEntity<RegistrationRequest> createUser(RegistrationRequest registrationRequest) {
-        userService.register(registrationRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(registrationRequest);
+    public ResponseEntity<RegistrationResponse> createUser(
+            RegistrationRequest registrationRequest) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                userService.register(registrationRequest));
     }
 
     @Override

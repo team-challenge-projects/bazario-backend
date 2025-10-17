@@ -57,7 +57,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Double getTotalRating(Long id) {
-        return commentRepository.findAverageRatingByEvaluatedId(id);
+        return commentRepository.findAverageRatingByEvaluatedId(id).orElse(0.0);
     }
 
     @Override
