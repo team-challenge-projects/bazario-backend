@@ -26,6 +26,7 @@ import org.cyberrealm.tech.bazario.backend.dto.BasicParameter;
 import org.cyberrealm.tech.bazario.backend.dto.EmailRequest;
 import org.cyberrealm.tech.bazario.backend.dto.PrivateUserInformation;
 import org.cyberrealm.tech.bazario.backend.dto.RegistrationRequest;
+import org.cyberrealm.tech.bazario.backend.dto.RegistrationResponse;
 import org.cyberrealm.tech.bazario.backend.dto.TypeEmailMessage;
 import org.cyberrealm.tech.bazario.backend.dto.TypeView;
 import org.cyberrealm.tech.bazario.backend.dto.UserInformation;
@@ -67,6 +68,8 @@ class UserApiDelegateImplTest extends AbstractIntegrationTest {
         var dto = new RegistrationRequest().email("new-test@test.com")
                 .firstName("Test").password("tesT2#test")
                 .phoneNumber("+380670001234");
+        var response = new RegistrationResponse().email("new-test@test.com")
+                .firstName("Test").phoneNumber("+380670001234");
         when(redisTemplate.opsForValue()).thenReturn(valueOperations);
         doNothing().when(valueOperations).set(anyString(),any(), any(Duration.class));
 
@@ -74,7 +77,7 @@ class UserApiDelegateImplTest extends AbstractIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isCreated())
-                .andExpect(content().json(objectMapper.writeValueAsString(dto)));
+                .andExpect(content().json(objectMapper.writeValueAsString(response)));
     }
 
     @Test

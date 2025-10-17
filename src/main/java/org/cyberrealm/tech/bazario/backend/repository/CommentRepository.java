@@ -1,6 +1,7 @@
 package org.cyberrealm.tech.bazario.backend.repository;
 
 import java.util.List;
+import java.util.Optional;
 import org.cyberrealm.tech.bazario.backend.dto.user.UserScore;
 import org.cyberrealm.tech.bazario.backend.model.Review;
 import org.springframework.data.domain.Page;
@@ -24,7 +25,7 @@ public interface CommentRepository extends JpaRepository<Review, Long> {
     boolean existsByEvaluatorIdAndEvaluatedId(Long currentUserId, Long userId);
 
     @Query("SELECT AVG(r.rating) FROM Review r WHERE r.evaluated.id = :userId")
-    Double findAverageRatingByEvaluatedId(@Param("userId") Long userId);
+    Optional<Double> findAverageRatingByEvaluatedId(@Param("userId") Long userId);
 
     @Query(FIND_USER_IDS_WITH_AVE_RATING_BETWEEN)
     List<Long> findUserIdsWithAverageRatingBetween(@Param("from") int from, @Param("to") int to);

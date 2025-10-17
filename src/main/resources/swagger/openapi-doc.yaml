@@ -225,7 +225,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RegistrationRequest'
+                $ref: '#/components/schemas/RegistrationResponse'
         400:
           description: Invalid input
           content:
@@ -980,7 +980,10 @@ paths:
       tags:
         - Favorite
       summary: Get favorite ad
-      description: Get favorite ad
+      description: |
+        Get favorite ad<br>
+        A map of key-value pairs for filtering.<br>
+        Example Pageable:  "size":"16", "page":"0","sort":"rating,desc"(field,asc|desc)<br>
       operationId: getFavorite
       parameters:
         - $ref: '#/components/parameters/filtersParameter'
@@ -2855,6 +2858,16 @@ components:
           type: integer
           format: int64
         name:
+          type: string
+    RegistrationResponse:
+      type: "object"
+      properties:
+        email:
+          type: string
+          format: email
+        firstName:
+          type: string
+        phoneNumber:
           type: string
   parameters:
     idParam:
